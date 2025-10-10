@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Website</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Luckiest+Guy&family=Rubik+Bubbles&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="src/css/style.css" />
+
+</head>
+
+<body>
+
+  <!-- Landing Page -->
+  <header id="landing-page" class="landing-page">
+    <nav class="navbar">
+      <div class="navbar-container">
+        <img src="src/images/sanjuportfolio_logo.svg" alt="sanjuportfolio_logo" />
+        <ul class="nav-links">
+          <li><a href="#landing-page">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills-icons">Skills</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+    <h1>Hello I AM
+      <div class="roller">
+        <span id="rolltext">Sanju<br />
+          Full Stack Developer<br />
+          <i class="fas fa-arrow-down"></i><br />
+      </div>
+    </h1>
+  </header>
+
+  </header>
+  <!-- Main -->
+  <main id="main">
+    <!-- About Me -->
+    <section class="about-me" id="about">
+      <div class="bio">
+        <h2>About me</h2>
+        <p>
+          Hi, I'm Sanju, a technology enthusiast from India 🇮🇳. Since I was a kid, I've been fascinated by computers
+          and
+          technology. My journey with tech began when I started tinkering with Arduino projects during my school days.
+          Back then, most computers came with a cool thing called Ubuntu, which also introduced me to working through
+          the command line.
+        </p>
+        <br />
+        <p>
+          Even though I haven't had formal education beyond high school but my hands-on experience with projects and
+          self-learning have given me a strong foundation in tech. I've been teaching myself all kinds of stuff online,
+          like HTML, CSS, C#, and JavaScript.
+        </p>
+        <br />
+        <p>
+          Before getting into tech, I did some odd jobs to help out my family, like selling stuff for my brother's
+          startup and delivering food for Swiggy. But now, I'm really focused on becoming a full-stack developer. It's a
+          tough journey, but I'm determined to keep learning and growing.
+        </p>
+        <br />
+        <p>
+          I believe that with hard work and dedication, anything is possible. And I'm excited to see where my journey in
+          tech takes me!
+        </p>
+      </div>
+
+      <div class="picture-container">
+        <img src="src/images/androginous_hero_img.png" alt="informal portrait picture" />
+      </div>
+    </section>
+    <!-- Skills -->
+    <section id="skills-icons" class="skills reveal">
+      <h2>Skills</h2>
+      <div class="skills-icons">
+        <!-- "fa-brands fa-html5" classes disappear from <i> in the DOM when the <svg> icons appear. This is why I need additional classes "skill i-html" etc in order to reference the <i>/icons on the DOM and CSS-->
+        <i class="fa-brands fa-html5 skill html"> </i>
+        <i class="fa-brands fa-css3-alt skill css"> </i>
+        <i class="fa-brands fa-js skill js"> </i>
+        <i class="fa-brands fa-react skill react"> </i>
+        <i class="fa-brands fa-node-js skill node"> </i>
+        <i class="fa-brands fa-git-alt skill git"> </i>
+      </div>
+      <div class="icon-names">
+        <p class="icon-name html">HTML</p>
+        <p class="icon-name css">CSS</p>
+        <p class="icon-name js">JavaScript</p>
+        <p class="icon-name react">React</p>
+        <p class="icon-name node">Node.js</p>
+        <p class="icon-name git">Git</p>
+      </div>
+    </section>
+    <!-- Projects -->
+    <section class="projects" id="projects">
+      <br />
+      <h2>Projects</h2>
+      <div class="projects-list">
+        <div class="flip-card-container">
+          <div class="flip-card">
+            <!-- Front side of the card -->
+            <div class="card-front">
+              <h3>Portfolio Website</h3>
+              <div class="projects-icons">
+                <i class="fa-brands fa-html5"></i>
+                <i class="fa-brands fa-css3-alt"></i>
+              </div>
+              <div class="img-container">
+                <img src="src/images/portfolio-website.jpg" alt="Portfolio website homepage" />
+              </div>
+              <p>
+                My digital resume. It shows what I can do with websites. You can see the
+                things I've made and how I made them. I made this website to show people what I can do, like a showcase
+                of my work.
+              </p>
+            </div>
+            <!-- Back side of the card -->
+            <div class="card-back">
+              <div class="project-buttons">
+                <a href="https://github.com/sddion/sddion.github.io.git" target="_blank" class="button source-code">
+                  <p>Source<br />Code</p>
+                  <i class="fa-solid fa-code"></i>
+                </a>
+                <a href="https://sddion.github.io/" target="_blank" class="button live-site">
+                  <p>Live<br />Site</p>
+                  <i class="fa-regular fa-window-maximize"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Project 2 -->
+        <div class="flip-card-container">
+          <div class="flip-card">
+            <!-- Front side of the card -->
+            <div class="card-front">
+              <h3>Music Player</h3>
+              <div class="projects-icons">
+                <i class="fa-brands fa-html5"></i>
+                <i class="fa-brands fa-css3-alt"></i>
+                <i class="fa-brands fa-js"></i>
+                <i class="fa-brands fa-git-alt"></i>
+              </div>
+              <div class="img-container">
+                <img src="src/images/Screenshot_2024.jpg" alt="Music Player homepage" />
+              </div>
+              <p>
+                It is a sleek and intuitive web application for playing your favorite tunes without ads.
+                It has a user-friendly interface to enhance your listening experience.
+              </p>
+            </div>
+            <!-- Back side of the card -->
+            <div class="card-back">
+              <div class="project-buttons">
+                <a href="https://github.com/sddion/wave-music-player" target="_blank" class="button source-code">
+                  <p>Source<br />Code</p>
+                  <i class="fa-solid fa-code"></i>
+                </a>
+                <a href="https://wave-music-player.onrender.com" target="_blank" class="button live-site">
+                  <p>Live<br />Site</p>
+                  <i class="fa-regular fa-window-maximize"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Project 3 -->
+        <div class="flip-card-container">
+          <div class="flip-card">
+            <!-- Front side of the card -->
+            <div class="card-front">
+              <h3>Voicelink</h3>
+              <div class="projects-icons">
+                <i class="fa-brands fa-html5"></i>
+                <i class="fa-brands fa-css3-alt"></i>
+                <i class="fa-brands fa-js"></i>
+                <i class="fa-brands fa-git-alt"></i>
+              </div>
+              <div class="img-container">
+                <img src="src/images/voicelink_homepage.jpg" alt="Voicelink homepage" />
+              </div>
+              <p>
+                Voicelink is a lightweight web application built with Node.js and Twilio for making and receiving
+                encrypted voice calls over the internet without compromising your privacy.
+              </p>
+            </div>
+            <!-- Back side of the card -->
+            <div class="card-back">
+              <div class="project-buttons">
+                <a href="https://github.com/sddion/voicelink" target="_blank" class="button source-code">
+                  <p>Source<br />Code</p>
+                  <i class="fa-solid fa-code"></i>
+                </a>
+                <a href="https://voicelink.onrender.com" target="_blank" class="button live-site">
+                  <p>Live<br />Site</p>
+                  <i class="fa-regular fa-window-maximize"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+    <!-- Contact -->
+    <section id="contact" class="contact">
+
+      <ul class="social-media-list">
+        <li><a href="https://github.com/sddion" target="_blank" class="contact-icon">
+            <i class="fa-brands fa-github" aria-hidden="true"></i></a>
+        </li>
+        <li><a href="#" target="_blank" class="contact-icon">
+            <i class="fa-brands fa-facebook" aria-hidden="true"></i></a>
+        </li>
+        <li><a href="https://t.me/drifterbytes" target="_blank" class="contact-icon">
+            <i class="fa-brands fa-telegram" aria-hidden="true"></i></a>
+        </li>
+        <li><a href="https://instagram.com/dion.json" target="_blank" class="contact-icon">
+            <i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+        </li>
+      </ul>
+
+    </section>
+
+    <br />
+  </main>
+  <!-- Footer -->
+  <footer>
+    <p>Website designed by Sanju © 2024 all rights reserved</p>
+  </footer>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script defer src="src/js/brands.min.js" data-auto-replace-svg="nest"></script>
+  <script defer src="src/js/regular.min.js" data-auto-replace-svg="nest"></script>
+  <script defer src="src/js/solid.min.js" data-auto-replace-svg="nest"></script>
+  <script defer src="src/js/fontawesome.min.js" data-auto-replace-svg="nest"></script>
+  <script defer src="src/js/script.js"></script>
+</body>
+
+</html>
