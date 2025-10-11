@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
+
 import "./globals.css"
 import { ClientLayout } from "@/components/client-layout"
 
@@ -18,18 +18,31 @@ export const metadata: Metadata = {
     "embedded systems",
     "security",
     "Arduino",
+    "ESP32",
     "ESP8266",
   ],
   authors: [{ name: "Sanju", url: "https://github.com/sddion" }],
-  creator: "Sanju (sddion / dedsec)",
+  creator: "Sanju (sddion / 0xdedsec)",
   openGraph: {
     type: "website",
     locale: "en_US",
     title: "Sanju - Full-Stack Developer & Security Engineer",
-    description: "Self-taught developer with expertise across web, mobile, embedded systems, and security",
+    description:
+      "Self-taught developer with expertise across web, mobile, embedded systems, and security.",
     siteName: "Sanju Portfolio",
+    url: "https://sddion.vercel.app/",
+    images: [
+      {
+        url: "https://i.ibb.co/Zzs386fk/Screenshot-2025-10-11-at-18-07-49-Sanju-Full-Stack-Developer-Security-Engineer.png",
+        width: 1200,
+        height: 630,
+        alt: "Sanju Portfolio Preview",
+      },
+    ],
   },
-  generator: 'v0.app'
+  verification: {
+    google: "_AtTHdx6rjxEyjz6FDZ9EXnb0nH9HPoKVB6ZcHSUjTQ",
+  },
 }
 
 export default function RootLayout({
@@ -39,10 +52,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+      <body
+        className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased bg-neutral-950 text-neutral-50`}
+      >
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   )
