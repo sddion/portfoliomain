@@ -3,8 +3,14 @@
 import { Button } from "@/components/ui/button"
 import { Github, Gitlab, Mail, ArrowDown, Music } from "lucide-react"
 import Link from "next/link"
+import { useMounted } from "@/hooks/use-mounted"
 
 export function HeroSection() {
+  const mounted = useMounted()
+
+  if (!mounted) {
+    return null
+  }
   return (
     <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-16">
       <div className="container mx-auto max-w-5xl">
@@ -41,7 +47,7 @@ export function HeroSection() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2"
               >
-                <Music className="h-4 w-4" /> Try My Music Player
+                {mounted && <Music className="h-4 w-4" />} Try My Music Player
               </a>
             </Button>
           </div>
@@ -54,7 +60,7 @@ export function HeroSection() {
               className="text-muted-foreground hover:text-accent transition-colors"
               aria-label="GitHub"
             >
-              <Github className="h-6 w-6" />
+              {mounted && <Github className="h-6 w-6" />}
             </a>
             <a
               href="https://gitlab.com/0xdedsec"
@@ -63,10 +69,10 @@ export function HeroSection() {
               className="text-muted-foreground hover:text-accent transition-colors"
               aria-label="GitLab"
             >
-              <Gitlab className="h-6 w-6" />
+              {mounted && <Gitlab className="h-6 w-6" />}
             </a>
             <a href="#contact" className="text-muted-foreground hover:text-accent transition-colors" aria-label="Email">
-              <Mail className="h-6 w-6" />
+              {mounted && <Mail className="h-6 w-6" />}
             </a>
           </div>
 
@@ -76,7 +82,7 @@ export function HeroSection() {
               className="inline-flex items-center justify-center text-muted-foreground hover:text-accent transition-colors animate-bounce"
               aria-label="Scroll to about section"
             >
-              <ArrowDown className="h-6 w-6" />
+              {mounted && <ArrowDown className="h-6 w-6" />}
             </Link>
           </div>
         </div>

@@ -1,7 +1,12 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ExternalLink, Github, GitlabIcon, AlertTriangle } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useMounted } from "@/hooks/use-mounted"
+
 import type { Project } from "@/lib/projects-data"
 
 interface ProjectCardProps {
@@ -9,6 +14,8 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const mounted = useMounted()
+
   return (
     <Card className="flex flex-col h-full border-border hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
       <CardHeader>
@@ -23,9 +30,41 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
       <CardContent className="flex-1 space-y-4">
         {project.disclaimer && (
-          <div className="flex gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-            <p className="text-xs text-destructive">{project.disclaimer}</p>
+          <div className={cn(
+            "flex gap-2 p-3 rounded-lg",
+            project.disclaimer.includes("educational")
+              ? "bg-red-500/10 border border-red-500/20"
+              : "bg-yellow-500/10 border border-yellow-500/20"
+          )}>
+            {mounted && (
+              <AlertTriangle className={cn(
+                "h-4 w-4 shrink-0 mt-0.5",
+                project.disclaimer.includes("educational") ? "text-red-500" : "text-yellow-500"
+              )} />
+            )}
+            <p className={cn(
+              "text-xs space-x-1",
+              project.disclaimer.includes("educational") ? "text-red-500" : "text-yellow-500"
+            )}>
+              {project.disclaimer.split('http').map((part, i) => {
+                if (i === 0) return part;
+                const url = 'http' + part.split(' ')[0];
+                const rest = part.slice(url.length);
+                return (
+                  <span key={i}>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline"
+                    >
+                      {url}
+                    </a>
+                    {rest}
+                  </span>
+                );
+              })}
+            </p>
           </div>
         )}
 
@@ -60,7 +99,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         {project.liveUrl && (
           <Button asChild size="sm" className="flex-1">
             <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="h-4 w-4 mr-2" />
+              {mounted && <ExternalLink className="h-4 w-4 mr-2" />}
               Live Demo
             </a>
           </Button>
@@ -68,7 +107,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         {project.githubUrl && (
           <Button asChild variant="outline" size="sm" className="flex-1 bg-transparent">
             <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-              <Github className="h-4 w-4 mr-2" />
+              {mounted && <Github className="h-4 w-4 mr-2" />}
               GitHub
             </a>
           </Button>
@@ -76,7 +115,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         {project.gitlabUrl && (
           <Button asChild variant="outline" size="sm" className="flex-1 bg-transparent">
             <a href={project.gitlabUrl} target="_blank" rel="noopener noreferrer">
-              <GitlabIcon className="h-4 w-4 mr-2" />
+              {mounted && <GitlabIcon className="h-4 w-4 mr-2" />}
               GitLab
             </a>
           </Button>

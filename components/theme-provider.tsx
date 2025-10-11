@@ -14,20 +14,22 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark")
   const [mounted, setMounted] = useState(false)
+  const [theme, setTheme] = useState<Theme>(() => {
+    // During SSR, default to dark theme
+    if (typeof window === 'undefined') return 'dark'
 
-  // Load theme from localStorage on mount
+    // On client, try to load from localStorage
+    const savedTheme = localStorage.getItem("theme") as Theme | null
+    if (savedTheme) return savedTheme
+
+    // If no saved theme, check system preference
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  })
+
+  // Mark component as mounted
   useEffect(() => {
     setMounted(true)
-    const savedTheme = localStorage.getItem("theme") as Theme | null
-    if (savedTheme) {
-      setTheme(savedTheme)
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-      setTheme(prefersDark ? "dark" : "light")
-    }
   }, [])
 
   // Apply theme to document
@@ -47,12 +49,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"))
   }
 
-  // Prevent flash of unstyled content
-  if (!mounted) {
-    return <>{children}</>
-  }
-
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      <div className={mounted ? 'visible-after-mounted' : 'invisible-until-mounted'}>
+        {children}
+      </div>
+    </ThemeContext.Provider>
+  )
 }
 
 export function useTheme() {

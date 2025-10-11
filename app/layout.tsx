@@ -4,8 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
-import { Suspense } from "react"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ClientLayout } from "@/components/client-layout"
 
 export const metadata: Metadata = {
   title: "Sanju - Full-Stack Developer & Security Engineer",
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
     description: "Self-taught developer with expertise across web, mobile, embedded systems, and security",
     siteName: "Sanju Portfolio",
   },
-    generator: 'v0.app'
+  generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -41,12 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
-        <ThemeProvider>
-          <Suspense fallback={null}>
-            {children}
-            <Analytics />
-          </Suspense>
-        </ThemeProvider>
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   )

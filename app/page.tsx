@@ -5,7 +5,10 @@ import { SkillsSection } from "@/components/skills-section"
 import { ProjectsSection } from "@/components/projects-section"
 import { ServicesSection } from "@/components/services-section"
 import { ContactSection } from "@/components/contact-section"
+import { JokerQuoteSection } from "@/components/joker-quote-section"
 import { Footer } from "@/components/footer"
+
+export const dynamic = 'force-dynamic'
 
 export default function Home() {
   return (
@@ -14,8 +17,9 @@ export default function Home() {
       <HeroSection />
       <AboutSection />
       <SkillsSection />
+      <JokerQuoteSection />
       <ProjectsSection />
-      <ServicesSection /> {/* new */}
+      <ServicesSection />
       <ContactSection />
       <Footer />
     </main>

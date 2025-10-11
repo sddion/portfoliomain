@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     // 3. Send to notification service
 
     // For now, we'll just log and return success
-    console.log("[v0] Contact form submission:", { name, email, message })
+    console.warn("[v0] Contact form submission:", { name, email, message })
 
     // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 500))

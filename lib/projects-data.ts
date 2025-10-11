@@ -49,13 +49,13 @@ export const projects: Project[] = [
     id: "wave",
     title: "Wave (archived)",
     description:
-      "Original Flask-based web music player (archived, read-only). The project has been redesigned and migrated to Express.js.",
+      "Original Flask-based web music player (archived, read-only). The project has been redesigned and migrated to Express.js, then reimplemented with Next.js (Ragava).",
     category: "web",
     techStack: ["Python", "Flask", "JavaScript", "HTML/CSS"],
     githubUrl: "https://github.com/sddion/wave-music-player",
     features: ["Audio UI", "Flask Backend", "Custom Controls"],
     disclaimer:
-      "Archived (read-only). Migration to Express.js is available at https://github.com/sddion/wave and the Next.js implementation is Ragava (see above).",
+      "Archived (read-only). Migration to Express.js: https://github.com/sddion/wave Next.js implementation: https://github.com/sddion/Ragava (Legacy code not maintained)",
   },
   // Mobile Apps
   {

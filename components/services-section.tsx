@@ -2,9 +2,17 @@
 
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
+import { useMounted } from "@/hooks/use-mounted"
+import {
+  Palette,
+  Code2,
+  CircuitBoard,
+  Cpu,
+  LucideIcon
+} from "lucide-react"
 
 type Service = {
-  icon: string
+  Icon: LucideIcon
   title: string
   description: string
   priceInr: number
@@ -12,48 +20,69 @@ type Service = {
 
 const services: Service[] = [
   {
-    icon: "laptop",
+    Icon: Palette,
     title: "Web Design",
     description: "Visually sharp, accessible, responsive design tailored to your brand.",
-    priceInr: 15000,
+    priceInr: 200, // Per hour rate
   },
   {
-    icon: "code",
+    Icon: Code2,
     title: "Web Development",
     description: "Full-stack builds with clean API boundaries and production hardening.",
-    priceInr: 30000,
+    priceInr: 400, // Per hour rate
   },
   {
-    icon: "android",
-    title: "App Design",
-    description: "Sleek UX/UI for iOS/Android with design systems and motion.",
-    priceInr: 18000,
+    Icon: CircuitBoard,
+    title: "Hardware Design",
+    description: "Custom PCB design with KiCAD, ESP32/ESP8266 integration, and IoT solutions.",
+    priceInr: 200, // Per hour rate
   },
   {
-    icon: "apple",
-    title: "App Development",
-    description: "React Native apps with CI/CD, OTA updates, and telemetry.",
-    priceInr: 45000,
+    Icon: Cpu,
+    title: "IoT Development",
+    description: "ESP32/ESP8266 firmware, sensor integration, and home automation solutions.",
+    priceInr: 220, // Per hour rate
   },
 ]
 
 export function ServicesSection() {
-  const [usdPerInr, setUsdPerInr] = useState<number | null>(null)
+  const mounted = useMounted()
+  const [usdPerInr, setUsdPerInr] = useState(0.012)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let alive = true
-    // exchangerate.host is free and reliable
-    fetch("https://api.exchangerate.host/latest?base=INR&symbols=USD")
-      .then((r) => r.json())
-      .then((data) => {
+    setIsLoading(true)
+    setError('')
+
+    // Function to fetch rates with amount
+    const fetchRate = async (amount: number) => {
+      try {
+        const res = await fetch(`/api/fx?base=INR&symbol=USD&amount=${amount}`)
+        if (!res.ok) throw new Error('Failed to fetch rate')
+        const data = await res.json()
         if (!alive) return
-        const rate = data?.rates?.USD
-        if (typeof rate === "number") setUsdPerInr(rate)
-      })
-      .catch(() => {
-        // fallback approximate rate if API is unavailable
-        setUsdPerInr(0.012)
-      })
+
+        // Use the actual rate from the API
+        if (typeof data?.rate === "number") {
+          setUsdPerInr(data.rate)
+          setError('')
+        } else {
+          throw new Error('Invalid rate received')
+        }
+      } catch (error) {
+        console.error('Error fetching rate:', error)
+        setError('Could not fetch current rates')
+        setUsdPerInr(0.012) // Fallback rate
+      } finally {
+        if (alive) setIsLoading(false)
+      }
+    }
+
+    // Initial fetch with 1 INR
+    fetchRate(1)
+
     return () => {
       alive = false
     }
@@ -79,24 +108,29 @@ export function ServicesSection() {
                   "rounded-xl border border-border bg-card text-card-foreground p-6",
                   "transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg",
                   "animate-in fade-in-50 slide-in-from-bottom-4",
+                  `animation-delay-${(idx + 1) * 100}`
                 )}
-                style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 shrink-0 rounded-md bg-accent/15 text-accent grid place-items-center font-mono">
-                    {s.icon.toUpperCase().slice(0, 2)}
+                  <div className="h-10 w-10 shrink-0 rounded-md bg-accent/15 text-accent grid place-items-center">
+                    {mounted && <s.Icon className="h-6 w-6" />}
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold">{s.title}</h3>
                     <p className="text-muted-foreground">{s.description}</p>
                     <div className="pt-2 text-sm">
                       <span className="font-mono">₹{s.priceInr.toLocaleString("en-IN")}</span>{" "}
-                      <span className="text-muted-foreground">INR</span>
+                      <span className="text-muted-foreground">INR/hr</span>
                       {" • "}
                       <span className="font-mono">
-                        {usd !== null ? `$${usd.toLocaleString("en-US")}` : "Fetching USD..."}
-                      </span>{" "}
-                      <span className="text-muted-foreground">USD</span>
+                        {isLoading ? (
+                          "Loading..."
+                        ) : error ? (
+                          <span className="text-destructive" title={error}>~${usd?.toLocaleString("en-US") ?? "?"}/hr</span>
+                        ) : (
+                          `$${usd?.toLocaleString("en-US")}/hr`
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
