@@ -22,7 +22,7 @@ export const projects: Project[] = [
     techStack: ["Next.js", "TypeScript", "React", "Node.js"],
     liveUrl: "https://ragava.vercel.app",
     githubUrl: "https://github.com/sddion/Ragava",
-    gitlabUrl: "https://gitlab.com/sju17051/wavemusic",
+    gitlabUrl: "https://gitlab.com/0xdeds3c/wavemusic",
     features: ["Playlist Management", "Audio Streaming", "Responsive UI", "API route architecture", "CI/CD"],
   },
   {
