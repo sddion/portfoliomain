@@ -4,7 +4,8 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 
 import "./globals.css"
-import { ClientLayout } from "@/components/client-layout"
+import { ThemeProvider } from "@/components/theme-provider"
+import { WindowProvider } from "@/components/os/WindowManager"
 
 export const metadata: Metadata = {
   title: "Sanju - Full-Stack Developer & Security Engineer",
@@ -55,7 +56,16 @@ export default function RootLayout({
       <body
         className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased bg-neutral-950 text-neutral-50`}
       >
-        <ClientLayout>{children}</ClientLayout>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <WindowProvider>
+            {children}
+          </WindowProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

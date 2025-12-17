@@ -35,6 +35,22 @@ export function TerminalApp() {
             addToHistory("- Bagley (AI Assistant)")
             addToHistory("- Portfolio (This website)")
         },
+        curl: async (args) => {
+            const url = args[0]
+            if (!url) {
+                addToHistory("Usage: curl <url>")
+                return
+            }
+            addToHistory(`Fetching ${url}...`)
+            try {
+                const res = await fetch(`/api/proxy?url=${encodeURIComponent(url)}`)
+                if (!res.ok) throw new Error(res.statusText)
+                const text = await res.text()
+                addToHistory(text.substring(0, 500) + (text.length > 500 ? "\n... (truncated)" : ""))
+            } catch (err) {
+                addToHistory(`Error: ${err}`)
+            }
+        },
         sudo: () => {
             addToHistory("Permission denied: You are not in the sudoers file. This incident will be reported.")
         }

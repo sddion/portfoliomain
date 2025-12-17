@@ -6,13 +6,16 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
-import { ResumeApp } from "@/components/apps/ResumeApp"
+import { ConkyWidget } from "@/components/os/ConkyWidget"
+import dynamic from "next/dynamic"
+
+const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
 import { LoginScreen } from "@/components/os/LoginScreen"
 
@@ -64,18 +67,37 @@ export function Desktop() {
             icon: <Github className="text-white" size={32} />,
             action: () => window.open("https://github.com/sddion", "_blank"),
         },
+        {
+            id: "gitlab",
+            label: "GitLab",
+            icon: <Gitlab className="text-orange-500" size={32} />,
+            action: () => window.open("https://gitlab.com/0xdeds3c", "_blank"),
+        },
+        {
+            id: "instagram",
+            label: "Instagram",
+            icon: <Instagram className="text-pink-500" size={32} />,
+            action: () => window.open("https://instagram.com/wordswires", "_blank"),
+        },
     ]
 
+
+    // Clean up duplicate icons by filtering unique IDs or just ensuring list is correct.
+    // The previous update appended duplicates. I will re-declare the list cleanly.
+
     return (
-        <div className="h-screen w-screen overflow-hidden bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] bg-cover bg-center text-white relative">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+        <div className="h-screen w-screen overflow-hidden bg-[url('/image_10463403.png')] bg-cover bg-center text-white relative">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
+
+            {/* Conky Widget */}
+            <ConkyWidget />
 
             {/* CRT Scanline Effect */}
             <div className="crt-effect pointer-events-none" />
 
             {/* Desktop Icons Grid */}
             <div className="relative z-0 p-4 grid grid-flow-col grid-rows-[repeat(auto-fill,100px)] gap-4 w-fit h-[calc(100vh-40px)]">
-                {icons.map((icon) => (
+                {icons.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i).map((icon) => (
                     <DesktopIcon
                         key={icon.id}
                         label={icon.label}

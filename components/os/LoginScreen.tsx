@@ -28,12 +28,14 @@ export function LoginScreen() {
             <div className="z-10 flex flex-col items-center gap-8 w-full max-w-sm px-4">
 
                 {/* User Avatar */}
-                <div className="w-32 h-32 bg-zinc-900 rounded-full border-2 border-green-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,65,0.2)]">
-                    <User size={64} className="text-green-500" />
+                <div className="w-32 h-32 bg-zinc-900 rounded-full border-2 border-green-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,65,0.2)] overflow-hidden relative">
+                    <User size={80} className="text-zinc-400 absolute bottom-0 translate-y-2" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                    <div className="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#00ff41]" />
                 </div>
 
                 <div className="text-center space-y-2">
-                    <h1 className="text-2xl font-bold tracking-widest text-white">GUESTUSER</h1>
+                    <h1 className="text-2xl font-bold tracking-widest text-white">ANONYMOUS</h1>
                     <p className="text-xs text-zinc-500 uppercase tracking-widest">SanjuOS Secure Login</p>
                 </div>
 

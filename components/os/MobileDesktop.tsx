@@ -5,12 +5,14 @@ import { useWindowManager } from "@/components/os/WindowManager"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
-import { ResumeApp } from "@/components/apps/ResumeApp"
+import dynamic from "next/dynamic"
+
+const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
 export function MobileDesktop() {
     const { windows, openWindow, closeWindow, activeWindowId } = useWindowManager()
@@ -63,6 +65,20 @@ export function MobileDesktop() {
             icon: <Github className="text-white" size={24} />,
             bg: "bg-black",
             action: () => window.open("https://github.com/sddion", "_blank"),
+        },
+        {
+            id: "gitlab",
+            label: "GitLab",
+            icon: <Gitlab className="text-white" size={24} />,
+            bg: "bg-orange-600",
+            action: () => window.open("https://gitlab.com/0xdeds3c", "_blank"),
+        },
+        {
+            id: "instagram",
+            label: "Instagram",
+            icon: <Instagram className="text-white" size={24} />,
+            bg: "bg-pink-600",
+            action: () => window.open("https://instagram.com/wordswires", "_blank"),
         },
     ]
 
