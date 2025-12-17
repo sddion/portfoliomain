@@ -6,32 +6,37 @@ import { motion, AnimatePresence } from "framer-motion"
 export function BootSequence({ onComplete }: { onComplete: () => void }) {
     const [lines, setLines] = useState<string[]>([])
 
-    const bootText = [
-        "BIOS Date 01/01/24 15:23:00 Ver: 1.0.2",
-        "CPU: AMD Ryzen 9 5950X 16-Core Processor",
-        "Memory Test: 65536K OK",
-        "Detecting Primary Master ... SanjuOS SSD",
-        "Detecting Primary Slave ... None",
-        "Booting from hard disk...",
-        "Loading kernel modules...",
-        "Mounting root filesystem...",
-        "Starting system services...",
-        "Initializing graphics interface...",
-        "Welcome to SanjuOS v2.0.4",
-    ]
-
     useEffect(() => {
+        const bootText = [
+            "BIOS Date 01/01/24 15:23:00 Ver: 1.0.2",
+            "CPU: AMD Ryzen 9 5950X 16-Core Processor",
+            "Memory Test: 65536K OK",
+            "Detecting Primary Master ... SanjuOS SSD",
+            "Detecting Primary Slave ... None",
+            "Booting from hard disk...",
+            "Loading kernel modules...",
+            "Mounting root filesystem...",
+            "Starting system services...",
+            "Initializing graphics interface...",
+            "Welcome to SanjuOS v2.0.4",
+        ]
+
         let delay = 0
+        const timeouts: NodeJS.Timeout[] = []
+
         bootText.forEach((line, index) => {
             delay += Math.random() * 300 + 100
-            setTimeout(() => {
+            const id = setTimeout(() => {
                 setLines((prev) => [...prev, line])
                 if (index === bootText.length - 1) {
                     setTimeout(onComplete, 800)
                 }
             }, delay)
+            timeouts.push(id)
         })
-    }, [])
+
+        return () => timeouts.forEach(clearTimeout)
+    }, [onComplete])
 
     return (
         <div className="fixed inset-0 bg-black z-50 flex flex-col justify-start p-10 font-mono text-green-500 overflow-hidden">

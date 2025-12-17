@@ -3,16 +3,45 @@
 import React, { useState, useEffect } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { format } from "date-fns"
-import { Battery, Wifi, Volume2, Power } from "lucide-react"
-import { motion } from "framer-motion"
+import { Battery, BatteryCharging, Wifi, WifiOff, Volume2, VolumeX, Power } from "lucide-react"
 
 export function Taskbar() {
-    const { windows, activeWindowId, openWindow, minimizeWindow, focusWindow } = useWindowManager()
+    const { windows, minimizeWindow, focusWindow, logout } = useWindowManager()
     const [time, setTime] = useState(new Date())
+    const [batteryLevel, setBatteryLevel] = useState(100)
+    const [isCharging, setIsCharging] = useState(false)
+    const [online, setOnline] = useState(true)
+    const [volume, setVolume] = useState(100) // Simulated volume since Web Audio API doesn't control system volume
 
     useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000)
         return () => clearInterval(timer)
+    }, [])
+
+    useEffect(() => {
+        // Battery Status
+        if ('getBattery' in navigator) {
+            // @ts-ignore
+            navigator.getBattery().then((battery) => {
+                const updateBattery = () => {
+                    setBatteryLevel(Math.floor(battery.level * 100))
+                    setIsCharging(battery.charging)
+                }
+                updateBattery()
+                battery.addEventListener('levelchange', updateBattery)
+                battery.addEventListener('chargingchange', updateBattery)
+            })
+        }
+
+        // Network Status
+        setOnline(navigator.onLine)
+        window.addEventListener('online', () => setOnline(true))
+        window.addEventListener('offline', () => setOnline(false))
+
+        return () => {
+            window.removeEventListener('online', () => setOnline(true))
+            window.removeEventListener('offline', () => setOnline(false))
+        }
     }, [])
 
     return (
@@ -49,13 +78,46 @@ export function Taskbar() {
             {/* System Tray */}
             <div className="flex items-center gap-4 px-2 text-zinc-400 text-xs font-mono">
                 <div className="flex items-center gap-3">
-                    <Wifi size={14} />
-                    <Volume2 size={14} />
-                    <Battery size={14} />
+                    {/* Wifi */}
+                    <div className="flex items-center gap-1" title={online ? "Connected" : "Offline"}>
+                        {online ? <Wifi size={14} /> : <WifiOff size={14} className="text-red-500" />}
+                    </div>
+
+                    {/* Volume (Simulated with hover slider) */}
+                    <div className="group relative flex items-center gap-1 cursor-pointer">
+                        {volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                        {/* Tooltip Slider */}
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-800 p-2 rounded hidden group-hover:flex flex-col items-center gap-1 border border-zinc-700 shadow-lg">
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={volume}
+                                onChange={(e) => setVolume(Number(e.target.value))}
+                                className="h-24 -rotate-90 origin-center accent-green-500"
+                            />
+                            <span className="text-[10px]">{volume}%</span>
+                        </div>
+                    </div>
+
+                    {/* Battery */}
+                    <div className="flex items-center gap-1" title={`${batteryLevel}% ${isCharging ? '(Charging)' : ''}`}>
+                        {isCharging ? <BatteryCharging size={14} className="text-green-400" /> : <Battery size={14} />}
+                        <span className="hidden sm:inline">{batteryLevel}%</span>
+                    </div>
                 </div>
+
                 <div className="w-[1px] h-6 bg-zinc-700 mx-1" />
+
+                {/* Clock */}
                 <span>{format(time, "HH:mm")}</span>
-                <button className="hover:text-red-400 transition-colors">
+
+                {/* Shutdown / Logout */}
+                <button
+                    onClick={logout}
+                    className="hover:text-red-400 transition-colors p-1 rounded hover:bg-white/5"
+                    title="Shutdown (Logout)"
+                >
                     <Power size={14} />
                 </button>
             </div>

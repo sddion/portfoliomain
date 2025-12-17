@@ -23,6 +23,9 @@ interface WindowContextType {
     activeWindowId: string | null
     isBooting: boolean
     setBooting: (booting: boolean) => void
+    isLoggedIn: boolean
+    login: () => void
+    logout: () => void
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined)
@@ -30,8 +33,20 @@ const WindowContext = createContext<WindowContextType | undefined>(undefined)
 export function WindowProvider({ children }: { children: ReactNode }) {
     const [windows, setWindows] = useState<WindowState[]>([])
     const [activeWindowId, setActiveWindowId] = useState<string | null>(null)
-    const [isBooting, setBooting] = useState(true)
+    const [isBooting, setBooting] = useState(false) // Boot handled by login now
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [maxZIndex, setMaxZIndex] = useState(10)
+
+    const login = () => {
+        setIsLoggedIn(true)
+        setBooting(true) // Trigger boot on login
+    }
+
+    const logout = () => {
+        setIsLoggedIn(false)
+        setWindows([]) // Clear windows on logout
+        setBooting(false)
+    }
 
     const focusWindow = (id: string) => {
         setActiveWindowId(id)
@@ -93,6 +108,9 @@ export function WindowProvider({ children }: { children: ReactNode }) {
                 activeWindowId,
                 isBooting,
                 setBooting,
+                isLoggedIn,
+                login,
+                logout,
             }}
         >
             {children}

@@ -6,14 +6,22 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
+import { ExperienceApp } from "@/components/apps/ExperienceApp"
+import { ResumeApp } from "@/components/apps/ResumeApp"
+
+import { LoginScreen } from "@/components/os/LoginScreen"
 
 export function Desktop() {
-    const { isBooting, setBooting, windows, openWindow } = useWindowManager()
+    const { isBooting, setBooting, windows, openWindow, isLoggedIn } = useWindowManager()
+
+    if (!isLoggedIn) {
+        return <LoginScreen />
+    }
 
     if (isBooting) {
         return <BootSequence onComplete={() => setBooting(false)} />
@@ -33,6 +41,12 @@ export function Desktop() {
             content: <AboutApp />,
         },
         {
+            id: "experience",
+            label: "Experience",
+            icon: <Briefcase className="text-purple-400" size={32} />,
+            content: <ExperienceApp />,
+        },
+        {
             id: "projects",
             label: "Projects",
             icon: <Folder className="text-yellow-400" size={32} />,
@@ -40,16 +54,9 @@ export function Desktop() {
         },
         {
             id: "resume",
-            label: "Resume.pdf",
+            label: "Resume",
             icon: <FileText className="text-red-400" size={32} />,
-            content: (
-                <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 gap-4 p-8 text-center">
-                    <FileText size={48} className="text-zinc-700" />
-                    <p>PDF Viewer Module Loading...</p>
-                    <p className="text-xs">In a real deployment, embed the PDF here using &lt;iframe&gt; or react-pdf.</p>
-                    <a href="/resume.pdf" target="_blank" className="text-blue-400 underline">Download Resume</a>
-                </div>
-            ),
+            content: <ResumeApp />,
         },
         {
             id: "github",
