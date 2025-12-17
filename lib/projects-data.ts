@@ -12,6 +12,16 @@ export type Project = {
 }
 
 export const projects: Project[] = [
+  // Highlights
+  {
+    id: "bagley",
+    title: "Bagley (AI Robot)",
+    description: "Desktop robot & IoT AI assistant using ESP32/8266. Features voice-to-voice AI and real-time WebSocket audio streaming.",
+    category: "embedded",
+    techStack: ["ESP32", "Python", "WebSockets", "OpenAI", "C++"],
+    githubUrl: "https://github.com/sddion/bagley", // Placeholder/Assumed
+    features: ["Voice-to-Voice AI", "Real-time Audio Streaming", "Hardware Control", "IoT Integration"],
+  },
   // Web / Full-Stack Apps
   {
     id: "ragava",

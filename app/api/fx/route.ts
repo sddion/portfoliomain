@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server"
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable is not set")
-}
+// check happens inside handler now
 
 export async function GET(request: Request) {
   try {
+    if (!process.env.API_KEY) {
+        return NextResponse.json({ error: "API_KEY not configured" }, { status: 503 })
+    }
     const { searchParams } = new URL(request.url)
     const base = searchParams.get("base") || "INR"
     const to = searchParams.get("symbol") || "USD"

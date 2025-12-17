@@ -2,159 +2,68 @@
 @import "tw-animate-css";
 
 :root {
-  /* Custom theme for technical portfolio - dark navy inspired by Brittany Chiang's design */
-  --background: oklch(0.98 0 0);
-  --foreground: oklch(0.25 0.01 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.01 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.01 250);
-  --primary: oklch(0.55 0.15 250);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.92 0.01 250);
-  --secondary-foreground: oklch(0.25 0.01 250);
-  --muted: oklch(0.95 0.005 250);
-  --muted-foreground: oklch(0.5 0.01 250);
-  --accent: oklch(0.65 0.18 180);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.88 0.005 250);
-  --input: oklch(0.88 0.005 250);
-  --ring: oklch(0.55 0.15 250);
-  --chart-1: oklch(0.55 0.15 250);
-  --chart-2: oklch(0.65 0.18 180);
-  --chart-3: oklch(0.6 0.15 280);
-  --chart-4: oklch(0.7 0.12 200);
-  --chart-5: oklch(0.5 0.2 320);
-  --radius: 0.5rem;
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Cyberpunk / Linux Terminal Aesthetic */
+  --background: #0d0d0d;
+  --foreground: #00ff41; /* CRT Green */
+  --card: #121212;
+  --card-foreground: #e0e0e0;
+  --popover: #1a1a1a;
+  --popover-foreground: #e0e0e0;
+  --primary: #00ff41;
+  --primary-foreground: #000000;
+  --secondary: #2d2d2d;
+  --secondary-foreground: #ffffff;
+  --muted: #1f1f1f;
+  --muted-foreground: #808080;
+  --accent: #bd00ff; /* Cyber Purple */
+  --accent-foreground: #ffffff;
+  --destructive: #ff0055;
+  --destructive-foreground: #ffffff;
+  --border: #333333;
+  --input: #222222;
+  --ring: #00ff41;
+  --radius: 0px; /* Sharp edges for Linux look */
+
+  /* Terminal Specifics */
+  --terminal-bg: #0c0c0c;
+  --terminal-header: #1f1f1f;
+  
+  /* Fonts */
+  --font-mono: 'Geist Mono', monospace;
+  --font-sans: 'Geist Sans', sans-serif;
 }
 
-.dark {
-  /* Dark mode with deep navy background inspired by design references */
-  --background: oklch(0.15 0.02 250);
-  --foreground: oklch(0.88 0.01 250);
-  --card: oklch(0.18 0.02 250);
-  --card-foreground: oklch(0.88 0.01 250);
-  --popover: oklch(0.18 0.02 250);
-  --popover-foreground: oklch(0.88 0.01 250);
-  --primary: oklch(0.65 0.18 180);
-  --primary-foreground: oklch(0.15 0.02 250);
-  --secondary: oklch(0.22 0.02 250);
-  --secondary-foreground: oklch(0.88 0.01 250);
-  --muted: oklch(0.22 0.02 250);
-  --muted-foreground: oklch(0.6 0.01 250);
-  --accent: oklch(0.65 0.18 180);
-  --accent-foreground: oklch(0.15 0.02 250);
-  --destructive: oklch(0.5 0.2 25);
-  --destructive-foreground: oklch(0.88 0.01 250);
-  --border: oklch(0.25 0.02 250);
-  --input: oklch(0.25 0.02 250);
-  --ring: oklch(0.65 0.18 180);
-  --chart-1: oklch(0.65 0.18 180);
-  --chart-2: oklch(0.55 0.15 250);
-  --chart-3: oklch(0.6 0.15 280);
-  --chart-4: oklch(0.7 0.12 200);
-  --chart-5: oklch(0.5 0.2 320);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
-  /* Theme variables */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-mono); /* Default to mono for hacker vibe */
+  overflow: hidden; /* Desktop env shouldn't scroll overall */
 }
 
-@layer utilities {
-  .animation-delay-100 {
-    animation-delay: 100ms;
-  }
-
-  .animation-delay-200 {
-    animation-delay: 200ms;
-  }
-
-  .animation-delay-300 {
-    animation-delay: 300ms;
-  }
-
-  .animation-delay-400 {
-    animation-delay: 400ms;
-  }
-
-  .invisible-until-mounted {
-    visibility: hidden;
-  }
-
-  .visible-after-mounted {
-    visibility: visible;
-  }
+/* Custom Scrollbar for Windows */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
 
-
-
-@layer base {
-  * {
-    border-color: var(--border);
-    outline-color: var(--ring);
-    outline-width: 0;
-  }
-
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
-
-  /* Smooth scrolling for navigation */
-  html {
-    scroll-behavior: smooth;
-  }
+.crt-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  z-index: 9999;
 }
