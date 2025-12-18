@@ -12,16 +12,31 @@ import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
 import dynamic from "next/dynamic"
 
+import { NotificationShade } from "@/components/os/NotificationShade"
+
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
 export function MobileDesktop() {
     const { windows, openWindow, closeWindow, activeWindowId } = useWindowManager()
     const [time, setTime] = useState(new Date())
+    const [notificationOpen, setNotificationOpen] = useState(false)
 
     React.useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000)
         return () => clearInterval(timer)
     }, [])
+
+    React.useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            // Only close if we're navigating AWAY from the current app (e.g. back to desktop)
+            if (activeWindowId && event.state?.appId !== activeWindowId) {
+                closeWindow(activeWindowId)
+            }
+        }
+
+        window.addEventListener('popstate', handlePopState)
+        return () => window.removeEventListener('popstate', handlePopState)
+    }, [activeWindowId, closeWindow])
 
     const apps = [
         {
@@ -88,6 +103,8 @@ export function MobileDesktop() {
         if (app.action) {
             app.action()
         } else {
+            // Push state so back button works
+            window.history.pushState({ appId: app.id }, "", `#${app.id}`)
             openWindow(app.id, app.label, app.content)
         }
     }
@@ -96,13 +113,18 @@ export function MobileDesktop() {
         <div className="h-screen w-screen bg-black text-white overflow-hidden relative font-sans">
 
             {/* Status Bar */}
-            <div className="absolute top-0 left-0 right-0 h-12 flex items-center justify-between px-6 z-50 pointer-events-none">
+            <div
+                className="absolute top-0 left-0 right-0 h-12 flex items-center justify-between px-6 z-50 cursor-pointer"
+                onClick={() => setNotificationOpen(true)}
+            >
                 <span className="font-bold text-sm tracking-wide">{format(time, "HH:mm")}</span>
                 <div className="flex items-center gap-2">
                     <Wifi size={16} />
                     <Battery size={16} />
                 </div>
             </div>
+
+            <NotificationShade isOpen={notificationOpen} onClose={() => setNotificationOpen(false)} />
 
             {/* Content Area */}
             <div className="h-full pt-12 pb-20 px-4 overflow-y-auto">
@@ -116,12 +138,7 @@ export function MobileDesktop() {
                             className="h-full bg-zinc-900 rounded-2xl overflow-hidden relative border border-zinc-800 shadow-2xl"
                         >
                             <div className="absolute top-4 left-4 z-50">
-                                <button
-                                    onClick={() => closeWindow(activeApp.id)}
-                                    className="p-2 bg-black/50 backdrop-blur rounded-full text-white hover:bg-white/20 transition-colors"
-                                >
-                                    <ArrowLeft size={20} />
-                                </button>
+                                {/* Back button removed for native navigation */}
                             </div>
                             <div className="h-full pt-14 pb-4 px-2 overflow-y-auto custom-scrollbar">
                                 {activeApp.content}
