@@ -109,7 +109,7 @@ export function ResumeApp() {
                                     <span className="text-xs font-semibold text-zinc-500">2023 - Present</span>
                                 </div>
                                 <ul className="list-disc ml-4 text-zinc-700 space-y-1">
-                                    <li>Architected and built <strong>SanjuOS</strong>, a web-based operating system portfolio featuring a functional window manager, terminal emulator with real logic, and responsive UI.</li>
+                                    <li>Architected and built <strong>SanjuOS</strong>, a web-based operating system portfolio featuring a functional window manager, terminal emulator and responsive UI.</li>
                                     <li>Developed <strong>Bagley</strong>, a personal AI assistant integrated into desktop workflows for automation.</li>
                                     <li>Conducted security research on local network vulnerabilities, creating custom Bash tools for network auditing.</li>
                                     <li>Engineered multiple full-stack prototypes including e-commerce platforms and real-time chat applications.</li>
@@ -118,7 +118,7 @@ export function ResumeApp() {
 
                             <div className="mb-6">
                                 <div className="flex justify-between items-baseline mb-1">
-                                    <h3 className="font-bold text-base">Operational Roles (Swiggy / Zepto / Zomato)</h3>
+                                    <h3 className="font-bold text-base">Delivery Roles (Swiggy / Zepto / Zomato)</h3>
                                     <span className="text-xs font-semibold text-zinc-500">2021 - 2023</span>
                                 </div>
                                 <p className="text-zinc-700 mb-2">
@@ -133,27 +133,25 @@ export function ResumeApp() {
                             <div className="mb-4">
                                 <h3 className="font-bold text-sm">Portfolio OS (Web)</h3>
                                 <p className="text-zinc-700">
-                                    A complex React application mimicking a Linux desktop environment. Features include a custom window management system, valid terminal interactions, theme switching, and real-time API integrations.
+                                    A  React application mimicking a Linux desktop environment. Features include a custom window management system, terminal interactions, theme switching, and real-time API integrations.
                                 </p>
                             </div>
 
                             <div>
                                 <h3 className="font-bold text-sm">Hardware Automation</h3>
                                 <p className="text-zinc-700">
-                                    Created custom scripts for ESP8266 microcontrollers to automate home network tasks and monitor local traffic patterns.
+                                    Created custom scripts for ESP8266 microcontrollers to automate home network tasks.
                                 </p>
                             </div>
                         </section>
 
                         <footer className="mt-12 border-t border-zinc-200 pt-4 text-center text-xs text-zinc-400">
-                            <p>&copy; {new Date().getFullYear()} Sanju. Built with React & Next.js.</p>
+                            <p>&copy; {new Date().getFullYear()} Sanju</p>
                         </footer>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-4">
                         <div className="bg-zinc-900 p-4 rounded text-center text-zinc-400 max-w-md border border-zinc-700">
-                            <AlertCircle className="mx-auto mb-2 text-yellow-500" />
-                            <p className="text-sm">To view the original PDF, ensure <code>public/resume.pdf</code> exists.</p>
                         </div>
                         <div className="shadow-2xl">
                             <Document file="/resume.pdf" onLoadSuccess={onDocumentLoadSuccess} className="flex flex-col gap-4">
