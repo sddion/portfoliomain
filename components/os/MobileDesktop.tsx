@@ -5,16 +5,19 @@ import { useWindowManager } from "@/components/os/WindowManager"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, Zap } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
 import { CreditsApp } from "@/components/apps/CreditsApp"
 import { SettingsApp } from "@/components/apps/SettingsApp"
+import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
+import { BlogApp } from "@/components/apps/BlogApp"
 import dynamic from "next/dynamic"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
+import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
@@ -99,6 +102,20 @@ export function MobileDesktop() {
             action: () => window.open("https://instagram.com/wordswires", "_blank"),
         },
         {
+            id: "blog",
+            label: "Blog",
+            icon: <FileText className="text-teal-400" size={24} />,
+            bg: "bg-teal-600",
+            content: <BlogApp />,
+        },
+        {
+            id: "esp32-flasher",
+            label: "ESP Flasher",
+            icon: <Zap className="text-orange-500" size={24} />,
+            bg: "bg-orange-600",
+            content: <ESP32FlasherApp />,
+        },
+        {
             id: "credits",
             label: "Credits",
             icon: <ImageIcon className="text-yellow-400" size={24} />,
@@ -142,17 +159,29 @@ export function MobileDesktop() {
     return (
         <div className="h-screen w-screen bg-black text-white overflow-hidden relative font-sans">
 
-            {/* Status Bar */}
-            <div
-                className="absolute top-0 left-0 right-0 h-12 flex items-center justify-between px-6 z-50 cursor-pointer"
-                onClick={() => setNotificationOpen(true)}
-            >
-                <span className="font-bold text-sm tracking-wide">{format(time, "HH:mm")}</span>
+            {/* Status Bar - Non-interactive background */}
+            <div className="absolute top-0 left-0 right-0 z-40 px-6 pt-2 pb-1 flex items-center justify-between text-white text-xs bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+                <span className="font-semibold">{format(time, "HH:mm")}</span>
                 <div className="flex items-center gap-2">
-                    <Wifi size={16} />
-                    <Battery size={16} />
+                    <Wifi size={16} className="opacity-80" />
+                    <Battery size={16} className="opacity-80" />
                 </div>
             </div>
+
+            {/* Notification Shade Pull Handle */}
+            <motion.div
+                className="absolute top-0 left-0 right-0 h-10 z-[60] flex justify-center py-1 cursor-grab active:cursor-grabbing"
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={0.2}
+                onDragEnd={(_, info) => {
+                    if (info.offset.y > 60) {
+                        setNotificationOpen(true)
+                    }
+                }}
+            >
+                <div className="w-12 h-1 bg-white/30 rounded-full" />
+            </motion.div>
 
             <NotificationShade isOpen={notificationOpen} onClose={() => setNotificationOpen(false)} />
 
@@ -180,46 +209,36 @@ export function MobileDesktop() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="h-full flex flex-col justify-end pb-8"
+                            className="h-full flex flex-col pb-14"
                         >
-                            {/* App Grid with Swipe */}
-                            <motion.div
-                                drag="x"
-                                dragConstraints={{ left: totalPages > 1 ? -window.innerWidth : 0, right: 0 }}
-                                dragElastic={0.1}
-                                onDragEnd={(_, info) => {
-                                    if (totalPages > 1) {
-                                        if (info.offset.x < -50 && currentPage === 0) {
-                                            setCurrentPage(1)
-                                        } else if (info.offset.x > 50 && currentPage === 1) {
-                                            setCurrentPage(0)
-                                        }
-                                    }
-                                }}
-                                animate={{ x: currentPage === 0 ? 0 : -window.innerWidth }}
-                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                className="flex w-full"
-                            >
-                                {/* Page 1 */}
-                                <div className="min-w-full px-4 grid grid-cols-4 grid-rows-2 gap-y-8 gap-x-4">
-                                    {page1Apps.map((app) => (
-                                        <button
-                                            key={app.id}
-                                            onClick={() => handleAppClick(app)}
-                                            className="flex flex-col items-center gap-2 group"
-                                        >
-                                            <div className={`w-14 h-14 ${app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
-                                                {app.icon}
-                                            </div>
-                                            <span className="text-[10px] text-zinc-400 font-medium tracking-wide">{app.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
+                            {/* Mobile Conky Widget - Added to home screen */}
+                            <div className="px-4 pt-6 pb-4">
+                                <MobileConkyWidget />
+                            </div>
 
-                                {/* Page 2 */}
-                                {totalPages > 1 && (
+                            {/* App Grid Container - Flex-grow to push pagination down */}
+                            <div className="flex-1 flex items-end pb-6 relative">
+                                {/* App Grid with Swipe */}
+                                <motion.div
+                                    drag="x"
+                                    dragConstraints={{ left: totalPages > 1 ? -window.innerWidth : 0, right: 0 }}
+                                    dragElastic={0.1}
+                                    onDragEnd={(_, info) => {
+                                        if (totalPages > 1) {
+                                            if (info.offset.x < -50 && currentPage === 0) {
+                                                setCurrentPage(1)
+                                            } else if (info.offset.x > 50 && currentPage === 1) {
+                                                setCurrentPage(0)
+                                            }
+                                        }
+                                    }}
+                                    animate={{ x: currentPage === 0 ? 0 : -window.innerWidth }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    className="flex w-full"
+                                >
+                                    {/* Page 1 */}
                                     <div className="min-w-full px-4 grid grid-cols-4 grid-rows-2 gap-y-8 gap-x-4">
-                                        {page2Apps.map((app) => (
+                                        {page1Apps.map((app) => (
                                             <button
                                                 key={app.id}
                                                 onClick={() => handleAppClick(app)}
@@ -232,24 +251,42 @@ export function MobileDesktop() {
                                             </button>
                                         ))}
                                     </div>
-                                )}
-                            </motion.div>
 
-                            {/* Page Indicators */}
-                            {totalPages > 1 && (
-                                <div className="flex justify-center gap-2 mt-8">
-                                    {Array.from({ length: totalPages }).map((_, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => setCurrentPage(i)}
-                                            className={`h-1.5 rounded-full transition-all ${i === currentPage
-                                                ? 'w-6 bg-white'
-                                                : 'w-1.5 bg-zinc-600'
-                                                }`}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+                                    {/* Page 2 */}
+                                    {totalPages > 1 && (
+                                        <div className="min-w-full px-4 grid grid-cols-4 grid-rows-2 gap-y-8 gap-x-4">
+                                            {page2Apps.map((app) => (
+                                                <button
+                                                    key={app.id}
+                                                    onClick={() => handleAppClick(app)}
+                                                    className="flex flex-col items-center gap-2 group"
+                                                >
+                                                    <div className={`w-14 h-14 ${app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
+                                                        {app.icon}
+                                                    </div>
+                                                    <span className="text-[10px] text-zinc-400 font-medium tracking-wide">{app.label}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </motion.div>
+
+                                {/* Page Indicators - Absolutely positioned to prevent layout shift */}
+                                {totalPages > 1 && (
+                                    <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 pb-2 pointer-events-none">
+                                        {Array.from({ length: totalPages }).map((_, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => setCurrentPage(i)}
+                                                className={`h-1.5 rounded-full transition-all pointer-events-auto ${i === currentPage
+                                                    ? 'w-6 bg-white'
+                                                    : 'w-1.5 bg-zinc-600'
+                                                    }`}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
