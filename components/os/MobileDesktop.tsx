@@ -5,12 +5,13 @@ import { useWindowManager } from "@/components/os/WindowManager"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Palette } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Palette, Settings, MessageCircle } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
 import { CreditsApp } from "@/components/apps/CreditsApp"
+import { SettingsApp } from "@/components/apps/SettingsApp"
 import dynamic from "next/dynamic"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
@@ -102,6 +103,20 @@ export function MobileDesktop() {
             icon: <Palette className="text-yellow-400" size={24} />,
             bg: "bg-zinc-800",
             content: <CreditsApp />,
+        },
+        {
+            id: "settings",
+            label: "Settings",
+            icon: <Settings className="text-zinc-400" size={24} />,
+            bg: "bg-zinc-800",
+            content: <SettingsApp />,
+        },
+        {
+            id: "whatsapp",
+            label: "WhatsApp",
+            icon: <MessageCircle className="text-green-500" size={24} />,
+            bg: "bg-green-600",
+            action: () => window.open("https://wa.me/91882292607", "_blank"),
         },
     ]
 

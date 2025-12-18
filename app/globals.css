@@ -33,7 +33,7 @@
 
   /* Desktop Background - Default Cyberpunk */
   --desktop-bg: url('/cyber-bg.jpg');
-  --mobile-bg: url('/cyber-bg.jpg'); /* Default mobile is same as desktop for now */
+  --mobile-bg: url('/wallpapers/cyberpunk-mobile.png');
 
   /* Fonts */
   --font-mono: 'Geist Mono', monospace;
@@ -53,7 +53,7 @@
   --border: #772953;
   --accent: #e95420;
   --ring: #e95420;
-  
+
   --desktop-bg: url('/wallpapers/ubuntu-desktop.png');
   --mobile-bg: url('/wallpapers/ubuntu-mobile.png');
 }
@@ -69,7 +69,7 @@
   --primary-foreground: #000000;
   --border: #334155;
   --ring: #38bdf8;
-  
+
   --desktop-bg: url('/wallpapers/ocean-desktop.png');
   --mobile-bg: url('/wallpapers/ocean-mobile.png');
 }
@@ -85,7 +85,7 @@
   --secondary: #6272a4;
   --border: #6272a4;
   --ring: #ff79c6;
-  
+
   --desktop-bg: url('/wallpapers/dracula-desktop.png');
   --mobile-bg: url('/wallpapers/dracula-mobile.png');
 }

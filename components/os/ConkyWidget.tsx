@@ -203,7 +203,7 @@ export function ConkyWidget() {
             </DialogTrigger>
             <DialogContent className="font-mono border-primary/20 bg-black/90 backdrop-blur-xl text-xs sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-primary uppercase tracking-widest border-b border-primary/20 pb-2">
+                    <DialogTitle className="flex items-center gap-2 text-white uppercase tracking-widest border-b border-primary/20 pb-2">
                         <Terminal size={16} /> System Control Panel
                     </DialogTitle>
                 </DialogHeader>
