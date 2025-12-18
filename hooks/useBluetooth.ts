@@ -69,9 +69,15 @@ export function useBluetooth() {
       setConnecting(false);
 
       return bluetoothDevice;
-    } catch (err) {
+    } catch (err: any) {
       console.error("Bluetooth error:", err);
-      setError(err instanceof Error ? err.message : "Failed to connect to device");
+      let userMessage = "Failed to connect to device";
+      if (err.name === 'NotFoundError' || err.name === 'NotAllowedError') {
+        userMessage = "Bluetooth connection cancelled by user";
+      } else if (err.name === 'SecurityError') {
+        userMessage = "Bluetooth requires a secure context (HTTPS)";
+      }
+      setError(userMessage);
       setConnecting(false);
       return null;
     }

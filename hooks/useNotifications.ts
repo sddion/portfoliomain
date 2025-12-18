@@ -63,15 +63,8 @@ export function useNotifications() {
 
   const showNotification = useCallback(
     (title: string, options?: NotificationOptions & { data?: any }) => {
-      if (!supported || permission !== "granted") {
-        console.warn("Cannot show notification: not supported or not granted");
-        return null;
-      }
-
       try {
-        const notification = new Notification(title, options);
-        
-        // Add to history
+        // ALWAYS add to internal history first
         const newNotification: Notification = {
           id: `notif-${Date.now()}-${Math.random()}`,
           title,
@@ -84,7 +77,11 @@ export function useNotifications() {
 
         setNotifications((prev) => [newNotification, ...prev].slice(0, 20));
 
-        return notification;
+        // Only show browser notification if granted
+        if (supported && permission === "granted") {
+          return new Notification(title, options);
+        }
+        return null;
       } catch (error) {
         console.error("Error showing notification:", error);
         return null;

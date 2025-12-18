@@ -18,6 +18,7 @@ export function LoginScreen() {
     const [isBiometricAvailable, setIsBiometricAvailable] = useState(false)
     const [isBiometricRegistered, setIsBiometricRegistered] = useState(false)
     const [showRegisterPrompt, setShowRegisterPrompt] = useState(false)
+    const [errorMessage, setErrorMessage] = useState("Access Denied: Invalid Credentials")
 
     // WebAuthn Utilities
     const bufferToBase64 = (buffer: ArrayBuffer) => {
@@ -59,15 +60,16 @@ export function LoginScreen() {
 
     const handleLogin = async (e?: React.FormEvent) => {
         e?.preventDefault()
-        if (password === "sanjuos") {
+        if (password === "sanjuos" || password === "guest") {
             if (isBiometricAvailable && !isBiometricRegistered) {
                 setShowRegisterPrompt(true)
             } else {
                 login()
             }
         } else {
+            setErrorMessage("Access Denied: Invalid Credentials")
             setError(true)
-            setTimeout(() => setError(false), 2000)
+            setTimeout(() => setError(false), 3000)
         }
     }
 
@@ -99,8 +101,12 @@ export function LoginScreen() {
                 setShowRegisterPrompt(false);
                 login();
             }
-        } catch (err) {
-            console.error("Biometric Registration Failed:", err);
+        } catch (err: any) {
+            if (err.name !== 'NotAllowedError') {
+                setErrorMessage("Biometric Setup Failed: System Error")
+                setError(true)
+                setTimeout(() => setError(false), 3000)
+            }
             setShowRegisterPrompt(false);
             login(); // Fallback to normal login even if registration fails
         }
@@ -128,10 +134,14 @@ export function LoginScreen() {
             if (assertion) {
                 login();
             }
-        } catch (err) {
-            console.error("Biometric Auth Failed:", err);
+        } catch (err: any) {
+            if (err.name === 'NotAllowedError') {
+                setErrorMessage("Authentication Cancelled")
+            } else {
+                setErrorMessage("Biometric Authentication Failed")
+            }
             setError(true);
-            setTimeout(() => setError(false), 2000);
+            setTimeout(() => setError(false), 3000);
         }
     }
 
@@ -148,6 +158,28 @@ export function LoginScreen() {
             >
                 <div className={`absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-all duration-500 ${step === 'password' ? 'backdrop-blur-xl bg-black/60' : ''}`} />
             </div>
+
+            {/* Error Notification Toast - Android Style */}
+            <AnimatePresence>
+                {error && (
+                    <motion.div
+                        initial={{ y: -100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -100, opacity: 0 }}
+                        className="fixed top-6 left-0 right-0 z-[100] px-6"
+                    >
+                        <div className="bg-red-500/90 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-red-400/50">
+                            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                                <ShieldCheck size={20} />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold uppercase tracking-tight">System Notification</h4>
+                                <p className="text-[10px] text-white/80 uppercase tracking-widest font-black">{errorMessage}</p>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <AnimatePresence mode="wait">
                 {step === 'lock' ? (
@@ -234,15 +266,6 @@ export function LoginScreen() {
                                         className="w-full bg-[var(--os-surface)]/80 border border-[var(--os-border)] rounded px-10 py-3 text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]/50"
                                         autoFocus
                                     />
-                                    {error && (
-                                        <motion.p
-                                            initial={{ opacity: 0, scale: 0.9 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            className="absolute -bottom-6 left-0 right-0 text-center text-[10px] font-bold text-red-500 uppercase tracking-widest animate-pulse"
-                                        >
-                                            Access Denied
-                                        </motion.p>
-                                    )}
                                 </div>
 
                                 <div className="flex gap-2">

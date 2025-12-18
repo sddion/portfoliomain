@@ -106,6 +106,16 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
         }))
     }, [device, permission, showSnowfall])
 
+    // Sync Bluetooth errors to notification history
+    useEffect(() => {
+        if (bluetoothError) {
+            showNotification("Bluetooth System", {
+                body: bluetoothError,
+                icon: "/DedSec_logo.webp"
+            })
+        }
+    }, [bluetoothError, showNotification])
+
 
 
     return (

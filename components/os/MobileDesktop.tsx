@@ -5,7 +5,7 @@ import { useWindowManager } from "@/components/os/WindowManager"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard, X } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
@@ -27,6 +27,14 @@ export function MobileDesktop() {
     const [time, setTime] = useState(new Date())
     const [notificationOpen, setNotificationOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
+    const [isRecentsOpen, setIsRecentsOpen] = useState(false)
+
+    // Handle home state in history
+    React.useEffect(() => {
+        if (isLoggedIn) {
+            window.history.replaceState({ appId: 'home' }, "", "/")
+        }
+    }, [isLoggedIn])
 
     React.useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000)
@@ -35,15 +43,22 @@ export function MobileDesktop() {
 
     React.useEffect(() => {
         const handlePopState = (event: PopStateEvent) => {
-            // Only close if we're navigating AWAY from the current app (e.g. back to desktop)
-            if (activeWindowId && event.state?.appId !== activeWindowId) {
-                closeWindow(activeWindowId)
+            if (isRecentsOpen) {
+                setIsRecentsOpen(false)
+                return
+            }
+
+            if (activeWindowId) {
+                // If we have an active app and the new state is not that app, close it
+                if (!event.state || event.state.appId !== activeWindowId) {
+                    closeWindow(activeWindowId)
+                }
             }
         }
 
         window.addEventListener('popstate', handlePopState)
         return () => window.removeEventListener('popstate', handlePopState)
-    }, [activeWindowId, closeWindow])
+    }, [activeWindowId, closeWindow, isRecentsOpen])
 
     const apps = [
         {
@@ -141,7 +156,20 @@ export function MobileDesktop() {
             // Push state so back button works
             window.history.pushState({ appId: app.id }, "", `#${app.id}`)
             openWindow(app.id, app.label, app.content)
+            setIsRecentsOpen(false)
         }
+    }
+
+    const goHome = () => {
+        if (activeWindowId) {
+            window.history.pushState({ appId: 'home' }, "", "/")
+            closeWindow(activeWindowId)
+        }
+        setIsRecentsOpen(false)
+    }
+
+    const toggleRecents = () => {
+        setIsRecentsOpen(prev => !prev)
     }
 
     // Split apps into pages: 8 on first page (2x4), rest on second
@@ -182,6 +210,62 @@ export function MobileDesktop() {
             </motion.div>
 
             <NotificationShade isOpen={notificationOpen} onClose={() => setNotificationOpen(false)} />
+
+            {/* Recents Task Switcher */}
+            <AnimatePresence>
+                {isRecentsOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center p-6"
+                        onClick={() => setIsRecentsOpen(false)}
+                    >
+                        <div className="text-white/50 text-xs font-bold uppercase tracking-widest mb-12">Recents</div>
+                        <div className="w-full flex gap-6 overflow-x-auto px-12 pb-12 snap-x no-scrollbar">
+                            {windows.length === 0 ? (
+                                <div className="w-full text-center text-white/30 py-20">No active apps</div>
+                            ) : (
+                                windows.map((win) => {
+                                    const app = apps.find(a => a.id === win.id)
+                                    return (
+                                        <motion.div
+                                            key={win.id}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="min-w-[240px] aspect-[9/16] bg-[var(--os-surface)] rounded-3xl border border-white/10 shadow-2xl overflow-hidden relative snap-center flex flex-col"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleAppClick(app)
+                                            }}
+                                        >
+                                            <div className="p-4 flex items-center gap-3 border-b border-white/5">
+                                                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                                    {app?.icon}
+                                                </div>
+                                                <span className="text-sm font-bold">{win.title}</span>
+                                            </div>
+                                            <div className="flex-1 bg-black/20 flex items-center justify-center">
+                                                <div className="opacity-20 transform scale-150">
+                                                    {app?.icon}
+                                                </div>
+                                            </div>
+                                            <button
+                                                className="absolute top-4 right-4 p-2 bg-white/10 rounded-full"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    closeWindow(win.id)
+                                                }}
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        </motion.div>
+                                    )
+                                })
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Content Area */}
             <div className="h-full pt-12 pb-20 px-4 overflow-y-auto">
@@ -291,8 +375,18 @@ export function MobileDesktop() {
             </div>
 
             {/* Dock / Home Indicator */}
-            <div className="absolute bottom-2 left-0 right-0 flex justify-center py-4 z-50">
-                <div className="w-32 h-1 bg-[var(--os-surface-hover)] rounded-full" />
+            <div
+                className="absolute bottom-2 left-0 right-0 flex justify-center py-4 z-[80] cursor-pointer"
+                onClick={goHome}
+                onContextMenu={(e) => {
+                    e.preventDefault()
+                    toggleRecents()
+                }}
+            >
+                <motion.div
+                    whileTap={{ scaleX: 1.2, opacity: 1 }}
+                    className="w-32 h-1 bg-white/40 rounded-full"
+                />
             </div>
 
             {/* Background Image */}
