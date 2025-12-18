@@ -47,10 +47,10 @@ export function BlogApp() {
         <article className={`max-w-4xl mx-auto px-4 py-8 ${isMobile ? 'pb-24' : ''}`}>
             {/* Featured Image */}
             {post.featuredImage && (
-                <div className={`${isMobile ? 'h-48' : 'h-64'} mb-8 rounded-2xl overflow-hidden bg-[var(--os-surface-hover)] shadow-xl`}>
+                <div className="aspect-video mb-12 rounded-2xl overflow-hidden bg-[var(--os-surface-hover)] shadow-2xl border border-[var(--os-border)]">
                     <div
-                        className="h-full w-full bg-contain bg-center bg-no-repeat bg-black/40"
-                        style={{ backgroundImage: `url(${post.featuredImage})` }}
+                        className="h-full w-full bg-cover bg-center bg-no-repeat"
+                        style={{ backgroundImage: `url(${post.featuredImage})`, backgroundSize: '100% 100%' }}
                     />
                 </div>
             )}
@@ -84,13 +84,15 @@ export function BlogApp() {
             <div
                 className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none
                     prose-headings:text-[var(--foreground)] prose-headings:font-black tracking-tight
-                    prose-p:text-[var(--foreground)]/80 prose-p:leading-relaxed
+                    prose-headings:mt-12 prose-headings:mb-6
+                    prose-p:text-[var(--foreground)]/80 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-base
                     prose-a:text-[var(--primary)] prose-a:no-underline font-bold hover:prose-a:opacity-80
                     prose-code:text-orange-400 prose-code:bg-[var(--os-surface-hover)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-                    prose-pre:bg-black/50 prose-pre:border prose-pre:border-[var(--os-border)] prose-pre:rounded-xl
-                    prose-blockquote:border-l-[var(--primary)] prose-blockquote:bg-[var(--primary)]/5 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:text-[var(--muted-foreground)]
-                    prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto
-                    prose-table:text-sm prose-table:border prose-table:border-[var(--os-border)]`}
+                    prose-pre:bg-black/50 prose-pre:border prose-pre:border-[var(--os-border)] prose-pre:rounded-xl prose-pre:p-6 prose-pre:my-8
+                    prose-blockquote:border-l-[var(--primary)] prose-blockquote:bg-[var(--primary)]/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:text-[var(--muted-foreground)] prose-blockquote:rounded-r-xl prose-blockquote:my-8
+                    prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto prose-img:my-10
+                    prose-ul:my-6 prose-li:my-2
+                    prose-table:text-sm prose-table:border prose-table:border-[var(--os-border)] prose-table:my-8`}
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
             />
         </article>
@@ -164,10 +166,10 @@ export function BlogApp() {
                                     onClick={() => setSelectedPost(post)}
                                     className="group bg-[var(--os-surface)] border border-[var(--os-border)] rounded-2xl overflow-hidden hover:border-[var(--primary)]/50 hover:bg-[var(--os-surface-hover)] transition-all cursor-pointer flex flex-col h-full"
                                 >
-                                    <div className="h-40 bg-black/20 overflow-hidden shrink-0">
+                                    <div className="aspect-video bg-black/20 overflow-hidden shrink-0">
                                         <div
-                                            className="h-full w-full bg-contain bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
-                                            style={{ backgroundImage: `url(${post.featuredImage})` }}
+                                            className="h-full w-full bg-cover bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
+                                            style={{ backgroundImage: `url(${post.featuredImage})`, backgroundSize: '100% 100%' }}
                                         />
                                     </div>
                                     <div className="p-6 flex flex-col flex-1">
@@ -255,10 +257,10 @@ export function BlogApp() {
                                 onClick={() => setSelectedPost(post)}
                                 className="bg-[var(--os-surface)] border border-[var(--os-border)] rounded-3xl overflow-hidden active:scale-[0.98] transition-all"
                             >
-                                <div className="h-48 bg-black/20">
+                                <div className="aspect-video bg-black/20">
                                     <div
-                                        className="h-full w-full bg-contain bg-center bg-no-repeat opacity-80"
-                                        style={{ backgroundImage: `url(${post.featuredImage})` }}
+                                        className="h-full w-full bg-cover bg-center bg-no-repeat opacity-80"
+                                        style={{ backgroundImage: `url(${post.featuredImage})`, backgroundSize: '100% 100%' }}
                                     />
                                 </div>
                                 <div className="p-6">

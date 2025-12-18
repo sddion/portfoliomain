@@ -10,7 +10,6 @@ import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
-import { CreditsApp } from "@/components/apps/CreditsApp"
 import { SettingsApp } from "@/components/apps/SettingsApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
@@ -116,13 +115,6 @@ export function MobileDesktop() {
             icon: <CircuitBoard className="text-orange-500" size={24} />,
             bg: "bg-orange-600",
             content: <ESP32FlasherApp />,
-        },
-        {
-            id: "credits",
-            label: "Credits",
-            icon: <ImageIcon className="text-yellow-400" size={24} />,
-            bg: "bg-zinc-800",
-            content: <CreditsApp />,
         },
         {
             id: "settings",

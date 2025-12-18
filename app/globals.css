@@ -116,7 +116,6 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-mono);
-  /* Default to mono for hacker vibe */
   overflow: hidden;
   /* Desktop env shouldn't scroll overall */
 }

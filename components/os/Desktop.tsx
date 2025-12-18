@@ -12,7 +12,6 @@ import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
-import { CreditsApp } from "@/components/apps/CreditsApp"
 import { ConkyWidget } from "@/components/os/ConkyWidget"
 import { SettingsApp } from "@/components/apps/SettingsApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
@@ -71,14 +70,6 @@ export function Desktop() {
             label: "Projects",
             icon: <Folder className="text-yellow-400" size={32} />,
             content: <ProjectsApp />,
-        },
-        {
-            id: "credits",
-            label: "Credits",
-            icon: <div className="w-8 h-8 rounded-md bg-zinc-800 flex items-center justify-center text-yellow-400 border border-zinc-700 shadow-lg">
-                <Palette size={20} />
-            </div>,
-            content: <CreditsApp />,
         },
         {
             id: "resume",

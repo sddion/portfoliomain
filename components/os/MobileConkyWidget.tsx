@@ -71,7 +71,6 @@ export function MobileConkyWidget({ bluetoothDevice, githubStats }: MobileConkyW
                         <Github size={12} className="text-[var(--foreground)]" />
                         <span>GitHub</span>
                     </div>
-                    full Content ...
                     <div className="grid grid-cols-2 gap-2 text-[10px]">
                         <div className="bg-black/30 rounded p-1.5 border border-[var(--os-border)]/50">
                             <div className="text-[var(--muted-foreground)]">Repos</div>

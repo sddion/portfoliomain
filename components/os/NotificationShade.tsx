@@ -132,15 +132,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                     <Settings size={20} className="text-[var(--muted-foreground)]" />
                 </div>
             </div>
-            full Content ...
 
-            {/* Mobile Conky Widget */}
-            <div className="p-4">
-                <MobileConkyWidget
-                    bluetoothDevice={device}
-                    githubStats={githubStats}
-                />
-            </div>
 
             {/* Quick Settings */}
             <div className="p-4 grid grid-cols-4 gap-4">
@@ -188,20 +180,6 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                 </div>
             )}
 
-            {/* Brightness Slider */}
-            <div className="px-6 py-2">
-                <div className="flex items-center gap-3 bg-[var(--os-surface)] p-2 rounded-full px-4 border border-[var(--os-border)]">
-                    <Sun size={16} className="text-[var(--muted-foreground)]" />
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={brightness}
-                        onChange={(e) => setBrightness(Number(e.target.value))}
-                        className="w-full h-1 bg-[var(--os-surface-hover)] rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--foreground)]"
-                    />
-                </div>
-            </div>
 
             {/* Notifications */}
             <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 mt-2">

@@ -29,7 +29,7 @@ export function LoginScreen() {
 
     const handleLogin = (e?: React.FormEvent) => {
         e?.preventDefault()
-        if (password === "guest") {
+        if (password === "sanjuos") {
             login()
         } else {
             setError(true)
@@ -37,13 +37,9 @@ export function LoginScreen() {
         }
     }
 
-    const handleGuestLogin = () => {
-        setPassword("guest")
-        login()
-    }
 
     const renderMobile = () => (
-        <div className="h-full w-full relative bg-[var(--background)] overflow-hidden font-sans">
+        <div className="h-screen w-full relative bg-[var(--background)] overflow-hidden font-sans">
             {/* High Quality Background */}
             <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-1000"
@@ -119,7 +115,6 @@ export function LoginScreen() {
                                 </div>
                                 <h2 className="text-2xl font-black tracking-tight text-[var(--foreground)]">Welcome Back</h2>
                             </div>
-                            full Content ...
 
                             {/* Entry Form */}
                             <form onSubmit={handleLogin} className="space-y-6">
@@ -145,19 +140,12 @@ export function LoginScreen() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="flex justify-center">
                                     <button
                                         type="submit"
-                                        className="h-14 bg-[var(--foreground)] text-[var(--background)] rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform"
+                                        className="h-14 w-full bg-[var(--foreground)] text-[var(--background)] rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform"
                                     >
                                         Unlock
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleGuestLogin}
-                                        className="h-14 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform shadow-[0_4px_20px_rgba(var(--primary-rgb),0.4)] border border-[var(--primary)]/30"
-                                    >
-                                        Guest
                                     </button>
                                 </div>
 
@@ -210,7 +198,7 @@ export function LoginScreen() {
                         </div>
                         <input
                             type="password"
-                            placeholder="Password: guest"
+                            placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full bg-[var(--os-surface)]/80 border border-[var(--os-border)] rounded px-10 py-3 text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]/50"

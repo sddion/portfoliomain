@@ -104,10 +104,10 @@ export function ConkyWidget() {
             <DialogTrigger asChild>
                 <div
                     title="Click to view system details"
-                    className="absolute top-[30px] right-10 w-80 font-mono text-xs z-0 select-none text-primary/80 hidden md:block cursor-pointer hover:bg-black/20 p-4 rounded-lg transition-colors text-left"
+                    className="absolute top-[20px] right-10 w-80 font-mono text-xs z-0 select-none text-primary/80 hidden md:block cursor-pointer hover:bg-black/20 p-4 rounded-lg transition-colors text-left max-h-[calc(100vh-80px)] overflow-y-auto scrollbar-hide"
                 >
                     {/* System Info */}
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Terminal size={12} /> System Status
                         </h3>
@@ -126,7 +126,7 @@ export function ConkyWidget() {
                     </div>
 
                     {/* Quote */}
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Quote size={12} /> MOTD
                         </h3>
@@ -136,7 +136,7 @@ export function ConkyWidget() {
                     </div>
 
                     {/* Logs */}
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Terminal size={12} /> System Logs
                         </h3>
@@ -150,7 +150,7 @@ export function ConkyWidget() {
                     </div>
 
                     {/* GitHub Stats */}
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Github size={12} /> GitHub Telemetry
                         </h3>
