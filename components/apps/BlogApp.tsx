@@ -85,14 +85,18 @@ export function BlogApp() {
                 className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none
                     prose-headings:text-[var(--foreground)] prose-headings:font-black tracking-tight
                     prose-headings:mt-12 prose-headings:mb-6
-                    prose-p:text-[var(--foreground)]/80 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-base
+                    prose-p:text-[var(--foreground)]/80 prose-p:leading-relaxed prose-p:mb-8 prose-p:text-base
                     prose-a:text-[var(--primary)] prose-a:no-underline font-bold hover:prose-a:opacity-80
                     prose-code:text-orange-400 prose-code:bg-[var(--os-surface-hover)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-                    prose-pre:bg-black/50 prose-pre:border prose-pre:border-[var(--os-border)] prose-pre:rounded-xl prose-pre:p-6 prose-pre:my-8
-                    prose-blockquote:border-l-[var(--primary)] prose-blockquote:bg-[var(--primary)]/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:text-[var(--muted-foreground)] prose-blockquote:rounded-r-xl prose-blockquote:my-8
-                    prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto prose-img:my-10
-                    prose-ul:my-6 prose-li:my-2
-                    prose-table:text-sm prose-table:border prose-table:border-[var(--os-border)] prose-table:my-8`}
+                    prose-pre:bg-black/50 prose-pre:border prose-pre:border-[var(--os-border)] prose-pre:rounded-xl prose-pre:p-0 prose-pre:my-10 prose-pre:overflow-hidden
+                    prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--primary)] prose-blockquote:bg-[var(--primary)]/5 prose-blockquote:py-2 prose-blockquote:px-8 prose-blockquote:text-[var(--foreground)]/90 prose-blockquote:rounded-r-xl prose-blockquote:my-10 prose-blockquote:italic
+                    prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto prose-img:my-12 prose-img:border prose-img:border-white/10
+                    prose-hr:border-[var(--os-border)] prose-hr:my-12
+                    prose-ul:my-8 prose-li:my-3
+                    prose-table:text-sm prose-table:border prose-table:border-[var(--os-border)] prose-table:my-10
+                    [&_.terminal-header]:bg-[#1a1a1a] [&_.terminal-header]:px-4 [&_.terminal-header]:py-2 [&_.terminal-header]:flex [&_.terminal-header]:items-center [&_.terminal-header]:gap-2 [&_.terminal-header]:border-b [&_.terminal-header]:border-white/10
+                    [&_.terminal-dot]:w-2.5 [&_.terminal-dot]:h-2.5 [&_.terminal-dot]:rounded-full
+                    [&_.terminal-content]:p-6 [&_.terminal-content]:font-mono [&_.terminal-content]:text-green-400 [&_.terminal-content]:text-sm`}
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
             />
         </article>
@@ -313,8 +317,23 @@ export function BlogApp() {
 function renderMarkdown(markdown: string): string {
     let html = markdown
 
-    // Code blocks
+    // Code blocks & Terminals
     html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
+        if (lang === 'terminal') {
+            return `
+                <div class="terminal-container my-10 border border-white/10 rounded-xl overflow-hidden bg-black/60 shadow-2xl">
+                    <div class="terminal-header">
+                        <div class="terminal-dot bg-[#ff5f56]"></div>
+                        <div class="terminal-dot bg-[#ffbd2e]"></div>
+                        <div class="terminal-dot bg-[#27c93f]"></div>
+                        <div class="ml-2 text-[10px] text-white/30 font-mono tracking-widest uppercase">SanjuOS Terminal</div>
+                    </div>
+                    <div class="terminal-content">
+                        <pre><code>${escapeHtml(code.trim())}</code></pre>
+                    </div>
+                </div>
+            `
+        }
         return `<pre><code class="language-${lang || 'text'}">${escapeHtml(code.trim())}</code></pre>`
     })
 
@@ -326,11 +345,17 @@ function renderMarkdown(markdown: string): string {
     html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>')
     html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>')
 
+    // Horizontal Rules
+    html = html.replace(/^---$/gm, '<hr />')
+
+    // Blockquotes
+    html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+
     // Bold
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
 
-    // Links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // Links (with target _blank)
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
 
     // Images
     html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
@@ -340,7 +365,7 @@ function renderMarkdown(markdown: string): string {
     html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
 
     // Paragraphs
-    html = html.replace(/^(?!<[hup]|```|<li|<\/[uo]l>)(.+)$/gm, '<p>$1</p>')
+    html = html.replace(/^(?!<[hup]|<div|```|<li|<\/[uo]l>|<pre>|<blockquote|<hr)(.+)$/gm, '<p>$1</p>')
 
     // Tables (basic support)
     html = html.replace(/\|(.+)\|/g, (match) => {
