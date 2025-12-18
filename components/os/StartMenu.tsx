@@ -20,7 +20,7 @@ interface StartMenuProps {
 }
 
 export function StartMenu({ isOpen, onClose }: StartMenuProps) {
-    const { openWindow, logout } = useWindowManager()
+    const { openWindow, logout, toggleSnowfall, showSnowfall } = useWindowManager()
 
     const menuItems = [
         { label: "Terminal", icon: <Terminal size={18} className="text-green-500" />, id: "terminal", content: <TerminalApp /> },
@@ -30,6 +30,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
         { label: "Resume", icon: <FileText size={18} className="text-red-500" />, id: "resume", content: <ResumeApp /> },
         { label: "ESP Flasher", icon: <CircuitBoard size={18} className="text-orange-500" />, id: "esp32-flasher", content: <ESP32FlasherApp /> },
         { label: "Blog", icon: <FileText size={18} className="text-teal-500" />, id: "blog", content: <BlogApp /> },
+        { label: "Snowfall", icon: <Snowflake size={18} className={showSnowfall ? "text-blue-300" : "text-zinc-500"} />, action: toggleSnowfall },
         { label: "GitHub", icon: <Github size={18} className="text-white" />, action: () => window.open("https://github.com/sddion", "_blank") },
     ]
 

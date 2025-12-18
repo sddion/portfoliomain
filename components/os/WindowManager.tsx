@@ -116,7 +116,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         focusWindow(id)
     }
 
-    const [showSnowfall, setShowSnowfall] = useState(false)
+    const [showSnowfall, setShowSnowfall] = useState(true)
 
     const toggleSnowfall = () => setShowSnowfall(prev => !prev)
 
