@@ -5,7 +5,7 @@ import { useWindowManager } from "@/components/os/WindowManager"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image, Settings, MessageCircle } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
@@ -101,7 +101,7 @@ export function MobileDesktop() {
         {
             id: "credits",
             label: "Credits",
-            icon: <Image className="text-yellow-400" size={24} />,
+            icon: <ImageIcon className="text-yellow-400" size={24} />,
             bg: "bg-zinc-800",
             content: <CreditsApp />,
         },
@@ -243,8 +243,8 @@ export function MobileDesktop() {
                                             key={i}
                                             onClick={() => setCurrentPage(i)}
                                             className={`h-1.5 rounded-full transition-all ${i === currentPage
-                                                    ? 'w-6 bg-white'
-                                                    : 'w-1.5 bg-zinc-600'
+                                                ? 'w-6 bg-white'
+                                                : 'w-1.5 bg-zinc-600'
                                                 }`}
                                         />
                                     ))}

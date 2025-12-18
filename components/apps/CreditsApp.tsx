@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { Image, Terminal, Download, X, Eye } from "lucide-react"
+import { Image as ImageIcon, Terminal, Download, X, Eye } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 export function CreditsApp() {
@@ -82,7 +82,7 @@ export function CreditsApp() {
                 {/* Header */}
                 <div className="text-center space-y-3">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl shadow-purple-500/30 mb-2">
-                        <Image className="text-white w-8 h-8" />
+                        <ImageIcon className="text-white w-8 h-8" />
                     </div>
                     <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                         Wallpaper Gallery
