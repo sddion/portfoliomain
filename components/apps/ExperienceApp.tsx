@@ -93,8 +93,8 @@ const experiences: ExperienceItem[] = [
 
 export function ExperienceApp() {
     return (
-        <div className="h-full overflow-y-auto p-6 font-mono text-zinc-300 selection:bg-purple-500/30 custom-scrollbar">
-            <div className="max-w-3xl mx-auto relative pl-8 border-l border-zinc-800 space-y-12">
+        <div className="h-full overflow-y-auto p-6 font-mono text-[var(--foreground)] selection:bg-[var(--primary)]/30 custom-scrollbar">
+            <div className="max-w-3xl mx-auto relative pl-8 border-l border-[var(--os-border)] space-y-12">
 
                 {experiences.map((exp, index) => (
                     <motion.div
@@ -105,28 +105,28 @@ export function ExperienceApp() {
                         className="relative"
                     >
                         {/* Timeline Node */}
-                        <div className={`absolute -left-[41px] top-0 w-5 h-5 rounded-full border-4 border-zinc-950 flex items-center justify-center
-                            ${exp.type === 'builder' ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' :
-                                exp.type === 'business' ? 'bg-purple-500' :
-                                    exp.type === 'learning' ? 'bg-blue-500' : 'bg-zinc-600'}
+                        <div className={`absolute -left-[41px] top-0 w-5 h-5 rounded-full border-4 border-[var(--background)] flex items-center justify-center
+                            ${exp.type === 'builder' ? 'bg-[var(--primary)] shadow-[0_0_10px_rgba(34,197,94,0.5)]' :
+                                exp.type === 'business' ? 'bg-[var(--accent)]' :
+                                    exp.type === 'learning' ? 'bg-blue-500' : 'bg-[var(--muted-foreground)]'}
                         `}>
-                            {exp.type === 'builder' && <div className="w-full h-full animate-ping rounded-full bg-green-500 opacity-20" />}
+                            {exp.type === 'builder' && <div className="w-full h-full animate-ping rounded-full bg-[var(--primary)] opacity-20" />}
                         </div>
 
                         {/* Content Card */}
-                        <div className="bg-zinc-900 border border-zinc-800 p-4 rounded hover:border-zinc-700 transition-colors group">
+                        <div className="bg-[var(--os-surface)] border border-[var(--os-border)] p-4 rounded hover:border-[var(--primary)]/30 transition-colors group">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                                 <div>
-                                    <h3 className={`text-lg font-bold ${exp.type === 'builder' ? 'text-green-400' : 'text-white'
+                                    <h3 className={`text-lg font-bold ${exp.type === 'builder' ? 'text-[var(--primary)]' : 'text-[var(--foreground)]'
                                         }`}>
                                         {exp.role}
                                     </h3>
-                                    <div className="flex items-center gap-2 text-zinc-400 text-sm">
+                                    <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
                                         <Briefcase size={14} />
                                         <span>{exp.company}</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs font-bold px-2 py-1 rounded bg-zinc-950/50 text-zinc-500 border border-zinc-800/50">
+                                <div className="flex items-center gap-2 text-xs font-bold px-2 py-1 rounded bg-black/20 text-[var(--muted-foreground)] border border-[var(--os-border)]">
                                     <Calendar size={12} />
                                     <span>{exp.duration}</span>
                                 </div>
@@ -134,8 +134,8 @@ export function ExperienceApp() {
 
                             <ul className="space-y-2">
                                 {exp.description.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-zinc-400 group-hover:text-zinc-300 transition-colors">
-                                        <span className="mt-1.5 w-1 h-1 bg-zinc-600 rounded-full shrink-0" />
+                                    <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] transition-colors">
+                                        <span className="mt-1.5 w-1 h-1 bg-[var(--muted-foreground)] rounded-full shrink-0" />
                                         {item}
                                     </li>
                                 ))}

@@ -2,34 +2,34 @@ import React from "react"
 
 export function AboutApp() {
     return (
-        <div className="p-6 font-mono text-zinc-300 space-y-6 max-w-3xl mx-auto selection:bg-green-500/30">
-            <div className="flex items-center gap-4 mb-6 border-b border-zinc-700 pb-4">
+        <div className="p-6 font-mono text-[var(--foreground)]/80 space-y-6 max-w-3xl mx-auto selection:bg-[var(--primary)]/30">
+            <div className="flex items-center gap-4 mb-6 border-b border-[var(--os-border)] pb-4">
                 <img
                     src="https://avatars.githubusercontent.com/u/152778879?v=4"
                     alt="Sanju"
-                    className="w-16 h-16 rounded-full border border-green-500/50 object-cover shadow-lg"
+                    className="w-16 h-16 rounded-full border border-[var(--primary)]/50 object-cover shadow-lg"
                 />
                 <div>
-                    <h1 className="text-2xl font-bold text-white">Sanju</h1>
-                    <p className="text-green-500">Full-Stack Developer & Security Engineer</p>
+                    <h1 className="text-2xl font-bold text-[var(--foreground)]">Sanju</h1>
+                    <p className="text-[var(--primary)]">Full-Stack Developer & Security Engineer</p>
                 </div>
             </div>
 
             <div className="space-y-4 leading-relaxed">
                 <p>
-                    I&apos;m a <span className="text-white font-medium">self-taught full-stack developer</span> from
+                    I&apos;m a <span className="text-[var(--foreground)] font-medium">self-taught full-stack developer</span> from
                     India with a passion for building things that work. My journey started with hands-on learning and has
                     evolved into deploying live applications used by real users.
                 </p>
 
                 <p>
-                    My expertise spans multiple domains: <span className="text-blue-400">web development</span> (frontend and
-                    backend), <span className="text-blue-400">mobile app development</span> with React Native,{" "}
-                    <span className="text-blue-400">embedded hardware</span> projects with Arduino and ESP8266, and{" "}
-                    <span className="text-blue-400">Windows automation</span> and security scripting.
+                    My expertise spans multiple domains: <span className="text-[var(--primary)]">web development</span> (frontend and
+                    backend), <span className="text-[var(--primary)]">mobile app development</span> with React Native,{" "}
+                    <span className="text-[var(--primary)]">embedded hardware</span> projects with Arduino and ESP8266, and{" "}
+                    <span className="text-[var(--primary)]">Windows automation</span> and security scripting.
                 </p>
 
-                <blockquote className="border-l-2 border-green-500 pl-4 py-2 my-4 bg-zinc-900 italic text-zinc-400">
+                <blockquote className="border-l-2 border-[var(--primary)] pl-4 py-2 my-4 bg-[var(--os-surface-hover)] italic text-[var(--muted-foreground)]">
                     &quot;Fullstack dev, automation junkie, CLI wizard, professional code wrangler.
                     If it can be automated, I&apos;ll automate it. If it can&apos;t, I&apos;ll still try.&quot;
                 </blockquote>
@@ -41,8 +41,8 @@ export function AboutApp() {
                     “what the heck is this?”
                 </p>
 
-                <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
-                    <h3 className="text-white font-bold mb-2">Current Focus</h3>
+                <div className="bg-[var(--os-surface)] p-4 rounded border border-[var(--os-border)]">
+                    <h3 className="text-[var(--foreground)] font-bold mb-2">Current Focus</h3>
                     <p className="text-sm">
                         Building full-stack applications with TypeScript, exploring new technologies, and contributing to open-source projects.
                     </p>
@@ -58,8 +58,8 @@ export function AboutApp() {
                 </div>
 
                 <div className="flex gap-4 pt-4">
-                    <a href="https://github.com/sddion" target="_blank" className="text-green-500 hover:underline hover:text-green-400">GitHub</a>
-                    <a href="https://gitlab.com/dedsec" target="_blank" className="text-green-500 hover:underline hover:text-green-400">GitLab</a>
+                    <a href="https://github.com/sddion" target="_blank" className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100">GitHub</a>
+                    <a href="https://gitlab.com/dedsec" target="_blank" className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100">GitLab</a>
                 </div>
             </div>
         </div>

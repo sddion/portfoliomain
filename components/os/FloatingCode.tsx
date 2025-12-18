@@ -47,10 +47,10 @@ export function FloatingCode() {
             {items.map((item) => (
                 <motion.div
                     key={item.id}
-                    className="absolute text-green-500/20 font-mono text-xs sm:text-sm whitespace-nowrap"
+                    className="absolute text-green-500/30 font-mono text-xs sm:text-sm whitespace-nowrap"
                     initial={{ opacity: 0, x: `${item.x}vw`, y: `${item.y}vh` }}
                     animate={{
-                        opacity: [0, 0.4, 0],
+                        opacity: [0, 0.6, 0],
                         y: [`${item.y}vh`, `${item.y - 10}vh`] // Float up slightly
                     }}
                     transition={{

@@ -5,10 +5,10 @@ import { Download, Globe, Github, Camera, MapPin, Shield, Layers, Code2 } from "
 
 export function GeoshotApp() {
     return (
-        <div className="h-full flex flex-col bg-zinc-900 text-white overflow-hidden font-sans">
+        <div className="h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] overflow-hidden font-sans">
             {/* Header / Hero Section */}
-            <div className="bg-gradient-to-br from-green-900 via-zinc-900 to-black p-8 flex flex-col items-center text-center border-b border-zinc-700 shrink-0">
-                <div className="w-24 h-24 mb-4 rounded-xl overflow-hidden shadow-2xl border-2 border-green-500/30">
+            <div className="bg-[var(--os-surface)] p-8 flex flex-col items-center text-center border-b border-[var(--os-border)] shrink-0">
+                <div className="w-24 h-24 mb-4 rounded-xl overflow-hidden shadow-2xl border-2 border-[var(--primary)]/30">
                     <img
                         src="https://raw.githubusercontent.com/sddion/geoshot/main/docs/assets/android-icon-48x48.png"
                         alt="Geoshot Icon"
@@ -16,7 +16,7 @@ export function GeoshotApp() {
                     />
                 </div>
                 <h1 className="text-3xl font-extrabold tracking-tight mb-2">GeoShot</h1>
-                <p className="text-lg text-zinc-300 max-w-md mx-auto line-clamp-2">
+                <p className="text-lg text-[var(--foreground)] opacity-80 max-w-md mx-auto line-clamp-2">
                     Advanced geolocation camera app for professionals and explorers.
                 </p>
                 <div className="flex gap-3 mt-6">
@@ -24,7 +24,7 @@ export function GeoshotApp() {
                         href="https://github.com/sddion/geoshot/releases/latest"
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-black px-6 py-2 rounded-full font-bold transition-transform active:scale-95"
+                        className="flex items-center gap-2 bg-[var(--primary)] hover:opacity-80 text-[var(--primary-foreground)] px-6 py-2 rounded-full font-bold transition-transform active:scale-95"
                     >
                         <Download size={18} /> Download APK
                     </a>
@@ -32,7 +32,7 @@ export function GeoshotApp() {
                         href="https://github.com/sddion/geoshot"
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 px-4 py-2 rounded-full font-medium transition-colors"
+                        className="flex items-center gap-2 bg-[var(--os-surface-hover)] border border-[var(--os-border)] px-4 py-2 rounded-full font-medium transition-colors"
                     >
                         <Github size={18} /> Source
                     </a>
@@ -45,7 +45,7 @@ export function GeoshotApp() {
 
                 {/* Features Grid */}
                 <section>
-                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-green-400">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-[var(--primary)]">
                         <Camera size={24} /> Key Features
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -55,7 +55,7 @@ export function GeoshotApp() {
                             desc="Embed GPS coordinates into every photo automatically."
                         />
                         <FeatureCard
-                            icon={<Shield className="text-green-400" />}
+                            icon={<Shield className="text-[var(--primary)]" />}
                             title="Privacy First"
                             desc="Location data stays on your device. No tracking."
                         />
@@ -73,9 +73,9 @@ export function GeoshotApp() {
                 </section>
 
                 {/* About Section */}
-                <section className="bg-zinc-800/50 p-6 rounded-xl border border-zinc-700">
-                    <h3 className="font-bold text-lg mb-2 text-zinc-200">About GeoShot</h3>
-                    <p className="text-zinc-400 leading-relaxed text-sm">
+                <section className="bg-[var(--os-surface)] p-6 rounded-xl border border-[var(--os-border)]">
+                    <h3 className="font-bold text-lg mb-2 text-[var(--foreground)]">About GeoShot</h3>
+                    <p className="text-[var(--muted-foreground)] leading-relaxed text-sm">
                         GeoShot is designed for those who need to document location-specific visual data.
                         Whether you are a civil engineer, a traveler, or just someone who loves
                         data-rich photography, GeoShot provides the tools you need without the bloat.
@@ -90,8 +90,8 @@ export function GeoshotApp() {
 
                 {/* Download Options */}
                 <section>
-                    <h3 className="font-bold text-lg mb-4 text-zinc-200">Downloads</h3>
-                    <div className="bg-zinc-800 rounded-lg overflow-hidden divide-y divide-zinc-700 border border-zinc-700">
+                    <h3 className="font-bold text-lg mb-4 text-[var(--foreground)]">Downloads</h3>
+                    <div className="bg-[var(--os-surface)] rounded-lg overflow-hidden divide-y divide-[var(--os-border)] border border-[var(--os-border)]">
                         <DownloadRow
                             arch="arm64-v8a"
                             label="Modern Android Devices (64-bit)"
@@ -135,10 +135,10 @@ function Badge({ children }: { children: React.ReactNode }) {
 
 function DownloadRow({ arch, label, link }: { arch: string, label: string, link: string }) {
     return (
-        <div className="flex items-center justify-between p-4 hover:bg-zinc-700/50 transition-colors">
+        <div className="flex items-center justify-between p-4 hover:bg-[var(--os-surface-hover)] transition-colors">
             <div>
-                <div className="font-mono text-green-400 text-sm font-bold">{arch}</div>
-                <div className="text-xs text-zinc-400">{label}</div>
+                <div className="font-mono text-[var(--primary)] text-sm font-bold">{arch}</div>
+                <div className="text-xs text-[var(--muted-foreground)]">{label}</div>
             </div>
             <a
                 href={link}

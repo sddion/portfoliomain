@@ -1,0 +1,16 @@
+{
+    "id": "terminal-esp-flasher-guide",
+    "title": "Hacker Mode: Flashing ESP32 via Terminal",
+    "description": "Unleash the power of the SanjuOS Terminal to flash your microcontrollers using simple commands. Pro-level IoT development is here.",
+    "author": "SanjuOS Dev",
+    "date": "2025-12-18",
+    "category": "Tutorial",
+    "tags": [
+        "Terminal",
+        "ESP32",
+        "CLI",
+        "Web Serial"
+    ],
+    "featuredImage": "/blog/terminal-esp.png",
+    "content": "# Terminal Mode: Flashing ESP32 via Terminal\n\nFor those who prefer the speed and efficiency of a command-line interface, SanjuOS now supports **ESP32 flashing directly from the Terminal**. This bypasses the GUI for a faster, more 'hacker-style' workflow.\n\n## Available Commands\n\nThe `esp` suite of commands provides full control over your connected microcontrollers.\n\n| Command | Description |\n|---------|-------------|\n| `esp connect` | Request serial port access and initialize connection. |\n| `esp info` | Display information about the detected chip. |\n| `esp flash <url> [addr]` | Download firmware from a URL and flash to the device. |\n| `esp erase` | Perform a full flash memory erase. |\n| `esp disconnect` | Safely close the serial connection. |\n\n## Quick Start Workflow\n\n### 1. Initialize Connection\nType the following command and select your device from the browser popup:\n```bash\nesp connect\n```\n\n### 2. Verify Device\nEnsure the tool correctly identifies your hardware:\n```bash\nesp info\n```\n\n### 3. Flash Firmware via URL\nYou can now flash binaries directly from external URLs. The SanjuOS serverless API handles the proxying to avoid CORS issues:\n```bash\nesp flash https://example.com/firmware.bin 0x1000\n```\n\n### 4. Clean Up\nOnce finished, disconnect your device:\n```bash\nesp disconnect\n```\n\n## Why use Terminal Mode?\n\n- **Faster Workflow**: No need to navigate through GUI menus.\n- **Remote Binaries**: Directly flash files from GitHub or other repositories without downloading them to your computer first.\n- **Real-time Feedback**: Detailed logs streamed directly to your terminal history.\n\nHappy hacking!"
+}

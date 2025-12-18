@@ -19,11 +19,12 @@ import dynamic from "next/dynamic"
 import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
+import { LoginScreen } from "@/components/os/LoginScreen"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
 export function MobileDesktop() {
-    const { windows, openWindow, closeWindow, activeWindowId } = useWindowManager()
+    const { windows, openWindow, closeWindow, activeWindowId, isLoggedIn } = useWindowManager()
     const [time, setTime] = useState(new Date())
     const [notificationOpen, setNotificationOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
@@ -55,7 +56,7 @@ export function MobileDesktop() {
         },
         {
             id: "about",
-            label: "About",
+            label: "About Me",
             icon: <User className="text-blue-400" size={24} />,
             bg: "bg-zinc-800",
             content: <AboutApp />,
@@ -157,11 +158,15 @@ export function MobileDesktop() {
     const page2Apps = apps.slice(appsPerPage)
     const totalPages = page2Apps.length > 0 ? 2 : 1
 
+    if (!isLoggedIn) {
+        return <LoginScreen />
+    }
+
     return (
-        <div className="h-screen w-screen bg-black text-white overflow-hidden relative font-sans">
+        <div className="h-screen w-screen bg-[var(--background)] text-[var(--foreground)] overflow-hidden relative font-sans">
             <SnowfallEffect />
             {/* Status Bar - Non-interactive background */}
-            <div className="absolute top-0 left-0 right-0 z-40 px-6 pt-2 pb-1 flex items-center justify-between text-white text-xs bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+            <div className="absolute top-0 left-0 right-0 z-40 px-6 pt-2 pb-1 flex items-center justify-between text-[var(--foreground)] text-xs bg-gradient-to-b from-[var(--background)]/80 to-transparent pointer-events-none">
                 <span className="font-semibold">{format(time, "HH:mm")}</span>
                 <div className="flex items-center gap-2">
                     <Wifi size={16} className="opacity-80" />
@@ -195,7 +200,7 @@ export function MobileDesktop() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="h-full bg-zinc-900 rounded-2xl overflow-hidden relative border border-zinc-800 shadow-2xl"
+                            className="h-full bg-[var(--background)] rounded-2xl overflow-hidden relative border border-[var(--os-border)] shadow-2xl"
                         >
                             <div className="absolute top-4 left-4 z-50">
                                 {/* Back button removed for native navigation */}
@@ -218,7 +223,7 @@ export function MobileDesktop() {
                             </div>
 
                             {/* App Grid Container - Flex-grow to push pagination down */}
-                            <div className="flex-1 flex items-end pb-6 relative">
+                            <div className="flex-1 flex items-start pt-6 relative">
                                 {/* App Grid with Swipe */}
                                 <motion.div
                                     drag="x"
@@ -245,10 +250,10 @@ export function MobileDesktop() {
                                                 onClick={() => handleAppClick(app)}
                                                 className="flex flex-col items-center gap-2 group"
                                             >
-                                                <div className={`w-14 h-14 ${app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
+                                                <div className={`w-14 h-14 ${app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
                                                     {app.icon}
                                                 </div>
-                                                <span className="text-[10px] text-zinc-400 font-medium tracking-wide">{app.label}</span>
+                                                <span className="text-[10px] text-[var(--muted-foreground)] font-medium tracking-wide">{app.label}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -262,10 +267,10 @@ export function MobileDesktop() {
                                                     onClick={() => handleAppClick(app)}
                                                     className="flex flex-col items-center gap-2 group"
                                                 >
-                                                    <div className={`w-14 h-14 ${app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
+                                                    <div className={`w-14 h-14 ${app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
                                                         {app.icon}
                                                     </div>
-                                                    <span className="text-[10px] text-zinc-400 font-medium tracking-wide">{app.label}</span>
+                                                    <span className="text-[10px] text-[var(--muted-foreground)] font-medium tracking-wide">{app.label}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -295,12 +300,12 @@ export function MobileDesktop() {
 
             {/* Dock / Home Indicator */}
             <div className="absolute bottom-2 left-0 right-0 flex justify-center py-4 z-50">
-                <div className="w-32 h-1 bg-zinc-800 rounded-full" />
+                <div className="w-32 h-1 bg-[var(--os-surface-hover)] rounded-full" />
             </div>
 
             {/* Background Image */}
             <div
-                className="absolute inset-0 bg-cover bg-center -z-10 transition-[background-image] duration-500 ease-in-out bg-zinc-900"
+                className="absolute inset-0 bg-cover bg-center -z-10 transition-[background-image] duration-500 ease-in-out bg-[var(--background)]"
                 style={{ backgroundImage: "var(--mobile-bg)" }}
             >
                 <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />

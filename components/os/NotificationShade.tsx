@@ -113,7 +113,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
             initial={{ y: "-100%" }}
             animate={{ y: isOpen ? 0 : "-100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md text-white flex flex-col"
+            className="fixed inset-0 z-[100] bg-[var(--background)]/90 backdrop-blur-md text-[var(--foreground)] flex flex-col"
             drag="y"
             dragConstraints={{ top: -window.innerHeight, bottom: 0 }}
             onDragEnd={(_, info) => {
@@ -123,15 +123,16 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
             }}
         >
             {/* Header */}
-            <div className="p-4 flex justify-between items-end border-b border-white/10 pb-6 bg-gradient-to-b from-zinc-900 to-transparent">
+            <div className="p-4 flex justify-between items-end border-b border-[var(--os-border)] pb-6 bg-gradient-to-b from-black/20 to-transparent">
                 <div className="flex flex-col">
                     <span className="text-4xl font-thin tracking-tighter">{format(time, "HH:mm")}</span>
-                    <span className="text-sm text-zinc-400">{format(time, "EEEE, MMMM d")}</span>
+                    <span className="text-sm text-[var(--muted-foreground)]">{format(time, "EEEE, MMMM d")}</span>
                 </div>
                 <div className="flex gap-4 mb-1">
-                    <Settings size={20} className="text-zinc-400" />
+                    <Settings size={20} className="text-[var(--muted-foreground)]" />
                 </div>
             </div>
+            full Content ...
 
             {/* Mobile Conky Widget */}
             <div className="p-4">
@@ -149,10 +150,10 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                         className="flex flex-col items-center gap-2 group"
                         onClick={() => handleToggle(i)}
                     >
-                        <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${t.active ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.6)] scale-105' : 'bg-zinc-800 text-zinc-400'}`}>
+                        <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${t.active ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[0_0_15px_rgba(var(--primary-rgb),0.6)] scale-105' : 'bg-[var(--os-surface)] text-[var(--muted-foreground)]'}`}>
                             {t.icon}
                         </div>
-                        <span className="text-[10px] text-zinc-300 font-medium truncate w-full text-center">{t.label}</span>
+                        <span className="text-[10px] text-[var(--muted-foreground)] font-medium truncate w-full text-center">{t.label}</span>
                     </button>
                 ))}
             </div>
@@ -168,8 +169,8 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
             )}
             {connecting && (
                 <div className="px-4 pb-2">
-                    <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-2 text-center">
-                        <span className="text-[10px] text-blue-300">Connecting to device...</span>
+                    <div className="bg-[var(--primary)]/20 border border-[var(--primary)]/30 rounded-lg p-2 text-center">
+                        <span className="text-[10px] text-[var(--primary)]">Connecting to device...</span>
                     </div>
                 </div>
             )}
@@ -179,7 +180,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                 <div className="px-4 pb-2">
                     <button
                         onClick={requestPermission}
-                        className="w-full bg-green-600 hover:bg-green-500 text-white rounded-lg p-3 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                        className="w-full bg-[var(--primary)] hover:opacity-80 text-[var(--primary-foreground)] rounded-lg p-3 text-sm font-medium transition-opacity flex items-center justify-center gap-2"
                     >
                         <Bell size={16} />
                         Enable Notifications
@@ -189,15 +190,15 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
 
             {/* Brightness Slider */}
             <div className="px-6 py-2">
-                <div className="flex items-center gap-3 bg-zinc-800/50 p-2 rounded-full px-4">
-                    <Sun size={16} className="text-zinc-400" />
+                <div className="flex items-center gap-3 bg-[var(--os-surface)] p-2 rounded-full px-4 border border-[var(--os-border)]">
+                    <Sun size={16} className="text-[var(--muted-foreground)]" />
                     <input
                         type="range"
                         min="0"
                         max="100"
                         value={brightness}
                         onChange={(e) => setBrightness(Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                        className="w-full h-1 bg-[var(--os-surface-hover)] rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--foreground)]"
                     />
                 </div>
             </div>
@@ -211,7 +212,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                     {notifications.length > 0 && (
                         <button
                             onClick={clearNotifications}
-                            className="text-xs text-blue-400 hover:text-blue-300"
+                            className="text-xs text-[var(--primary)] hover:opacity-80"
                         >
                             Clear all
                         </button>
@@ -224,18 +225,18 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                     </div>
                 ) : (
                     notifications.map(n => (
-                        <div key={n.id} className="bg-zinc-800/80 rounded-2xl p-4 flex gap-3 border border-white/5">
-                            <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300">
+                        <div key={n.id} className="bg-[var(--os-surface)] rounded-2xl p-4 flex gap-3 border border-[var(--os-border)]">
+                            <div className="w-8 h-8 rounded-full bg-[var(--os-surface-hover)] flex items-center justify-center text-[var(--muted-foreground)]">
                                 <Bell size={16} />
                             </div>
                             <div className="flex-1">
                                 <div className="flex justify-between items-start">
-                                    <span className="text-xs font-medium text-zinc-400">{n.title}</span>
-                                    <span className="text-[10px] text-zinc-500">
+                                    <span className="text-xs font-medium text-[var(--muted-foreground)]">{n.title}</span>
+                                    <span className="text-[10px] text-[var(--muted-foreground)] opacity-60">
                                         {format(n.timestamp, "HH:mm")}
                                     </span>
                                 </div>
-                                <p className="text-xs text-zinc-300 mt-0.5 leading-relaxed">{n.body}</p>
+                                <p className="text-xs text-[var(--foreground)] opacity-80 mt-0.5 leading-relaxed">{n.body}</p>
                             </div>
                         </div>
                     ))
@@ -244,7 +245,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
 
             {/* Grab Handle */}
             <div className="w-full h-6 flex justify-center items-center cursor-grab active:cursor-grabbing pb-2" onClick={onClose}>
-                <div className="w-12 h-1 bg-zinc-600 rounded-full" />
+                <div className="w-12 h-1 bg-[var(--os-surface-hover)] rounded-full" />
             </div>
         </motion.div>
     )

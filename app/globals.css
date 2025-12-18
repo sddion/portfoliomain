@@ -24,8 +24,15 @@
   --border: #333333;
   --input: #222222;
   --ring: #00ff41;
+  --primary-rgb: 0, 255, 65;
   --radius: 0px;
   /* Sharp edges for Linux look */
+
+  /* OS Surface Tokens */
+  --os-surface: #121212e6;
+  /* Translucent Zinc-900ish */
+  --os-surface-hover: #1f1f1f;
+  --os-border: #333333;
 
   /* Terminal Specifics */
   --terminal-bg: #0c0c0c;
@@ -53,9 +60,14 @@
   --border: #772953;
   --accent: #e95420;
   --ring: #e95420;
+  --primary-rgb: 233, 84, 32;
 
   --desktop-bg: url('/wallpapers/ubuntu-desktop.png');
   --mobile-bg: url('/wallpapers/ubuntu-mobile.png');
+
+  --os-surface: #2c001ee6;
+  --os-surface-hover: #3e0a29;
+  --os-border: #772953;
 }
 
 [data-theme='ocean'] {
@@ -69,9 +81,14 @@
   --primary-foreground: #000000;
   --border: #334155;
   --ring: #38bdf8;
+  --primary-rgb: 56, 189, 248;
 
   --desktop-bg: url('/wallpapers/ocean-desktop.png');
   --mobile-bg: url('/wallpapers/ocean-mobile.png');
+
+  --os-surface: #1e293be6;
+  --os-surface-hover: #334155;
+  --os-border: #475569;
 }
 
 [data-theme='dracula'] {
@@ -85,9 +102,14 @@
   --secondary: #6272a4;
   --border: #6272a4;
   --ring: #ff79c6;
+  --primary-rgb: 255, 121, 198;
 
   --desktop-bg: url('/wallpapers/dracula-desktop.png');
   --mobile-bg: url('/wallpapers/dracula-mobile.png');
+
+  --os-surface: #282a36e6;
+  --os-surface-hover: #44475a;
+  --os-border: #6272a4;
 }
 
 body {

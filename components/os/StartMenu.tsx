@@ -44,16 +44,16 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="absolute bottom-12 left-2 w-64 bg-zinc-900 border border-zinc-700 rounded-tr-lg rounded-tl-lg shadow-2xl z-50 overflow-hidden flex flex-col"
+                        className="absolute bottom-12 left-2 w-64 bg-[var(--os-surface)] border border-[var(--os-border)] rounded-tr-lg rounded-tl-lg shadow-2xl z-50 overflow-hidden flex flex-col"
                     >
                         {/* Header */}
-                        <div className="bg-zinc-800 p-3 border-b border-zinc-700 flex items-center gap-2">
+                        <div className="bg-[var(--os-surface-hover)] p-3 border-b border-[var(--os-border)] flex items-center gap-2">
                             <img
                                 src="https://avatars.githubusercontent.com/u/152778879?v=4"
                                 alt="User Avatar"
                                 className="w-8 h-8 rounded-full shadow-lg object-cover"
                             />
-                            <span className="font-bold text-zinc-200">SanjuOS</span>
+                            <span className="font-bold text-[var(--foreground)]">SanjuOS</span>
                         </div>
 
                         {/* App List */}
@@ -66,7 +66,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                                         else if (item.id) openWindow(item.id, item.label, (item as any).content, item.icon)
                                         onClose()
                                     }}
-                                    className="w-full flex items-center gap-3 p-2 hover:bg-zinc-800 rounded transition-colors text-zinc-300 hover:text-white text-sm"
+                                    className="w-full flex items-center gap-3 p-2 hover:bg-[var(--os-surface-hover)] rounded transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm"
                                 >
                                     {item.icon}
                                     <span>{item.label}</span>
@@ -75,7 +75,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                         </div>
 
                         {/* Footer / Power */}
-                        <div className="p-2 border-t border-zinc-700 bg-zinc-950">
+                        <div className="p-2 border-t border-[var(--os-border)] bg-black/20">
                             <button
                                 onClick={logout}
                                 className="w-full flex items-center gap-2 p-2 hover:bg-red-900/30 text-red-400 hover:text-red-300 rounded transition-colors text-sm font-semibold"

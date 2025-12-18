@@ -15,20 +15,20 @@ export function ResumeApp() {
     }
 
     return (
-        <div className="h-full flex flex-col overflow-hidden bg-zinc-800">
+        <div className="h-full flex flex-col overflow-hidden bg-[var(--background)]">
             {/* Toolbar - Simplified (No toggle) */}
-            <div className="h-12 bg-zinc-900 border-b border-zinc-700 flex items-center justify-between px-4 shrink-0">
-                <div className="flex items-center gap-2 text-zinc-300 text-sm font-medium">
+            <div className="h-12 bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-center justify-between px-4 shrink-0">
+                <div className="flex items-center gap-2 text-[var(--foreground)] text-sm font-medium">
                     <FileText size={16} />
                     <span>Resume.pdf</span>
                 </div>
-                <a href="/resume.pdf" download className="flex items-center gap-2 px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-white rounded text-sm transition-colors">
+                <a href="/resume.pdf" download className="flex items-center gap-2 px-3 py-1.5 bg-[var(--primary)] hover:opacity-80 text-[var(--primary-foreground)] rounded text-sm transition-opacity">
                     <FileText size={16} /> Download
                 </a>
             </div>
 
             {/* Content Area - PDF Only */}
-            <div className="flex-1 overflow-auto bg-zinc-800 p-8 flex justify-center">
+            <div className="flex-1 overflow-auto bg-[var(--background)] p-8 flex justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <div className="shadow-2xl">
                         <Document

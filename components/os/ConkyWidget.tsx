@@ -108,7 +108,7 @@ export function ConkyWidget() {
                 >
                     {/* System Info */}
                     <div className="mb-6">
-                        <h3 className="font-bold border-b border-primary/30 pb-1 mb-2 uppercase flex items-center gap-2 text-primary">
+                        <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Terminal size={12} /> System Status
                         </h3>
                         <div className="flex justify-between mb-1">
@@ -127,22 +127,22 @@ export function ConkyWidget() {
 
                     {/* Quote */}
                     <div className="mb-6">
-                        <h3 className="font-bold border-b border-primary/30 pb-1 mb-2 uppercase flex items-center gap-2 text-primary">
+                        <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Quote size={12} /> MOTD
                         </h3>
-                        <blockquote className="italic text-muted-foreground border-l-2 border-primary/50 pl-2">
+                        <blockquote className="italic text-[var(--muted-foreground)] border-l-2 border-[var(--primary)]/50 pl-2">
                             "A jack of all trades is a master of none, but oftentimes better than a master of one."
                         </blockquote>
                     </div>
 
                     {/* Logs */}
                     <div className="mb-6">
-                        <h3 className="font-bold border-b border-primary/30 pb-1 mb-2 uppercase flex items-center gap-2 text-primary">
+                        <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Terminal size={12} /> System Logs
                         </h3>
                         <div className="flex flex-col gap-1 opacity-80">
                             {logs.map((log, i) => (
-                                <span key={i} className={`truncate ${i === 0 ? "text-primary font-bold" : "text-muted-foreground"}`} style={{ opacity: 1 - i * 0.15 }}>
+                                <span key={i} className={`truncate ${i === 0 ? "text-[var(--primary)] font-bold" : "text-[var(--muted-foreground)]"}`} style={{ opacity: 1 - i * 0.15 }}>
                                     {log}
                                 </span>
                             ))}
@@ -151,9 +151,10 @@ export function ConkyWidget() {
 
                     {/* GitHub Stats */}
                     <div className="mb-6">
-                        <h3 className="font-bold border-b border-primary/30 pb-1 mb-2 uppercase flex items-center gap-2 text-primary">
+                        <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Github size={12} /> GitHub Telemetry
                         </h3>
+                        full Content ...
                         {stats ? (
                             <>
                                 <div className="flex justify-between mb-1">
@@ -176,14 +177,14 @@ export function ConkyWidget() {
 
                     {/* Languages */}
                     <div>
-                        <h3 className="font-bold border-b border-primary/30 pb-1 mb-2 uppercase flex items-center gap-2 text-primary">
+                        <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Code size={12} /> Active Stack
                         </h3>
-                        <div className="w-full bg-muted h-1.5 rounded-full mb-2 overflow-hidden flex">
+                        <div className="w-full bg-[var(--muted)] h-1.5 rounded-full mb-2 overflow-hidden flex">
                             {languages.map((lang) => (
                                 <div key={lang.name} className={`h-full ${lang.color}`} style={{ width: `${lang.percent}%` }} />
                             ))}
-                            {languages.length === 0 && <div className="h-full bg-primary/20 w-full animate-pulse" />}
+                            {languages.length === 0 && <div className="h-full bg-[var(--primary)]/20 w-full animate-pulse" />}
                         </div>
 
                         {/* Legend List */}
@@ -203,21 +204,21 @@ export function ConkyWidget() {
             </DialogTrigger>
             <DialogContent className="font-mono border-primary/20 bg-black/90 backdrop-blur-xl text-xs sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-white uppercase tracking-widest border-b border-primary/20 pb-2">
+                    <DialogTitle className="flex items-center gap-2 text-[var(--foreground)] uppercase tracking-widest border-b border-[var(--primary)]/20 pb-2">
                         <Terminal size={16} /> System Control Panel
                     </DialogTitle>
                 </DialogHeader>
 
                 <div className="grid grid-cols-2 gap-4 mt-4">
                     <div className="space-y-4">
-                        <div className="p-3 rounded bg-primary/5 border border-primary/10">
-                            <h4 className="font-bold text-primary mb-2 flex items-center gap-2"><Terminal size={12} /> System</h4>
-                            <div className="space-y-1 text-muted-foreground">
-                                <div className="flex justify-between"><span>OS:</span> <span className="text-foreground">SanjuOS v2.0</span></div>
-                                <div className="flex justify-between"><span>Kernel:</span> <span className="text-foreground">6.8.0-kali</span></div>
-                                <div className="flex justify-between"><span>Uptime:</span> <span className="text-foreground">{format(time, "HH:mm:ss")}</span></div>
-                                <div className="flex justify-between"><span>CPU:</span> <span className="text-foreground">3%</span></div>
-                                <div className="flex justify-between"><span>MEM:</span> <span className="text-foreground">1.2GB / 16GB</span></div>
+                        <div className="p-3 rounded bg-[var(--primary)]/5 border border-[var(--primary)]/10">
+                            <h4 className="font-bold text-[var(--primary)] mb-2 flex items-center gap-2"><Terminal size={12} /> System</h4>
+                            <div className="space-y-1 text-[var(--muted-foreground)]">
+                                <div className="flex justify-between"><span>OS:</span> <span className="text-[var(--foreground)]">SanjuOS v2.0</span></div>
+                                <div className="flex justify-between"><span>Kernel:</span> <span className="text-[var(--foreground)]">6.8.0-kali</span></div>
+                                <div className="flex justify-between"><span>Uptime:</span> <span className="text-[var(--foreground)]">{format(time, "HH:mm:ss")}</span></div>
+                                <div className="flex justify-between"><span>CPU:</span> <span className="text-[var(--foreground)]">3%</span></div>
+                                <div className="flex justify-between"><span>MEM:</span> <span className="text-[var(--foreground)]">1.2GB / 16GB</span></div>
                             </div>
                         </div>
 
@@ -251,9 +252,9 @@ export function ConkyWidget() {
                             </div>
                         </div>
 
-                        <div className="p-3 rounded bg-primary/5 border border-primary/10">
-                            <h4 className="font-bold text-primary mb-2 flex items-center gap-2"><Quote size={12} /> MOTD</h4>
-                            <p className="italic text-muted-foreground leading-tight">
+                        <div className="p-3 rounded bg-[var(--primary)]/5 border border-[var(--primary)]/10">
+                            <h4 className="font-bold text-[var(--primary)] mb-2 flex items-center gap-2"><Quote size={12} /> MOTD</h4>
+                            <p className="italic text-[var(--muted-foreground)] leading-tight">
                                 "A jack of all trades is a master of none, but oftentimes better than a master of one."
                             </p>
                         </div>

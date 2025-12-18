@@ -51,7 +51,7 @@ export function Desktop() {
         {
             id: "terminal",
             label: "Terminal",
-            icon: <Terminal className="text-primary" size={32} />,
+            icon: <Terminal size={32} className="text-[var(--primary)]" />,
             content: <TerminalApp />,
         },
         {

@@ -76,26 +76,26 @@ export function CreditsApp() {
     }
 
     return (
-        <div className="h-full bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-800 text-white font-sans flex flex-col items-center p-6 overflow-y-auto">
+        <div className="h-full bg-[var(--background)] text-[var(--foreground)] font-sans flex flex-col items-center p-6 overflow-y-auto">
 
             <div className="max-w-4xl w-full space-y-6">
                 {/* Header */}
                 <div className="text-center space-y-3">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl shadow-purple-500/30 mb-2">
-                        <ImageIcon className="text-white w-8 h-8" />
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--primary)] rounded-2xl shadow-2xl shadow-[var(--primary)]/30 mb-2">
+                        <ImageIcon className="text-[var(--primary-foreground)] w-8 h-8" />
                     </div>
-                    <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-extrabold text-[var(--foreground)]">
                         Wallpaper Gallery
                     </h1>
-                    <p className="text-zinc-400 max-w-xl mx-auto text-sm">
-                        All wallpapers generated using <span className="text-white font-semibold">Gemini Pro</span> by Google DeepMind
+                    <p className="text-[var(--muted-foreground)] max-w-xl mx-auto text-sm">
+                        All wallpapers generated using <span className="text-[var(--foreground)] font-semibold">Gemini Pro</span> by Google DeepMind
                     </p>
                 </div>
 
                 {/* Wallpapers Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                     {wallpapers.map((wp) => (
-                        <div key={`${wp.name}-${wp.type}`} className="group relative bg-zinc-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl overflow-hidden border border-zinc-700/50 hover:border-zinc-600 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10">
+                        <div key={`${wp.name}-${wp.type}`} className="group relative bg-[var(--os-surface)] backdrop-blur-sm rounded-xl sm:rounded-2xl overflow-hidden border border-[var(--os-border)] hover:border-[var(--primary)]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[var(--primary)]/10">
                             {/* Image */}
                             <div
                                 className="relative h-32 sm:h-40 overflow-hidden cursor-pointer"
@@ -114,30 +114,31 @@ export function CreditsApp() {
                                     </button>
                                 </div>
                             </div>
+                            full Content ...
 
                             {/* Content */}
                             <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <h3 className="text-base sm:text-lg font-bold text-white">{wp.name}</h3>
-                                        <span className="text-xs text-zinc-500">{wp.type}</span>
+                                        <h3 className="text-base sm:text-lg font-bold text-[var(--foreground)]">{wp.name}</h3>
+                                        <span className="text-xs text-[var(--muted-foreground)]">{wp.type}</span>
                                     </div>
                                     <button
                                         onClick={() => handleDownload(wp.preview, `${wp.name}-${wp.type}`)}
-                                        className="p-2 bg-zinc-700/50 hover:bg-zinc-600 rounded-lg transition-colors group/btn"
+                                        className="p-2 bg-[var(--os-surface-hover)] hover:opacity-80 rounded-lg transition-opacity group/btn"
                                         title="Download wallpaper"
                                     >
-                                        <Download className="text-zinc-300 group-hover/btn:text-white" size={16} />
+                                        <Download className="text-[var(--foreground)] opacity-70 group-hover/btn:opacity-100" size={16} />
                                     </button>
                                 </div>
 
                                 {/* Prompt */}
-                                <div className="bg-black/40 rounded-lg p-2 sm:p-3 border border-zinc-800">
+                                <div className="bg-black/20 rounded-lg p-2 sm:p-3 border border-[var(--os-border)]">
                                     <div className="flex items-center gap-2 mb-1.5">
-                                        <Terminal size={12} className="text-zinc-500" />
-                                        <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Prompt</span>
+                                        <Terminal size={12} className="text-[var(--muted-foreground)]" />
+                                        <span className="text-[9px] sm:text-[10px] font-mono text-[var(--muted-foreground)] uppercase tracking-wider">Prompt</span>
                                     </div>
-                                    <p className="font-mono text-[9px] sm:text-[10px] leading-relaxed text-white line-clamp-3">
+                                    <p className="font-mono text-[9px] sm:text-[10px] leading-relaxed text-[var(--foreground)] line-clamp-3 opacity-80">
                                         {wp.prompt}
                                     </p>
                                 </div>
@@ -147,7 +148,7 @@ export function CreditsApp() {
                 </div>
 
                 {/* Footer */}
-                <div className="text-center text-xs text-zinc-600 pt-4 border-t border-zinc-800/50">
+                <div className="text-center text-xs text-[var(--muted-foreground)] pt-4 border-t border-[var(--os-border)]">
                     <p>Portfolio OS v2.0 • 2025 • Powered by Gemini</p>
                 </div>
             </div>

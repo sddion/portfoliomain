@@ -1,24 +1,16 @@
-[
-  {
+{
     "id": "getting-started-esp32-flasher",
     "title": "How to Use the ESP32 Web Flasher",
     "description": "Learn how to flash firmware to your ESP32 or ESP8266 directly from your browser using the built-in flasher tool.",
     "author": "SanjuOS Dev",
     "date": "2025-12-18",
     "category": "Tutorial",
-    "tags": ["ESP32", "Web Serial", "Firmware", "IoT"],
+    "tags": [
+        "ESP32",
+        "Web Serial",
+        "Firmware",
+        "IoT"
+    ],
     "featuredImage": "/blog/esp32-hero.png",
     "content": "# How to Use the ESP32 Web Flasher\n\nWelcome to the official guide for using the **ESP32 Web Flasher** on SanjuOS. This tool leverages the **Web Serial API** to allow you to communicate with your microcontrollers directly from your browser—no local drivers or Python environments required!\n\n## Prerequisites\n\n- A device with **Chrome** or **Edge** browser (Web Serial support is mandatory).\n- A high-quality USB Data cable.\n- Your ESP32 or ESP8266 development board.\n- Firmware files in `.bin` format.\n\n## Step-by-Step Guide\n\n### 1. Connect your Device\nPlug your ESP32 into your computer. Open the **ESP Flasher** app from the SanjuOS desktop. \n\n### 2. Configure Connection\nSelect your preferred **Baud Rate** (115200 is standard and recommended for most boards). Click the **Connect ESP32** button. A browser popup will appear—select the serial port corresponding to your device (usually labeled as CP210x or CH340).\n\n### 3. Upload Firmware\nOnce connected, you'll see a 'Connected' status. Click on the upload area to select one or more `.bin` files. You can specify the flash address for each file (e.g., `0x1000` for common applications).\n\n### 4. Flash!\nClick **Flash Firmware**. You can monitor the progress in the real-time console at the bottom. Once finished, the tool will automatically perform a hard reset to boot your new firmware.\n\n![Interface Preview](/blog/flasher-interface.png)\n\n## Conclusion\n\nFlashing IoT devices has never been easier. Stay tuned for more tools coming to SanjuOS!"
-  },
-  {
-    "id": "esp32-troubleshooting-guide",
-    "title": "ESP32 Flasher Troubleshooting Guide",
-    "description": "Encountering connection issues or timing errors? This guide covers the most common flashing problems and their solutions.",
-    "author": "SanjuOS Dev",
-    "date": "2025-12-18",
-    "category": "Troubleshooting",
-    "tags": ["ESP32", "Hardware", "Serial", "Fix"],
-    "featuredImage": "/blog/bootloader.png",
-    "content": "# ESP32 Flasher Troubleshooting\n\nSometimes, hardware communication can be tricky. If you're having trouble connecting to your ESP32, follow these common troubleshooting steps.\n\n## 1. Entering Bootloader Mode\n\nIf the tool fails to connect with a 'Failed to connect' error, you likely need to put your ESP32 into **Bootloader Mode** manually:\n\n1. Hold down the **BOOT** button on your board.\n2. Quickly press and release the **EN** (or **RST**) button.\n3. Release the **BOOT** button.\n4. Try clicking **Connect** again.\n\n![Bootloader Instructions](/blog/bootloader.png)\n\n## 2. Browser Compatibility\n\nEnsure you are using a **Chromium-based browser**. Firefox and Safari currently do not support the Web Serial API. Look for the 'Web Serial API not supported' warning in the app header.\n\n## 3. Cable & Port Issues\n\n- **Power-only cables**: Many cheap micro-USB cables only provide power. Ensure you are using a **Data cable**.\n- **Driver Issues**: On Windows, you might need drivers for the USB-to-Serial chip (CP210x or CH340).\n\n## 4. Baud Rate Mismatch\n\nIf you see 'garbage' characters in the console, your baud rate is likely incorrect. Try switching between **115200** and **9600** to see if communication stabilizes."
-  }
-]
+}

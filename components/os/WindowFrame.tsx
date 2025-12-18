@@ -47,35 +47,35 @@ export function WindowFrame({
             onMouseDown={() => focusWindow(id)}
             style={{ zIndex }}
             className={cn(
-                "absolute bg-zinc-900 border border-zinc-700 shadow-xl overflow-hidden flex flex-col",
+                "absolute bg-[var(--os-surface)] border border-[var(--os-border)] shadow-xl overflow-hidden flex flex-col backdrop-blur-md",
                 isMaximized ? "top-0 left-0 rounded-none" : "rounded-md"
             )}
         >
             {/* Title Bar */}
             <div
-                className="h-9 bg-zinc-800 border-b border-zinc-700 flex items-center justify-between px-3 select-none cursor-default"
+                className="h-9 bg-[var(--os-surface-hover)] border-b border-[var(--os-border)] flex items-center justify-between px-3 select-none cursor-default"
                 onDoubleClick={() => maximizeWindow(id)}
             >
                 <div className="flex items-center gap-2">
                     {icon}
-                    <span className="text-zinc-300 text-sm font-medium">{title}</span>
+                    <span className="text-[var(--foreground)] text-sm font-medium">{title}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={(e) => { e.stopPropagation(); minimizeWindow(id); }}
-                        className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white transition-colors"
+                        className="p-1 hover:bg-white/10 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                     >
                         <Minus size={14} />
                     </button>
                     <button
                         onClick={(e) => { e.stopPropagation(); maximizeWindow(id); }}
-                        className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white transition-colors"
+                        className="p-1 hover:bg-white/10 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                     >
                         {isMaximized ? <Maximize2 size={12} /> : <Square size={12} />}
                     </button>
                     <button
                         onClick={(e) => { e.stopPropagation(); closeWindow(id); }}
-                        className="p-1 hover:bg-red-900/50 rounded text-zinc-400 hover:text-red-400 transition-colors"
+                        className="p-1 hover:bg-[var(--destructive)]/50 rounded text-[var(--muted-foreground)] hover:text-[var(--destructive-foreground)] transition-colors"
                     >
                         <X size={14} />
                     </button>
@@ -83,7 +83,7 @@ export function WindowFrame({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-auto bg-zinc-950/90 text-zinc-200 relative">
+            <div className="flex-1 overflow-auto bg-black/40 text-[var(--foreground)] relative">
                 {children}
             </div>
         </motion.div>

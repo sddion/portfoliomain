@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { Book, Calendar, User, Tag, ArrowLeft, Search } from "lucide-react"
-import blogPosts from "@/data/blog-posts.json"
+import { blogPosts } from "@/data/blog"
 
 interface BlogPost {
     id: string
@@ -20,6 +20,15 @@ export function BlogApp() {
     const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+    const [isMobile, setIsMobile] = useState(false)
+
+    // Detect Mobile
+    React.useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768)
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
 
     const posts: BlogPost[] = blogPosts as BlogPost[]
 
@@ -34,191 +43,266 @@ export function BlogApp() {
         return matchesSearch && matchesCategory
     })
 
-    if (selectedPost) {
-        return (
-            <div className="h-full bg-zinc-900 text-white overflow-auto">
-                {/* Header */}
-                <div className="sticky top-0 bg-zinc-900/95 backdrop-blur-lg border-b border-zinc-800 z-10">
-                    <div className="max-w-4xl mx-auto px-4 py-4">
-                        <button
-                            onClick={() => setSelectedPost(null)}
-                            className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
-                        >
-                            <ArrowLeft size={20} />
-                            Back to Blog
-                        </button>
-                    </div>
-                </div>
-
-                {/* Post Content */}
-                <article className="max-w-4xl mx-auto px-4 py-8">
-                    {/* Featured Image */}
-                    {selectedPost.featuredImage && (
-                        <div className="h-64 mb-8 rounded-2xl overflow-hidden bg-zinc-800">
-                            <div
-                                className="h-full w-full bg-cover bg-center"
-                                style={{ backgroundImage: `url(${selectedPost.featuredImage})` }}
-                            />
-                        </div>
-                    )}
-
-                    {/* Post Header */}
-                    <header className="mb-8">
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            <span className="px-3 py-1 bg-blue-600 rounded-full text-xs">{selectedPost.category}</span>
-                            {selectedPost.tags.map(tag => (
-                                <span key={tag} className="px-3 py-1 bg-zinc-800 rounded-full text-xs">{tag}</span>
-                            ))}
-                        </div>
-                        <h1 className="text-3xl sm:text-4xl font-bold mb-4">{selectedPost.title}</h1>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400">
-                            <span className="flex items-center gap-2">
-                                <User size={16} />
-                                {selectedPost.author}
-                            </span>
-                            <span className="flex items-center gap-2">
-                                <Calendar size={16} />
-                                {new Date(selectedPost.date).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                })}
-                            </span>
-                        </div>
-                    </header>
-
-                    {/* Post Body - Markdown rendered as HTML */}
+    const renderPostContent = (post: BlogPost) => (
+        <article className={`max-w-4xl mx-auto px-4 py-8 ${isMobile ? 'pb-24' : ''}`}>
+            {/* Featured Image */}
+            {post.featuredImage && (
+                <div className={`${isMobile ? 'h-48' : 'h-64'} mb-8 rounded-2xl overflow-hidden bg-[var(--os-surface-hover)] shadow-xl`}>
                     <div
-                        className="prose prose-invert prose-lg max-w-none
-              prose-headings:text-white prose-headings:font-bold
-              prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
-              prose-p:text-zinc-300 prose-p:leading-relaxed
-              prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300
-              prose-strong:text-white prose-strong:font-bold
-              prose-code:text-orange-400 prose-code:bg-zinc-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-              prose-pre:bg-zinc-800 prose-pre:borderborder-zinc-700
-              prose-blockquote:border-l-blue-500 prose-blockquote:text-zinc-400
-              prose-img:rounded-xl prose-img:shadow-2xl
-              prose-ul:text-zinc-300 prose-ol:text-zinc-300
-              prose-li:text-zinc-300
-              prose-table:text-zinc-300"
-                        dangerouslySetInnerHTML={{ __html: renderMarkdown(selectedPost.content) }}
+                        className="h-full w-full bg-contain bg-center bg-no-repeat bg-black/40"
+                        style={{ backgroundImage: `url(${post.featuredImage})` }}
                     />
-                </article>
-            </div>
-        )
-    }
-
-    return (
-        <div className="h-full bg-gradient-to-br from-zinc-900 via-zinc-900 to-blue-900/20 text-white overflow-auto">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 sm:p-8">
-                <div className="max-w-6xl mx-auto">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-xl flex items-center justify-center">
-                            <Book className="text-white" size={32} />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold">SanjuOS Blog</h1>
-                            <p className="text-sm sm:text-base text-blue-100">Tutorials, guides, and tech insights</p>
-                        </div>
-                    </div>
-
-                    {/* Search */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Search posts..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white/10 backdrop-blur border border-white/20 rounded-lg pl-10 pr-4 py-2 text-white placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-white/30"
-                        />
-                    </div>
                 </div>
-            </div>
+            )}
 
-            <div className="max-w-6xl mx-auto px-4 py-8">
-                {/* Categories */}
-                <div className="flex flex-wrap gap-2 mb-8">
-                    <button
-                        onClick={() => setSelectedCategory(null)}
-                        className={`px-4 py-2 rounded-lg transition-colors ${!selectedCategory
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-                            }`}
-                    >
-                        All Posts
-                    </button>
-                    {categories.map(category => (
-                        <button
-                            key={category}
-                            onClick={() => setSelectedCategory(category)}
-                            className={`px-4 py-2 rounded-lg transition-colors ${selectedCategory === category
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-                                }`}
-                        >
-                            {category}
-                        </button>
+            {/* Post Header */}
+            <header className="mb-8 border-b border-[var(--os-border)] pb-8">
+                <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-full text-[10px] font-bold uppercase tracking-wider">{post.category}</span>
+                    {post.tags.map(tag => (
+                        <span key={tag} className="px-3 py-1 bg-[var(--os-surface-hover)] border border-[var(--os-border)] rounded-full text-[10px] text-[var(--muted-foreground)] font-medium">{tag}</span>
                     ))}
                 </div>
+                <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-black text-[var(--foreground)] mb-4 leading-tight`}>{post.title}</h1>
+                <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--muted-foreground)] font-medium">
+                    <span className="flex items-center gap-2">
+                        <User size={14} className="text-[var(--primary)]" />
+                        {post.author}
+                    </span>
+                    <span className="flex items-center gap-2">
+                        <Calendar size={14} className="text-[var(--primary)]" />
+                        {new Date(post.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
+                    </span>
+                </div>
+            </header>
 
-                {/* Posts Grid */}
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredPosts.length === 0 ? (
-                        <div className="col-span-full text-center py-12">
-                            <p className="text-zinc-500">No posts found matching your search</p>
+            {/* Post Body */}
+            <div
+                className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none
+                    prose-headings:text-[var(--foreground)] prose-headings:font-black tracking-tight
+                    prose-p:text-[var(--foreground)]/80 prose-p:leading-relaxed
+                    prose-a:text-[var(--primary)] prose-a:no-underline font-bold hover:prose-a:opacity-80
+                    prose-code:text-orange-400 prose-code:bg-[var(--os-surface-hover)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+                    prose-pre:bg-black/50 prose-pre:border prose-pre:border-[var(--os-border)] prose-pre:rounded-xl
+                    prose-blockquote:border-l-[var(--primary)] prose-blockquote:bg-[var(--primary)]/5 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:text-[var(--muted-foreground)]
+                    prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto
+                    prose-table:text-sm prose-table:border prose-table:border-[var(--os-border)]`}
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
+            />
+        </article>
+    )
+
+    const renderDesktop = () => (
+        <div className="h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] font-sans overflow-hidden">
+            {selectedPost ? (
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    <div className="h-12 border-b border-[var(--os-border)] flex items-center px-4 bg-[var(--os-surface)] backdrop-blur-md shrink-0">
+                        <button
+                            onClick={() => setSelectedPost(null)}
+                            className="flex items-center gap-2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors text-sm font-bold"
+                        >
+                            <ArrowLeft size={16} />
+                            BACK TO ARCHIVE
+                        </button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[var(--primary)]/10 via-transparent to-transparent">
+                        {renderPostContent(selectedPost)}
+                    </div>
+                </div>
+            ) : (
+                <div className="flex-1 flex overflow-hidden">
+                    {/* Sidebar Navigation */}
+                    <div className="w-64 border-r border-[var(--os-border)] bg-[var(--os-surface)] flex flex-col pt-6 shrink-0">
+                        <div className="px-6 mb-8">
+                            <h2 className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-[0.2em] mb-4">Repository</h2>
+                            <div className="space-y-1">
+                                <button
+                                    onClick={() => setSelectedCategory(null)}
+                                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-bold transition-all ${!selectedCategory ? 'bg-[var(--primary)] shadow-[0_0_15px_rgba(37,99,235,0.3)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)] hover:bg-white/5'}`}
+                                >
+                                    <Book size={16} />
+                                    ALL ASSETS
+                                </button>
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setSelectedCategory(cat)}
+                                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-bold transition-all ${selectedCategory === cat ? 'bg-[var(--primary)] shadow-[0_0_15px_rgba(37,99,235,0.3)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)] hover:bg-white/5'}`}
+                                    >
+                                        <Tag size={16} />
+                                        {cat.toUpperCase()}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    ) : (
-                        filteredPosts.map(post => (
+
+                        <div className="px-6">
+                            <h2 className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-[0.2em] mb-4">Filter</h2>
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" size={14} />
+                                <input
+                                    type="text"
+                                    placeholder="Search entries..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-black/20 border border-[var(--os-border)] rounded-lg pl-9 pr-4 py-2 text-xs text-[var(--foreground)] placeholder-[var(--muted-foreground)]/50 focus:outline-none focus:border-[var(--primary)] transition-colors"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Post Grid */}
+                    <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[var(--accent)]/10 via-transparent to-transparent">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredPosts.map(post => (
+                                <article
+                                    key={post.id}
+                                    onClick={() => setSelectedPost(post)}
+                                    className="group bg-[var(--os-surface)] border border-[var(--os-border)] rounded-2xl overflow-hidden hover:border-[var(--primary)]/50 hover:bg-[var(--os-surface-hover)] transition-all cursor-pointer flex flex-col h-full"
+                                >
+                                    <div className="h-40 bg-black/20 overflow-hidden shrink-0">
+                                        <div
+                                            className="h-full w-full bg-contain bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
+                                            style={{ backgroundImage: `url(${post.featuredImage})` }}
+                                        />
+                                    </div>
+                                    <div className="p-6 flex flex-col flex-1">
+                                        <span className="text-[10px] font-black text-[var(--primary)] uppercase tracking-widest mb-2">{post.category}</span>
+                                        <h3 className="text-lg font-bold text-[var(--foreground)] mb-2 leading-tight group-hover:text-[var(--primary)] transition-colors line-clamp-2">
+                                            {post.title}
+                                        </h3>
+                                        <p className="text-sm text-[var(--muted-foreground)] line-clamp-3 mb-4 flex-1">{post.description}</p>
+                                        <div className="flex items-center justify-between text-[10px] font-bold text-[var(--muted-foreground)] pt-4 border-t border-[var(--os-border)]">
+                                            <span className="flex items-center gap-1.5 uppercase">
+                                                <Calendar size={12} className="text-[var(--muted-foreground)]" />
+                                                {new Date(post.date).toLocaleDateString()}
+                                            </span>
+                                            <span className="text-[var(--muted-foreground)]">READ MORE →</span>
+                                        </div>
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+
+    const renderMobile = () => (
+        <div className="h-full bg-[var(--background)] text-[var(--foreground)] font-sans flex flex-col">
+            {selectedPost ? (
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    {/* Floating Back Button */}
+                    <button
+                        onClick={() => setSelectedPost(null)}
+                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-full font-black text-sm shadow-[0_8px_30px_rgba(37,99,235,0.4)] border border-[var(--primary)]/50 flex items-center gap-2 active:scale-95 transition-transform"
+                    >
+                        <ArrowLeft size={18} />
+                        BACK TO FEED
+                    </button>
+                    <div className="flex-1 overflow-y-auto bg-black/20">
+                        {renderPostContent(selectedPost)}
+                    </div>
+                </div>
+            ) : (
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    {/* Android Style Header */}
+                    <div className="px-6 pt-12 pb-6 bg-gradient-to-b from-[var(--primary)]/20 to-transparent">
+                        <h1 className="text-4xl font-black tracking-tighter mb-2">Sanju<span className="text-[var(--primary)]">Blog</span></h1>
+                        <p className="text-[var(--muted-foreground)] font-medium mb-6">Explore the latest tech insights</p>
+
+                        <div className="relative mb-6">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search tutorials..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-[var(--os-surface)] border border-[var(--os-border)] rounded-2xl pl-12 pr-4 py-4 text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all"
+                            />
+                        </div>
+
+                        {/* Category Pills */}
+                        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                            <button
+                                onClick={() => setSelectedCategory(null)}
+                                className={`shrink-0 px-5 py-2 rounded-full text-xs font-bold transition-all ${!selectedCategory ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--os-surface)] text-[var(--muted-foreground)]'}`}
+                            >
+                                ALL
+                            </button>
+                            {categories.map(cat => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setSelectedCategory(cat)}
+                                    className={`shrink-0 px-5 py-2 rounded-full text-xs font-bold transition-all ${selectedCategory === cat ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--os-surface)] text-[var(--muted-foreground)]'}`}
+                                >
+                                    {cat.toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Card List */}
+                    <div className="flex-1 overflow-y-auto px-6 pb-24 space-y-6">
+                        {filteredPosts.map(post => (
                             <article
                                 key={post.id}
                                 onClick={() => setSelectedPost(post)}
-                                className="bg-zinc-800/50 backdrop-blur rounded-xl overflow-hidden border border-zinc-700 hover:border-blue-500 transition-all cursor-pointer group"
+                                className="bg-[var(--os-surface)] border border-[var(--os-border)] rounded-3xl overflow-hidden active:scale-[0.98] transition-all"
                             >
-                                {/* Featured Image */}
-                                <div className="h-48 bg-zinc-700 overflow-hidden">
+                                <div className="h-48 bg-black/20">
                                     <div
-                                        className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                                        className="h-full w-full bg-contain bg-center bg-no-repeat opacity-80"
                                         style={{ backgroundImage: `url(${post.featuredImage})` }}
                                     />
                                 </div>
-
-                                {/* Content */}
-                                <div className="p-4">
-                                    {/* Category & Tags */}
-                                    <div className="flex flex-wrap gap-2 mb-3">
-                                        <span className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs">
-                                            {post.category}
-                                        </span>
+                                <div className="p-6">
+                                    <div className="flex items-center justify-between mb-3 text-[10px] font-black tracking-widest uppercase">
+                                        <span className="text-[var(--primary)]">{post.category}</span>
+                                        <span className="text-[var(--muted-foreground)]">{new Date(post.date).toLocaleDateString()}</span>
                                     </div>
-
-                                    {/* Title */}
-                                    <h2 className="text-lg font-bold mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
-                                        {post.title}
-                                    </h2>
-
-                                    {/* Description */}
-                                    <p className="text-sm text-zinc-400 mb-4 line-clamp-2">{post.description}</p>
-
-                                    {/* Metadata */}
-                                    <div className="flex items-center gap-4 text-xs text-zinc-500">
-                                        <span className="flex items-center gap-1">
-                                            <Calendar size={12} />
-                                            {new Date(post.date).toLocaleDateString()}
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            <Tag size={12} />
-                                            {post.tags.length} tags
-                                        </span>
-                                    </div>
+                                    <h2 className="text-xl font-bold mb-3 leading-tight text-[var(--foreground)]">{post.title}</h2>
+                                    <p className="text-[var(--muted-foreground)] text-xs line-clamp-2 leading-relaxed">{post.description}</p>
                                 </div>
                             </article>
-                        ))
-                    )}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
+        </div>
+    )
+
+    return (
+        <div className="h-full w-full overflow-hidden">
+            {isMobile ? renderMobile() : renderDesktop()}
+
+            <style jsx>{`
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: var(--os-border);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: var(--primary);
+                }
+            `}</style>
         </div>
     )
 }

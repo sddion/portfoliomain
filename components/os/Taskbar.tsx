@@ -50,20 +50,20 @@ export function Taskbar() {
     }, [])
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 h-10 bg-zinc-900/95 border-t border-zinc-700 flex items-center justify-between px-2 z-[9999] backdrop-blur-sm">
+        <div className="fixed bottom-0 left-0 right-0 h-10 bg-[var(--os-surface)] border-t border-[var(--os-border)] flex items-center justify-between px-2 z-[9999] backdrop-blur-sm">
             {/* Start Button / Menu */}
             <div className="relative flex items-center gap-2">
                 <StartMenu isOpen={startOpen} onClose={() => setStartOpen(false)} />
                 <button
                     onClick={() => setStartOpen(!startOpen)}
-                    className={`flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-800 rounded font-bold transition-colors ${startOpen ? 'bg-zinc-800 text-green-400' : 'text-green-500'}`}
+                    className={`flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--os-surface-hover)] rounded font-bold transition-colors ${startOpen ? 'bg-[var(--os-surface-hover)] text-[var(--primary)]' : 'text-[var(--primary)]'}`}
                 >
-                    <div className="w-4 h-4 rounded-sm bg-green-500 relative flex items-center justify-center">
-                        <span className="text-black text-[10px] font-bold">_</span>
+                    <div className="w-4 h-4 rounded-sm bg-[var(--primary)] relative flex items-center justify-center">
+                        <span className="text-[var(--primary-foreground)] text-[10px] font-bold">_</span>
                     </div>
                     <span>Start</span>
                 </button>
-                <div className="w-[1px] h-6 bg-zinc-700 mx-1" />
+                <div className="w-[1px] h-6 bg-[var(--os-border)] mx-1" />
 
                 {/* Open Windows */}
                 <div className="flex items-center gap-1">
@@ -73,8 +73,8 @@ export function Taskbar() {
                             onClick={() => win.isMinimized ? focusWindow(win.id) : minimizeWindow(win.id)}
                             className={`
                 px-3 py-1 text-xs truncate max-w-[150px] rounded flex items-center gap-2 transition-all
-                ${!win.isMinimized && 'bg-zinc-800 border-b-2 border-green-500 text-white'}
-                ${win.isMinimized && 'hover:bg-zinc-800/50 text-zinc-400'}
+                ${!win.isMinimized && 'bg-[var(--os-surface-hover)] border-b-2 border-[var(--primary)] text-[var(--foreground)]'}
+                ${win.isMinimized && 'hover:bg-[var(--os-surface-hover)] text-[var(--muted-foreground)]'}
               `}
                         >
                             {win.icon && <span className="opacity-70">{win.icon}</span>}
@@ -85,17 +85,17 @@ export function Taskbar() {
             </div>
 
             {/* System Tray */}
-            <div className="flex items-center gap-4 px-2 text-zinc-400 text-xs font-mono">
+            <div className="flex items-center gap-4 px-2 text-[var(--muted-foreground)] text-xs font-mono">
                 <div className="flex items-center gap-3">
                     {/* Wifi */}
                     <div className="relative">
                         <WiFiMenu isOpen={wifiOpen} onClose={() => setWifiOpen(false)} />
                         <button
                             onClick={() => setWifiOpen(!wifiOpen)}
-                            className={`flex items-center gap-1 hover:text-white transition-colors ${wifiOpen ? 'text-green-400' : ''}`}
+                            className={`flex items-center gap-1 hover:text-[var(--foreground)] transition-colors ${wifiOpen ? 'text-[var(--primary)]' : ''}`}
                             title={online ? "Connected" : "Offline"}
                         >
-                            {online ? <Wifi size={14} /> : <WifiOff size={14} className="text-red-500" />}
+                            {online ? <Wifi size={14} /> : <WifiOff size={14} className="text-[var(--destructive)]" />}
                         </button>
                     </div>
 
@@ -103,23 +103,23 @@ export function Taskbar() {
 
                     {/* Battery */}
                     <div className="flex items-center gap-1" title={`${batteryLevel}% ${isCharging ? '(Charging)' : ''}`}>
-                        {isCharging ? <BatteryCharging size={14} className="text-green-400" /> : <Battery size={14} />}
+                        {isCharging ? <BatteryCharging size={14} className="text-[var(--primary)]" /> : <Battery size={14} />}
                         <span className="hidden sm:inline">{batteryLevel}%</span>
                     </div>
                 </div>
 
-                <div className="w-[1px] h-6 bg-zinc-700 mx-1" />
+                <div className="w-[1px] h-6 bg-[var(--os-border)] mx-1" />
 
                 {/* Snowfall Toggle */}
                 <button
                     onClick={toggleSnowfall}
-                    className={`hover:text-white transition-colors p-1 rounded hover:bg-white/5 ${showSnowfall ? 'text-blue-300' : ''}`}
+                    className={`hover:text-[var(--foreground)] transition-colors p-1 rounded hover:bg-white/5 ${showSnowfall ? 'text-blue-300' : ''}`}
                     title="Toggle Snow"
                 >
                     <CloudSnow size={14} />
                 </button>
 
-                <div className="w-[1px] h-6 bg-zinc-700 mx-1" />
+                <div className="w-[1px] h-6 bg-[var(--os-border)] mx-1" />
 
                 {/* Clock */}
                 <span>{format(time, "HH:mm")}</span>
@@ -127,7 +127,7 @@ export function Taskbar() {
                 {/* Shutdown / Logout */}
                 <button
                     onClick={logout}
-                    className="hover:text-red-400 transition-colors p-1 rounded hover:bg-white/5"
+                    className="hover:text-[var(--destructive)] transition-colors p-1 rounded hover:bg-white/5"
                     title="Shutdown (Logout)"
                 >
                     <Power size={14} />

@@ -185,38 +185,38 @@ export function ESP32FlasherApp() {
     }
 
     return (
-        <div className="h-full bg-[#0D0D0D] text-white font-mono overflow-hidden flex flex-col items-center justify-center p-2 sm:p-4 select-none">
+        <div className="h-full bg-[var(--background)] text-[var(--foreground)] font-mono overflow-auto flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 select-none">
             {/* Main Cyber Container */}
-            <div className="relative w-full max-w-2xl bg-[#151515] border-2 border-[#FF6B00]/40 rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,107,0,0.1)] flex flex-col">
+            <div className="relative w-full max-w-2xl bg-[var(--os-surface)] border-2 border-[var(--primary)]/40 rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,107,0,0.1)] flex flex-col my-4 sm:my-0">
 
                 {/* Decorative Cyber Corners */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#FF6B00] rounded-tl-sm z-10" />
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#FF6B00] rounded-tr-sm z-10" />
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#FF6B00] rounded-bl-sm z-10" />
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#FF6B00] rounded-br-sm z-10" />
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[var(--primary)] rounded-tl-sm z-10" />
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[var(--primary)] rounded-tr-sm z-10" />
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[var(--primary)] rounded-bl-sm z-10" />
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[var(--primary)] rounded-br-sm z-10" />
 
                 {/* Header Section */}
                 <div className="relative pt-6 pb-4 px-8 flex flex-col items-center">
                     <div className="flex items-center gap-6 w-full justify-center">
                         {/* Left Wings */}
-                        <div className="hidden sm:flex flex-col gap-1 items-end opacity-80">
-                            <div className="w-12 h-0.5 bg-[#00A3FF]" />
-                            <div className="w-8 h-0.5 bg-[#00A3FF]" />
-                            <div className="w-4 h-0.5 bg-[#00A3FF]" />
+                        <div className="hidden md:flex flex-col gap-1 items-end opacity-80">
+                            <div className="w-12 h-0.5 bg-[var(--accent)]" />
+                            <div className="w-8 h-0.5 bg-[var(--accent)]" />
+                            <div className="w-4 h-0.5 bg-[var(--accent)]" />
                         </div>
 
-                        <h1 className="text-xl sm:text-2xl font-black tracking-[0.2em] text-[#E0E0E0] uppercase">
-                            ESP32 <span className="text-[#FF6B00]">Flasher</span> Tool
+                        <h1 className="text-xl sm:text-2xl font-black tracking-[0.2em] text-[var(--foreground)] uppercase">
+                            ESP32 <span className="text-[var(--primary)]">Flasher</span> Tool
                         </h1>
 
                         {/* Right Wings */}
-                        <div className="hidden sm:flex flex-col gap-1 items-start opacity-80">
-                            <div className="w-12 h-0.5 bg-[#00A3FF]" />
-                            <div className="w-8 h-0.5 bg-[#00A3FF]" />
-                            <div className="w-4 h-0.5 bg-[#00A3FF]" />
+                        <div className="hidden md:flex flex-col gap-1 items-start opacity-80">
+                            <div className="w-12 h-0.5 bg-[var(--accent)]" />
+                            <div className="w-8 h-0.5 bg-[var(--accent)]" />
+                            <div className="w-4 h-0.5 bg-[var(--accent)]" />
                         </div>
                     </div>
-                    <div className="mt-2 text-[10px] text-[#00A3FF]/60 tracking-widest uppercase">System Interface v2.0.4</div>
+                    <div className="mt-2 text-[10px] text-[var(--accent)]/60 tracking-widest uppercase">System Interface v2.0.4</div>
                 </div>
 
                 {/* Browser Support Warning */}
@@ -231,7 +231,7 @@ export function ESP32FlasherApp() {
 
                     {/* File Drop/Selection Area */}
                     <div
-                        className={`relative border-2 ${files.length > 0 ? 'border-[#FF6B00]/60' : 'border-[#FF6B00]/30'} border-dashed rounded-md bg-[#111111] p-8 flex flex-col items-center transition-all duration-300 group hover:border-[#FF6B00]`}
+                        className={`relative border-2 ${files.length > 0 ? 'border-[var(--primary)]/60' : 'border-[var(--primary)]/30'} border-dashed rounded-md bg-black/20 p-8 flex flex-col items-center transition-all duration-300 group hover:border-[var(--primary)]`}
                         onClick={() => !flashing && fileInputRef.current?.click()}
                     >
                         <input
@@ -242,14 +242,14 @@ export function ESP32FlasherApp() {
                             onChange={handleFileSelect}
                             className="hidden"
                         />
-                        <div className="w-16 h-16 mb-4 flex items-center justify-center text-[#FF6B00] group-hover:scale-110 transition-transform">
+                        <div className="w-16 h-16 mb-4 flex items-center justify-center text-[var(--primary)] group-hover:scale-110 transition-transform">
                             <Upload size={48} strokeWidth={1.5} />
                         </div>
-                        <p className="text-[#FF6B00] text-sm font-bold tracking-widest uppercase mb-4">
+                        <p className="text-[var(--primary)] text-sm font-bold tracking-widest uppercase mb-4">
                             {files.length > 0 ? `${files.length} Files Selected` : 'Drop Firmware Binary Here'}
                         </p>
                         <button
-                            className="px-6 py-2 border border-[#00A3FF] text-[#00A3FF] text-xs font-bold uppercase tracking-widest hover:bg-[#00A3FF]/10 transition-colors"
+                            className="px-6 py-2 border border-[var(--accent)] text-[var(--accent)] text-xs font-bold uppercase tracking-widest hover:bg-[var(--accent)]/10 transition-colors"
                         >
                             Browse Files
                         </button>
@@ -257,44 +257,47 @@ export function ESP32FlasherApp() {
 
                     {/* Progress and Connection Section */}
                     <div className="space-y-4">
-                        <div className="flex items-end justify-between px-1">
-                            <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#00A3FF]">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-4 px-1">
+                            <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--accent)]">
                                 <div className="flex items-center gap-2">
                                     {progress === 100 && !flashing && <CheckCircle size={10} className="text-green-500 animate-pulse" />}
                                     {flashing ? `Flashing: ${progress}%` : progress === 100 ? 'Flash Success' : error ? 'System Error' : 'System Ready'}
                                 </div>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                                 {!connected && (
-                                    <select
-                                        value={baudRate}
-                                        onChange={(e) => setBaudRate(Number(e.target.value))}
-                                        className="bg-transparent border-b border-[#00A3FF]/30 text-[#00A3FF] text-[10px] outline-none cursor-pointer hover:border-[#00A3FF]"
-                                    >
-                                        <option className="bg-[#151515]" value={9600}>9600</option>
-                                        <option className="bg-[#151515]" value={115200}>115200</option>
-                                        <option className="bg-[#151515]" value={921600}>921600</option>
-                                    </select>
+                                    <div className="flex items-center gap-2 bg-black/20 px-2 py-1 rounded border border-[var(--accent)]/20">
+                                        <span className="text-[8px] text-[var(--accent)]/60 uppercase">Baud:</span>
+                                        <select
+                                            value={baudRate}
+                                            onChange={(e) => setBaudRate(Number(e.target.value))}
+                                            className="bg-transparent text-[var(--accent)] text-[10px] outline-none cursor-pointer hover:border-[var(--accent)] flex-1"
+                                        >
+                                            <option className="bg-[var(--os-surface)]" value={9600}>9600</option>
+                                            <option className="bg-[var(--os-surface)]" value={115200}>115200</option>
+                                            <option className="bg-[var(--os-surface)]" value={921600}>921600</option>
+                                        </select>
+                                    </div>
                                 )}
                                 <button
                                     onClick={connected ? handleDisconnect : handleConnect}
                                     disabled={connecting || flashing}
-                                    className={`flex items-center gap-2 px-4 py-1.5 border ${connected ? 'border-red-500 text-red-500 uppercase' : 'border-[#00A3FF] text-[#00A3FF] uppercase'} text-[10px] font-bold tracking-widest hover:bg-white/5 transition-all`}
+                                    className={`flex items-center justify-center gap-2 px-6 py-3 sm:py-1.5 border ${connected ? 'border-[var(--destructive)] text-[var(--destructive)] uppercase' : 'border-[var(--accent)] text-[var(--accent)] uppercase'} text-[10px] font-black tracking-widest hover:bg-white/5 transition-all rounded-sm`}
                                 >
-                                    <Usb size={12} />
+                                    <Usb size={14} />
                                     {connecting ? 'Connecting...' : connected ? 'Disconnect' : 'Connect Device'}
                                 </button>
                             </div>
                         </div>
 
                         {/* Segmented Progress Bar */}
-                        <div className="h-8 w-full bg-[#111111]/80 border border-[#00A3FF]/20 rounded-sm p-1 flex gap-0.5 overflow-hidden">
+                        <div className="h-8 w-full bg-black/20 border border-[var(--accent)]/20 rounded-sm p-1 flex gap-0.5 overflow-hidden">
                             {Array.from({ length: 40 }).map((_, i) => (
                                 <div
                                     key={i}
                                     className={`flex-1 h-full rounded-sm transition-all duration-300 ${(i / 40) * 100 < progress
-                                        ? 'bg-[#00A3FF] shadow-[0_0_10px_rgba(0,163,255,0.6)]'
-                                        : 'bg-[#222222]/40'
+                                        ? 'bg-[var(--accent)] shadow-[0_0_10px_rgba(0,163,255,0.6)]'
+                                        : 'bg-[var(--foreground)]/10'
                                         }`}
                                 />
                             ))}
@@ -303,7 +306,7 @@ export function ESP32FlasherApp() {
 
                     {/* Flash Files List - Scrollable */}
                     {files.length > 0 && connected && (
-                        <div className="bg-[#0A0A0A] border border-[#FF6B00]/20 rounded p-4 space-y-2 max-h-40 overflow-auto custom-scrollbar">
+                        <div className="bg-black/20 border border-[var(--primary)]/20 rounded p-4 space-y-2 max-h-40 overflow-auto custom-scrollbar">
                             {files.map((item, index) => (
                                 <div key={index} className="flex items-center gap-4 text-[10px] border-b border-white/5 pb-2">
                                     <div className="flex-1 truncate opacity-70">{item.file.name}</div>
@@ -311,9 +314,9 @@ export function ESP32FlasherApp() {
                                         type="text"
                                         value={item.address}
                                         onChange={(e) => updateAddress(index, e.target.value)}
-                                        className="bg-transparent border-b border-[#FF6B00]/40 text-[#FF6B00] w-20 outline-none text-center"
+                                        className="bg-transparent border-b border-[var(--primary)]/40 text-[var(--primary)] w-20 outline-none text-center"
                                     />
-                                    <button onClick={() => removeFile(index)} className="text-red-500 hover:scale-110"><X size={12} /></button>
+                                    <button onClick={() => removeFile(index)} className="text-[var(--destructive)] hover:scale-110"><X size={12} /></button>
                                 </div>
                             ))}
                         </div>
@@ -321,8 +324,8 @@ export function ESP32FlasherApp() {
 
                     {/* Console Output */}
                     <div className="relative">
-                        <div className="absolute top-0 right-4 px-2 bg-[#151515] text-[8px] text-[#FF6B00] uppercase tracking-widest -translate-y-1/2">Terminal.vlogs</div>
-                        <div className="bg-[#0A0A0A] border border-[#FF6B00]/40 rounded-sm p-4 h-32 overflow-y-auto font-mono text-[9px] text-[#FF6B00]/80 leading-relaxed custom-scrollbar shadow-inner">
+                        <div className="absolute top-0 right-4 px-2 bg-[var(--os-surface)] text-[8px] text-[var(--primary)] uppercase tracking-widest -translate-y-1/2">Terminal.vlogs</div>
+                        <div className="bg-black/40 border border-[var(--primary)]/40 rounded-sm p-4 h-32 overflow-y-auto font-mono text-[9px] text-[var(--primary)]/80 leading-relaxed custom-scrollbar shadow-inner">
                             {logs.length === 0 ? (
                                 <span className="opacity-30 italic">Initialize connection to view logs...</span>
                             ) : (
@@ -338,29 +341,30 @@ export function ESP32FlasherApp() {
 
                     {/* Action Buttons */}
                     {connected && (
-                        <div className="flex gap-4 pt-2">
+                        <div className="flex flex-col sm:flex-row gap-4 pt-2">
                             <button
                                 onClick={handleFlash}
                                 disabled={flashing || files.length === 0}
-                                className={`flex-1 h-12 bg-transparent border-2 border-[#FF6B00] text-[#FF6B00] font-black uppercase tracking-[0.3em] text-xs shadow-[0_0_15px_rgba(255,107,0,0.2)] hover:bg-[#FF6B00] hover:text-black transition-all disabled:opacity-30 disabled:border-zinc-700 disabled:text-zinc-700 disabled:shadow-none flex items-center justify-center gap-3`}
+                                className={`flex-1 h-16 sm:h-12 bg-transparent border-2 border-[var(--primary)] text-[var(--primary)] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[10px] sm:text-xs shadow-[0_0_15px_rgba(255,107,0,0.2)] hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-all disabled:opacity-30 disabled:border-zinc-700 disabled:text-zinc-700 disabled:shadow-none flex items-center justify-center gap-3`}
                             >
-                                <Play size={16} fill="currentColor" />
+                                <Play size={20} fill="currentColor" className="sm:size-4" />
                                 {flashing ? 'Flashing Sequence Active' : 'Begin Flash Cycle'}
                             </button>
                             <button
                                 onClick={handleErase}
                                 disabled={flashing}
-                                className="w-12 h-12 border border-red-900/40 flex items-center justify-center text-red-500 hover:bg-red-500/10 transition-colors"
+                                className="h-16 sm:h-12 sm:w-12 border border-[var(--destructive)]/40 flex items-center justify-center text-[var(--destructive)] hover:bg-[var(--destructive)]/10 transition-colors uppercase text-[10px] font-bold tracking-widest gap-2 sm:gap-0"
                                 title="Erase All Flash"
                             >
                                 <Trash2 size={18} />
+                                <span className="sm:hidden">Erase All</span>
                             </button>
                         </div>
                     )}
                 </div>
 
                 {/* Footer Info */}
-                <div className="px-6 py-3 bg-[#111111] border-t border-white/5 flex justify-between items-center text-[8px] uppercase tracking-widest text-zinc-600">
+                <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex justify-between items-center text-[8px] uppercase tracking-widest text-[var(--muted-foreground)]">
                     <div>Hardware: {chipInfo || 'None'}</div>
                     <div className="flex gap-4">
                         <span>CPU: ESP32-S3</span>
@@ -377,11 +381,12 @@ export function ESP32FlasherApp() {
                     background: transparent;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #FF6B0044;
+                    background: var(--primary);
+                    opacity: 0.3;
                     border-radius: 10px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #FF6B0088;
+                    opacity: 0.6;
                 }
             `}</style>
         </div>

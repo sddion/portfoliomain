@@ -1,0 +1,16 @@
+{
+    "id": "esp32-troubleshooting-guide",
+    "title": "ESP32 Flasher Troubleshooting Guide",
+    "description": "Encountering connection issues or timing errors? This guide covers the most common flashing problems and their solutions.",
+    "author": "SanjuOS Dev",
+    "date": "2025-12-18",
+    "category": "Troubleshooting",
+    "tags": [
+        "ESP32",
+        "Hardware",
+        "Serial",
+        "Fix"
+    ],
+    "featuredImage": "/blog/bootloader.png",
+    "content": "# ESP32 Flasher Troubleshooting\n\nSometimes, hardware communication can be tricky. If you're having trouble connecting to your ESP32, follow these common troubleshooting steps.\n\n## 1. Entering Bootloader Mode\n\nIf the tool fails to connect with a 'Failed to connect' error, you likely need to put your ESP32 into **Bootloader Mode** manually:\n\n1. Hold down the **BOOT** button on your board.\n2. Quickly press and release the **EN** (or **RST**) button.\n3. Release the **BOOT** button.\n4. Try clicking **Connect** again.\n\n![Bootloader Instructions](/blog/bootloader.png)\n\n## 2. Browser Compatibility\n\nEnsure you are using a **Chromium-based browser**. Firefox and Safari currently do not support the Web Serial API. Look for the 'Web Serial API not supported' warning in the app header.\n\n## 3. Cable & Port Issues\n\n- **Power-only cables**: Many cheap micro-USB cables only provide power. Ensure you are using a **Data cable**.\n- **Driver Issues**: On Windows, you might need drivers for the USB-to-Serial chip (CP210x or CH340).\n\n## 4. Baud Rate Mismatch\n\nIf you see 'garbage' characters in the console, your baud rate is likely incorrect. Try switching between **115200** and **9600** to see if communication stabilizes."
+}
