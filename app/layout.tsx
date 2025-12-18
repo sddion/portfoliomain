@@ -60,7 +60,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="data-theme"
-          defaultTheme="dark"
+          defaultTheme="ocean"
           themes={["dark", "ubuntu", "ocean", "dracula"]}
           enableSystem={false}
           disableTransitionOnChange

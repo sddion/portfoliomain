@@ -4,7 +4,7 @@
 :root {
   /* Cyberpunk / Linux Terminal Aesthetic */
   --background: #0d0d0d;
-  --foreground: #00ff41;
+  --foreground: #ffffff;
   /* CRT Green */
   --card: #121212;
   --card-foreground: #e0e0e0;
@@ -40,7 +40,7 @@
 
   /* Desktop Background - Default Cyberpunk */
   --desktop-bg: url('/cyber-bg.jpg');
-  --mobile-bg: url('/wallpapers/cyberpunk-mobile.png');
+  --mobile-bg: url('/cyber-bg.jpg');
 
   /* Fonts */
   --font-mono: 'Geist Mono', monospace;
