@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import { projects, categories } from "@/lib/projects-data"
 import { Folder, FileCode, Search, Server, Cpu, Globe, Shield, Star, GitBranch } from "lucide-react"
+import { GeoshotApp } from "@/components/apps/GeoshotApp"
 
 export function ProjectsApp() {
     const [viewMode, setViewMode] = useState<'home' | 'list' | 'detail'>('home')
@@ -124,6 +125,16 @@ export function ProjectsApp() {
 
     const renderMobileDetail = () => {
         if (!selectedProject) return null
+
+        // Special render for Geoshot
+        if (selectedProject.id === 'geoshot') {
+            return (
+                <div className="h-full bg-zinc-900 border-l border-zinc-700">
+                    <GeoshotApp />
+                </div>
+            )
+        }
+
         return (
             <div className="p-6 overflow-y-auto h-full">
                 <div className="flex flex-col items-center mb-8">
@@ -249,44 +260,52 @@ export function ProjectsApp() {
 
                     {/* Details Pane (Preview) */}
                     {selectedProject && (
-                        <div className="w-64 border-l border-zinc-700 bg-zinc-900/80 p-4 overflow-y-auto">
-                            <div className="flex flex-col items-center mb-4">
-                                <div className="w-20 h-20 bg-zinc-800 rounded-lg flex items-center justify-center text-4xl mb-2 text-zinc-400">
-                                    {getIconForCategory(selectedProject.category)}
+                        <>
+                            {selectedProject.id === 'geoshot' ? (
+                                <div className="flex-1 border-l border-zinc-700 bg-zinc-900 overflow-hidden">
+                                    <GeoshotApp />
                                 </div>
-                                <h2 className="text-lg font-bold text-center text-white">{selectedProject.title}</h2>
-                                <span className="text-xs text-zinc-500 uppercase tracking-widest">{selectedProject.category}</span>
-                            </div>
+                            ) : (
+                                <div className="w-64 border-l border-zinc-700 bg-zinc-900/80 p-4 overflow-y-auto">
+                                    <div className="flex flex-col items-center mb-4">
+                                        <div className="w-20 h-20 bg-zinc-800 rounded-lg flex items-center justify-center text-4xl mb-2 text-zinc-400">
+                                            {getIconForCategory(selectedProject.category)}
+                                        </div>
+                                        <h2 className="text-lg font-bold text-center text-white">{selectedProject.title}</h2>
+                                        <span className="text-xs text-zinc-500 uppercase tracking-widest">{selectedProject.category}</span>
+                                    </div>
 
-                            <div className="space-y-4 text-sm">
-                                <div>
-                                    <h3 className="font-bold text-zinc-400 text-xs mb-1 uppercase">About</h3>
-                                    <p className="text-zinc-300 leading-relaxed">{selectedProject.description}</p>
-                                </div>
+                                    <div className="space-y-4 text-sm">
+                                        <div>
+                                            <h3 className="font-bold text-zinc-400 text-xs mb-1 uppercase">About</h3>
+                                            <p className="text-zinc-300 leading-relaxed">{selectedProject.description}</p>
+                                        </div>
 
-                                <div>
-                                    <h3 className="font-bold text-zinc-400 text-xs mb-1 uppercase">Stack</h3>
-                                    <div className="flex flex-wrap gap-1">
-                                        {selectedProject.techStack.map(t => (
-                                            <span key={t} className="text-[10px] bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-300 border border-zinc-700">{t}</span>
-                                        ))}
+                                        <div>
+                                            <h3 className="font-bold text-zinc-400 text-xs mb-1 uppercase">Stack</h3>
+                                            <div className="flex flex-wrap gap-1">
+                                                {selectedProject.techStack.map(t => (
+                                                    <span key={t} className="text-[10px] bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-300 border border-zinc-700">{t}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2 pt-2">
+                                            {selectedProject.githubUrl && (
+                                                <a href={selectedProject.githubUrl} target="_blank" className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-3 py-2 rounded text-zinc-200 transition-colors">
+                                                    <GitBranch size={14} /> Source Code
+                                                </a>
+                                            )}
+                                            {selectedProject.liveUrl && (
+                                                <a href={selectedProject.liveUrl} target="_blank" className="flex items-center gap-2 bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-900 px-3 py-2 rounded transition-colors">
+                                                    <Globe size={14} /> Live Demo
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div className="flex flex-col gap-2 pt-2">
-                                    {selectedProject.githubUrl && (
-                                        <a href={selectedProject.githubUrl} target="_blank" className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-3 py-2 rounded text-zinc-200 transition-colors">
-                                            <GitBranch size={14} /> Source Code
-                                        </a>
-                                    )}
-                                    {selectedProject.liveUrl && (
-                                        <a href={selectedProject.liveUrl} target="_blank" className="flex items-center gap-2 bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-900 px-3 py-2 rounded transition-colors">
-                                            <Globe size={14} /> Live Demo
-                                        </a>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

@@ -5,11 +5,12 @@ import { useWindowManager } from "@/components/os/WindowManager"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Sparkles } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
+import { CreditsApp } from "@/components/apps/CreditsApp"
 import dynamic from "next/dynamic"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
@@ -95,6 +96,13 @@ export function MobileDesktop() {
             bg: "bg-pink-600",
             action: () => window.open("https://instagram.com/wordswires", "_blank"),
         },
+        {
+            id: "credits",
+            label: "Credits",
+            icon: <Sparkles className="text-yellow-400" size={24} />,
+            bg: "bg-zinc-800",
+            content: <CreditsApp />,
+        },
     ]
 
     const activeApp = apps.find(app => windows.find(w => w.id === app.id)?.isOpen)
@@ -177,8 +185,13 @@ export function MobileDesktop() {
                 <div className="w-32 h-1 bg-zinc-800 rounded-full" />
             </div>
 
-            {/* Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-zinc-900 via-black to-black -z-10" />
+            {/* Background Image */}
+            <div
+                className="absolute inset-0 bg-cover bg-center -z-10 transition-[background-image] duration-500 ease-in-out"
+                style={{ backgroundImage: "var(--mobile-bg)" }}
+            >
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+            </div>
         </div>
     )
 }

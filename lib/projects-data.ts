@@ -14,6 +14,16 @@ export type Project = {
 export const projects: Project[] = [
   // Highlights
   {
+    id: "geoshot",
+    title: "Geoshot",
+    description: "Android application for geotagging photos with customizable overlays. Features location tracking, map integration, and watermarking.",
+    category: "mobile",
+    techStack: ["React Native", "Expo", "Maps API"],
+    liveUrl: "https://github.com/sddion/geoshot", // Using repo as live for now
+    githubUrl: "https://github.com/sddion/geoshot",
+    features: ["Geotagging", "Camera Overlay", "Location Tracking", "Custom Watermarks"],
+  },
+  {
     id: "bagley",
     title: "Bagley (AI Robot)",
     description: "Desktop robot & IoT AI assistant using ESP32/8266. Features voice-to-voice AI and real-time WebSocket audio streaming.",
