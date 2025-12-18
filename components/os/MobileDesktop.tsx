@@ -5,7 +5,7 @@ import { useWindowManager } from "@/components/os/WindowManager"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, Zap } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
@@ -112,7 +112,7 @@ export function MobileDesktop() {
         {
             id: "esp32-flasher",
             label: "ESP Flasher",
-            icon: <Zap className="text-orange-500" size={24} />,
+            icon: <CircuitBoard className="text-orange-500" size={24} />,
             bg: "bg-orange-600",
             content: <ESP32FlasherApp />,
         },

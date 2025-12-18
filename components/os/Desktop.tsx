@@ -6,7 +6,7 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette, Zap } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette, CircuitBoard } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
@@ -39,7 +39,7 @@ export function Desktop() {
         {
             id: "esp32-flasher",
             label: "ESP Flasher",
-            icon: <Zap className="text-orange-500" size={32} />,
+            icon: <CircuitBoard className="text-orange-500" size={32} />,
             content: <ESP32FlasherApp />,
         },
         {
@@ -95,7 +95,7 @@ export function Desktop() {
         {
             id: "esp32-flasher",
             label: "ESP Flasher",
-            icon: <Zap className="text-orange-500" size={32} />,
+            icon: <CircuitBoard className="text-orange-500" size={32} />,
             content: <ESP32FlasherApp />,
         },
         {

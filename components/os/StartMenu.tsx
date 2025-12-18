@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Power, Terminal, User, Folder, Briefcase, FileText, Github, Box, Zap, Snowflake } from "lucide-react"
+import { Power, Terminal, User, Folder, Briefcase, FileText, Github, CircuitBoard, Snowflake } from "lucide-react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { motion, AnimatePresence } from "framer-motion"
 import { TerminalApp } from "@/components/apps/TerminalApp"
@@ -28,7 +28,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
         { label: "About Me", icon: <User size={18} className="text-blue-500" />, id: "about", content: <AboutApp /> },
         { label: "Experience", icon: <Briefcase size={18} className="text-purple-500" />, id: "experience", content: <ExperienceApp /> },
         { label: "Resume", icon: <FileText size={18} className="text-red-500" />, id: "resume", content: <ResumeApp /> },
-        { label: "ESP Flasher", icon: <Zap size={18} className="text-orange-500" />, id: "esp32-flasher", content: <ESP32FlasherApp /> },
+        { label: "ESP Flasher", icon: <CircuitBoard size={18} className="text-orange-500" />, id: "esp32-flasher", content: <ESP32FlasherApp /> },
         { label: "Blog", icon: <FileText size={18} className="text-teal-500" />, id: "blog", content: <BlogApp /> },
         { label: "GitHub", icon: <Github size={18} className="text-white" />, action: () => window.open("https://github.com/sddion", "_blank") },
     ]

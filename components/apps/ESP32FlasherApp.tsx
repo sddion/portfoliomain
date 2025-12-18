@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef } from "react"
-import { Zap, Upload, Cpu, AlertCircle, CheckCircle, Trash2, Play, X } from "lucide-react"
+import { Upload, Usb, AlertCircle, CheckCircle, Trash2, Play, X } from "lucide-react"
 
 export function ESP32FlasherApp() {
     const [connected, setConnected] = useState(false)
@@ -259,7 +259,10 @@ export function ESP32FlasherApp() {
                     <div className="space-y-4">
                         <div className="flex items-end justify-between px-1">
                             <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#00A3FF]">
-                                {flashing ? `Flashing: ${progress}%` : error ? 'System Error' : 'System Ready'}
+                                <div className="flex items-center gap-2">
+                                    {progress === 100 && !flashing && <CheckCircle size={10} className="text-green-500 animate-pulse" />}
+                                    {flashing ? `Flashing: ${progress}%` : progress === 100 ? 'Flash Success' : error ? 'System Error' : 'System Ready'}
+                                </div>
                             </div>
                             <div className="flex items-center gap-4">
                                 {!connected && (
@@ -278,7 +281,7 @@ export function ESP32FlasherApp() {
                                     disabled={connecting || flashing}
                                     className={`flex items-center gap-2 px-4 py-1.5 border ${connected ? 'border-red-500 text-red-500 uppercase' : 'border-[#00A3FF] text-[#00A3FF] uppercase'} text-[10px] font-bold tracking-widest hover:bg-white/5 transition-all`}
                                 >
-                                    <Cpu size={12} />
+                                    <Usb size={12} />
                                     {connecting ? 'Connecting...' : connected ? 'Disconnect' : 'Connect Device'}
                                 </button>
                             </div>
@@ -290,8 +293,8 @@ export function ESP32FlasherApp() {
                                 <div
                                     key={i}
                                     className={`flex-1 h-full rounded-sm transition-all duration-300 ${(i / 40) * 100 < progress
-                                            ? 'bg-[#00A3FF] shadow-[0_0_10px_rgba(0,163,255,0.6)]'
-                                            : 'bg-[#222222]/40'
+                                        ? 'bg-[#00A3FF] shadow-[0_0_10px_rgba(0,163,255,0.6)]'
+                                        : 'bg-[#222222]/40'
                                         }`}
                                 />
                             ))}
