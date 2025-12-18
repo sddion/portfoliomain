@@ -32,19 +32,20 @@ interface WindowContextType {
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined)
 
+const LoginExpiry = 24 * 60 * 60 * 1000 // 24 hours in ms
+
 export function WindowProvider({ children }: { children: ReactNode }) {
     const [windows, setWindows] = useState<WindowState[]>([])
     const [activeWindowId, setActiveWindowId] = useState<string | null>(null)
     const [isBooting, setBooting] = useState(false) // Boot handled by login now
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [maxZIndex, setMaxZIndex] = useState(10)
-    const LOGIN_EXPIRY = 24 * 60 * 60 * 1000 // 24 hours in ms
 
     useEffect(() => {
         const storedLogin = localStorage.getItem("sanjuos_login")
         if (storedLogin) {
             const loginTime = parseInt(storedLogin)
-            if (Date.now() - loginTime < LOGIN_EXPIRY) {
+            if (Date.now() - loginTime < LoginExpiry) {
                 setIsLoggedIn(true)
                 // If previously logged in, we skip the boot sequence for seamless refresh
                 // unless the user specifically wants it. For now, just set logged in.
