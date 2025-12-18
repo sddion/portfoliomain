@@ -1,9 +1,13 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Wifi, Bluetooth, Battery, Moon, Sun, Plane, Settings, Bell, X } from "lucide-react"
+import { Wifi, Bluetooth, Battery, Moon, Sun, Plane, Settings, Bell, X, AlertCircle } from "lucide-react"
 import { format } from "date-fns"
+import { useNotifications } from "@/hooks/useNotifications"
+import { useGitHubActivity } from "@/hooks/useGitHubActivity"
+import { useBluetooth } from "@/hooks/useBluetooth"
+import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 
 interface NotificationShadeProps {
     isOpen: boolean
@@ -13,53 +17,86 @@ interface NotificationShadeProps {
 export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
     const [time, setTime] = useState(new Date())
     const [brightness, setBrightness] = useState(80)
+    const [githubStats, setGithubStats] = useState({ repos: 0, followers: 0 })
+
+    // Hooks
+    const { supported, permission, notifications, requestPermission, showNotification, clearNotifications } = useNotifications()
+    const { commits, refetch } = useGitHubActivity("sddion", permission === "granted")
+    const { supported: bluetoothSupported, device, connecting, error: bluetoothError, requestDevice } = useBluetooth()
 
     React.useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000)
         return () => clearInterval(timer)
     }, [])
 
+    // Fetch GitHub stats for Conky widget
+    useEffect(() => {
+        fetch("https://api.github.com/users/sddion")
+            .then(res => res.json())
+            .then(data => {
+                setGithubStats({
+                    repos: data.public_repos || 0,
+                    followers: data.followers || 0
+                })
+            })
+            .catch(console.error)
+    }, [])
+
+    // Show notification when new commits are detected
+    useEffect(() => {
+        if (commits.length > 0 && permission === "granted") {
+            const latestCommit = commits[0]
+            showNotification("New GitHub Commit", {
+                body: `${latestCommit.author}: ${latestCommit.message}`,
+                icon: "/DedSec_logo.webp",
+                tag: `commit-${latestCommit.sha}`,
+                data: { url: latestCommit.url }
+            })
+        }
+    }, [commits, permission, showNotification])
+
     const [toggles, setToggles] = useState([
         { icon: <Wifi size={20} />, label: "Wi-Fi", active: true },
-        { icon: <Bluetooth size={20} />, label: "Bluetooth", active: true },
-        { icon: <Battery size={20} />, label: "Battery Saver", active: false },
+        { icon: <Bluetooth size={20} />, label: "Bluetooth", active: !!device?.connected },
+        { icon: <Bell size={20} />, label: "Notifications", active: permission === "granted" },
         { icon: <Moon size={20} />, label: "Do Not Disturb", active: false },
-        { icon: <Plane size={20} />, label: "Airplane Mode", active: false },
-        { icon: <Sun size={20} />, label: "Flashlight", active: false },
     ])
 
-    const handleToggle = (index: number) => {
+    const handleToggle = async (index: number) => {
+        const toggle = toggles[index]
+
+        // Handle Bluetooth toggle
+        if (toggle.label === "Bluetooth") {
+            if (!device?.connected) {
+                await requestDevice()
+            }
+            return
+        }
+
+        // Handle Notifications toggle
+        if (toggle.label === "Notifications") {
+            if (permission !== "granted") {
+                await requestPermission()
+            }
+            return
+        }
+
+        // Regular toggles
         setToggles(prev => prev.map((t, i) =>
             i === index ? { ...t, active: !t.active } : t
         ))
     }
 
-    const notifications = [
-        {
-            id: 1,
-            app: "System",
-            title: "Update Available",
-            desc: "Portfolio OS v2.0 is ready to install.",
-            time: "Now",
-            icon: <Settings size={16} />
-        },
-        {
-            id: 2,
-            app: "Messages",
-            title: "New Message",
-            desc: "Hey! Check out this new UI update.",
-            time: "5m ago",
-            icon: <Bell size={16} />
-        },
-        {
-            id: 3,
-            app: "GitHub",
-            title: "CI/CD Pipeline",
-            desc: "Build failed for commit 'fix: mobile ui'",
-            time: "10m ago",
-            icon: <X size={16} />
-        }
-    ]
+    // Sync Bluetooth and Notification states
+    useEffect(() => {
+        setToggles(prev => prev.map(t => {
+            if (t.label === "Bluetooth") return { ...t, active: !!device?.connected }
+            if (t.label === "Notifications") return { ...t, active: permission === "granted" }
+            return t
+        }))
+    }, [device, permission])
+
+
 
     return (
         <motion.div
@@ -86,6 +123,14 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                 </div>
             </div>
 
+            {/* Mobile Conky Widget */}
+            <div className="p-4">
+                <MobileConkyWidget
+                    bluetoothDevice={device}
+                    githubStats={githubStats}
+                />
+            </div>
+
             {/* Quick Settings */}
             <div className="p-4 grid grid-cols-4 gap-4">
                 {toggles.map((t, i) => (
@@ -101,6 +146,36 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                     </button>
                 ))}
             </div>
+
+            {/* Bluetooth Status */}
+            {bluetoothError && (
+                <div className="px-4 pb-2">
+                    <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-2 flex items-center gap-2">
+                        <AlertCircle size={14} className="text-red-400" />
+                        <span className="text-[10px] text-red-300">{bluetoothError}</span>
+                    </div>
+                </div>
+            )}
+            {connecting && (
+                <div className="px-4 pb-2">
+                    <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-2 text-center">
+                        <span className="text-[10px] text-blue-300">Connecting to device...</span>
+                    </div>
+                </div>
+            )}
+
+            {/* Notification Permission Prompt */}
+            {supported && permission === "default" && (
+                <div className="px-4 pb-2">
+                    <button
+                        onClick={requestPermission}
+                        className="w-full bg-green-600 hover:bg-green-500 text-white rounded-lg p-3 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    >
+                        <Bell size={16} />
+                        Enable Notifications
+                    </button>
+                </div>
+            )}
 
             {/* Brightness Slider */}
             <div className="px-6 py-2">
@@ -120,24 +195,41 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
             {/* Notifications */}
             <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 mt-2">
                 <div className="flex justify-between items-center mb-2 px-2">
-                    <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Notifications</span>
-                    <button className="text-xs text-blue-400">Clear all</button>
+                    <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">
+                        Notifications {notifications.length > 0 && `(${notifications.length})`}
+                    </span>
+                    {notifications.length > 0 && (
+                        <button
+                            onClick={clearNotifications}
+                            className="text-xs text-blue-400 hover:text-blue-300"
+                        >
+                            Clear all
+                        </button>
+                    )}
                 </div>
-                {notifications.map(n => (
-                    <div key={n.id} className="bg-zinc-800/80 rounded-2xl p-4 flex gap-3 border border-white/5">
-                        <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300">
-                            {n.icon}
-                        </div>
-                        <div className="flex-1">
-                            <div className="flex justify-between items-start">
-                                <span className="text-xs font-medium text-zinc-400">{n.app}</span>
-                                <span className="text-[10px] text-zinc-500">{n.time}</span>
-                            </div>
-                            <h4 className="text-sm font-semibold text-zinc-200 mt-0.5">{n.title}</h4>
-                            <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">{n.desc}</p>
-                        </div>
+                {notifications.length === 0 ? (
+                    <div className="text-center py-12">
+                        <Bell size={32} className="mx-auto text-zinc-700 mb-2" />
+                        <p className="text-sm text-zinc-500">No notifications</p>
                     </div>
-                ))}
+                ) : (
+                    notifications.map(n => (
+                        <div key={n.id} className="bg-zinc-800/80 rounded-2xl p-4 flex gap-3 border border-white/5">
+                            <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300">
+                                <Bell size={16} />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <span className="text-xs font-medium text-zinc-400">{n.title}</span>
+                                    <span className="text-[10px] text-zinc-500">
+                                        {format(n.timestamp, "HH:mm")}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-zinc-300 mt-0.5 leading-relaxed">{n.body}</p>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
 
             {/* Grab Handle */}
