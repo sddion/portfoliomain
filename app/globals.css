@@ -31,6 +31,9 @@
   --terminal-bg: #0c0c0c;
   --terminal-header: #1f1f1f;
 
+  /* Desktop Background - Default Cyberpunk */
+  --desktop-bg: url('/cyber-bg.jpg');
+
   /* Fonts */
   --font-mono: 'Geist Mono', monospace;
   --font-sans: 'Geist Sans', sans-serif;
@@ -49,6 +52,8 @@
   --border: #772953;
   --accent: #e95420;
   --ring: #e95420;
+  
+  --desktop-bg: linear-gradient(135deg, #2c001e 0%, #772953 100%);
 }
 
 [data-theme='ocean'] {
@@ -62,6 +67,8 @@
   --primary-foreground: #000000;
   --border: #334155;
   --ring: #38bdf8;
+  
+  --desktop-bg: linear-gradient(to bottom, #0f172a, #1e293b);
 }
 
 [data-theme='dracula'] {
@@ -75,6 +82,8 @@
   --secondary: #6272a4;
   --border: #6272a4;
   --ring: #ff79c6;
+  
+  --desktop-bg: linear-gradient(135deg, #282a36 0%, #44475a 100%);
 }
 
 body {

@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 
 export function AboutApp() {
@@ -51,7 +49,10 @@ export function AboutApp() {
                 <div className="flex flex-wrap gap-2 py-2">
                     <img src="https://img.shields.io/github/followers/sddion?style=social" alt="Github Followers" />
                     <img src="https://img.shields.io/github/stars/sddion?style=social" alt="Github Stars" />
-                    <img src="https://img.shields.io/github/languages/top/sddion/portfoliomain?color=green" alt="Top Language" />
+                    <img
+                        src="https://img.shields.io/github/languages/top/sddion/portfoliomain?color=green"
+                        alt="Top Language"
+                    />
                 </div>
 
                 <div className="flex gap-4 pt-4">

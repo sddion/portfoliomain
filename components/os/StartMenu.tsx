@@ -75,7 +75,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                                 className="w-full flex items-center gap-2 p-2 hover:bg-red-900/30 text-red-400 hover:text-red-300 rounded transition-colors text-sm font-semibold"
                             >
                                 <Power size={16} />
-                                <span>System Shutdown</span>
+                                <span>Shutdown</span>
                             </button>
                         </div>
                     </motion.div>

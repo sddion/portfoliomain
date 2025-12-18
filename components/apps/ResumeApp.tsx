@@ -5,10 +5,8 @@ import { Printer, FileText, LayoutTemplate, AlertCircle } from "lucide-react"
 import { Document, Page, pdfjs } from 'react-pdf'
 
 // Set worker source for pdf.js
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.mjs',
-    import.meta.url,
-).toString();
+// Set worker source for pdf.js to CDN to ensure correct version and avoid build issues
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export function ResumeApp() {
     const [mode, setMode] = useState<'html' | 'pdf'>('html')
@@ -152,10 +150,36 @@ export function ResumeApp() {
                 ) : (
                     <div className="flex flex-col items-center gap-4">
                         <div className="bg-zinc-900 p-4 rounded text-center text-zinc-400 max-w-md border border-zinc-700">
+                            <p className="text-xs mb-2">Showing original PDF document.</p>
                         </div>
                         <div className="shadow-2xl">
-                            <Document file="/resume.pdf" onLoadSuccess={onDocumentLoadSuccess} className="flex flex-col gap-4">
-                                {Array.from(new Array(numPages), (el, index) => (
+                            <Document
+                                file="/resume.pdf"
+                                onLoadSuccess={onDocumentLoadSuccess}
+                                onLoadError={(error) => {
+                                    console.error("Error loading PDF:", error)
+                                    // Fallback UI handled by rendering nothing or a custom error component if needed
+                                    // But here we might want to show an alert
+                                }}
+                                error={
+                                    <div className="bg-red-900/20 border border-red-500/50 p-6 rounded-lg text-center max-w-md">
+                                        <AlertCircle className="mx-auto text-red-500 mb-2" size={32} />
+                                        <h3 className="text-red-400 font-bold mb-1">Failed to load PDF</h3>
+                                        <p className="text-zinc-400 text-sm mb-4">The PDF file could not be rendered.</p>
+                                        <a href="/resume.pdf" download className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded text-sm font-bold inline-flex items-center gap-2">
+                                            <FileText size={16} /> Download PDF
+                                        </a>
+                                    </div>
+                                }
+                                loading={
+                                    <div className="flex flex-col items-center gap-2 text-zinc-500 py-10">
+                                        <div className="animate-spin w-6 h-6 border-2 border-zinc-500 border-t-transparent rounded-full" />
+                                        <span className="text-sm">Loading resume...</span>
+                                    </div>
+                                }
+                                className="flex flex-col gap-4"
+                            >
+                                {numPages > 0 && Array.from(new Array(numPages), (el, index) => (
                                     <Page
                                         key={`page_${index + 1}`}
                                         pageNumber={index + 1}

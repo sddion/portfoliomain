@@ -6,6 +6,8 @@ import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { WindowProvider } from "@/components/os/WindowManager"
+import { SnowfallEffect } from '@/components/ui/snowfall-effect';
+
 
 export const metadata: Metadata = {
   title: "Sanju - Full-Stack Developer & Security Engineer",
@@ -64,6 +66,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <WindowProvider>
+            <SnowfallEffect snowflakeCount={150} color="#2ae704c5" />
             {children}
           </WindowProvider>
         </ThemeProvider>

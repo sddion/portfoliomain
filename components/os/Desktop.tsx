@@ -6,7 +6,7 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
@@ -19,6 +19,7 @@ import dynamic from "next/dynamic"
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
 import { LoginScreen } from "@/components/os/LoginScreen"
+import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 
 export function Desktop() {
     const { isBooting, setBooting, windows, openWindow, isLoggedIn } = useWindowManager()
@@ -86,18 +87,27 @@ export function Desktop() {
             icon: <Instagram className="text-pink-500" size={32} />,
             action: () => window.open("https://instagram.com/wordswires", "_blank"),
         },
+        {
+            id: "whatsapp",
+            label: "WhatsApp",
+            icon: <MessageCircle className="text-green-500" size={32} />,
+            action: () => window.open("https://wa.me/91882292607", "_blank"),
+        },
     ]
 
 
-    // Clean up duplicate icons by filtering unique IDs or just ensuring list is correct.
-    // The previous update appended duplicates. I will re-declare the list cleanly.
-
     return (
-        <div className="h-screen w-screen overflow-hidden bg-[url('/cyber-bg.jpg')] bg-cover bg-center text-white relative">
+        <div
+            className="h-screen w-screen overflow-hidden bg-cover bg-center text-white relative transition-[background-image] duration-500 ease-in-out"
+            style={{ backgroundImage: "var(--desktop-bg)" }}
+        >
             <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
 
             {/* Conky Widget */}
             <ConkyWidget />
+
+            {/* Snowfall Effect */}
+            <SnowfallEffect />
 
             {/* CRT Scanline Effect */}
             <div className="crt-effect pointer-events-none" />

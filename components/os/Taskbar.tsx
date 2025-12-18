@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { format } from "date-fns"
-import { Battery, BatteryCharging, Wifi, WifiOff, Power } from "lucide-react"
+import { Battery, BatteryCharging, Wifi, WifiOff, Power, CloudSnow } from "lucide-react"
 
 import { StartMenu } from "./StartMenu"
 import { WiFiMenu } from "./WiFiMenu"
 
 export function Taskbar() {
-    const { windows, minimizeWindow, focusWindow, logout } = useWindowManager()
+    const { windows, minimizeWindow, focusWindow, logout, toggleSnowfall, showSnowfall } = useWindowManager()
     const [startOpen, setStartOpen] = useState(false)
     const [wifiOpen, setWifiOpen] = useState(false)
     const [time, setTime] = useState(new Date())
@@ -107,6 +107,17 @@ export function Taskbar() {
                         <span className="hidden sm:inline">{batteryLevel}%</span>
                     </div>
                 </div>
+
+                <div className="w-[1px] h-6 bg-zinc-700 mx-1" />
+
+                {/* Snowfall Toggle */}
+                <button
+                    onClick={toggleSnowfall}
+                    className={`hover:text-white transition-colors p-1 rounded hover:bg-white/5 ${showSnowfall ? 'text-blue-300' : ''}`}
+                    title="Toggle Snow"
+                >
+                    <CloudSnow size={14} />
+                </button>
 
                 <div className="w-[1px] h-6 bg-zinc-700 mx-1" />
 

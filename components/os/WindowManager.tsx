@@ -26,6 +26,8 @@ interface WindowContextType {
     isLoggedIn: boolean
     login: () => void
     logout: () => void
+    showSnowfall: boolean
+    toggleSnowfall: () => void
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined)
@@ -96,6 +98,10 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         focusWindow(id)
     }
 
+    const [showSnowfall, setShowSnowfall] = useState(false)
+
+    const toggleSnowfall = () => setShowSnowfall(prev => !prev)
+
     return (
         <WindowContext.Provider
             value={{
@@ -111,6 +117,8 @@ export function WindowProvider({ children }: { children: ReactNode }) {
                 isLoggedIn,
                 login,
                 logout,
+                showSnowfall,
+                toggleSnowfall
             }}
         >
             {children}

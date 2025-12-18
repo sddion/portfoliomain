@@ -11,14 +11,14 @@ export function BootSequence({ onComplete }: { onComplete: () => void }) {
             "BIOS Date 01/01/24 15:23:00 Ver: 1.0.2",
             "CPU: AMD Ryzen 9 5950X 16-Core Processor",
             "Memory Test: 65536K OK",
-            "Detecting Primary Master ... SanjuOS SSD",
-            "Detecting Primary Slave ... None",
+            "Detecting Primary Master ...",
+            "Detecting Primary Slave ... ",
             "Booting from hard disk...",
             "Loading kernel modules...",
             "Mounting root filesystem...",
             "Starting system services...",
             "Initializing graphics interface...",
-            "Welcome to SanjuOS v2.0.4",
+            "Welcome to Kali Linux",
         ]
 
         let delay = 0
