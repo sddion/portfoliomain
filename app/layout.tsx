@@ -57,9 +57,10 @@ export default function RootLayout({
         className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased bg-neutral-950 text-neutral-50`}
       >
         <ThemeProvider
-          attribute="class"
+          attribute="data-theme"
           defaultTheme="dark"
-          enableSystem
+          themes={["dark", "ubuntu", "ocean", "dracula"]}
+          enableSystem={false}
           disableTransitionOnChange
         >
           <WindowProvider>

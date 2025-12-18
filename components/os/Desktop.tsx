@@ -6,13 +6,14 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
 import { ConkyWidget } from "@/components/os/ConkyWidget"
+import { SettingsApp } from "@/components/apps/SettingsApp"
 import dynamic from "next/dynamic"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
@@ -34,7 +35,7 @@ export function Desktop() {
         {
             id: "terminal",
             label: "Terminal",
-            icon: <Terminal className="text-green-500" size={32} />,
+            icon: <Terminal className="text-primary" size={32} />,
             content: <TerminalApp />,
         },
         {
@@ -60,6 +61,12 @@ export function Desktop() {
             label: "Resume",
             icon: <FileText className="text-red-400" size={32} />,
             content: <ResumeApp />,
+        },
+        {
+            id: "settings",
+            label: "Settings",
+            icon: <Settings className="text-zinc-400" size={32} />,
+            content: <SettingsApp />,
         },
         {
             id: "github",

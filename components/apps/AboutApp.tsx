@@ -48,6 +48,12 @@ export function AboutApp() {
                     </p>
                 </div>
 
+                <div className="flex flex-wrap gap-2 py-2">
+                    <img src="https://img.shields.io/github/followers/sddion?style=social" alt="Github Followers" />
+                    <img src="https://img.shields.io/github/stars/sddion?style=social" alt="Github Stars" />
+                    <img src="https://img.shields.io/github/languages/top/sddion/portfoliomain?color=green" alt="Top Language" />
+                </div>
+
                 <div className="flex gap-4 pt-4">
                     <a href="https://github.com/sddion" target="_blank" className="text-green-500 hover:underline hover:text-green-400">GitHub</a>
                     <a href="https://gitlab.com/dedsec" target="_blank" className="text-green-500 hover:underline hover:text-green-400">GitLab</a>

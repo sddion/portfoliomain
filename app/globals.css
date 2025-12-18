@@ -36,6 +36,47 @@
   --font-sans: 'Geist Sans', sans-serif;
 }
 
+[data-theme='ubuntu'] {
+  --background: #2c001e;
+  --foreground: #ffffff;
+  --card: #3e0a29;
+  --card-foreground: #ffffff;
+  --primary: #e95420;
+  /* Ubuntu Orange */
+  --primary-foreground: #ffffff;
+  --primary: #e95420;
+  --secondary: #772953;
+  --border: #772953;
+  --accent: #e95420;
+  --ring: #e95420;
+}
+
+[data-theme='ocean'] {
+  --background: #0f172a;
+  /* Slate 900 */
+  --foreground: #e2e8f0;
+  --card: #1e293b;
+  --card-foreground: #e2e8f0;
+  --primary: #38bdf8;
+  /* Sky 400 */
+  --primary-foreground: #000000;
+  --border: #334155;
+  --ring: #38bdf8;
+}
+
+[data-theme='dracula'] {
+  --background: #282a36;
+  --foreground: #f8f8f2;
+  --card: #44475a;
+  --card-foreground: #f8f8f2;
+  --primary: #ff79c6;
+  /* Pink */
+  --primary-foreground: #282a36;
+  --secondary: #6272a4;
+  --border: #6272a4;
+  --ring: #ff79c6;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
