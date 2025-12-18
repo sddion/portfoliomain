@@ -1,9 +1,18 @@
 "use client"
 
 import React from "react"
-import { Power, Terminal, User, Folder, Briefcase, FileText, Github, Box } from "lucide-react"
+import { Power, Terminal, User, Folder, Briefcase, FileText, Github, Box, Zap, Snowflake } from "lucide-react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { motion, AnimatePresence } from "framer-motion"
+import { TerminalApp } from "@/components/apps/TerminalApp"
+import { AboutApp } from "@/components/apps/AboutApp"
+import { ProjectsApp } from "@/components/apps/ProjectsApp"
+import { ExperienceApp } from "@/components/apps/ExperienceApp"
+import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
+import { BlogApp } from "@/components/apps/BlogApp"
+import dynamic from "next/dynamic"
+
+const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
 interface StartMenuProps {
     isOpen: boolean
@@ -14,11 +23,13 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
     const { openWindow, logout } = useWindowManager()
 
     const menuItems = [
-        { label: "Terminal", icon: <Terminal size={18} className="text-green-500" />, id: "terminal" },
-        { label: "Projects", icon: <Folder size={18} className="text-yellow-500" />, id: "projects" },
-        { label: "About Me", icon: <User size={18} className="text-blue-500" />, id: "about" },
-        { label: "Experience", icon: <Briefcase size={18} className="text-purple-500" />, id: "experience" },
-        { label: "Resume", icon: <FileText size={18} className="text-red-500" />, id: "resume" },
+        { label: "Terminal", icon: <Terminal size={18} className="text-green-500" />, id: "terminal", content: <TerminalApp /> },
+        { label: "Projects", icon: <Folder size={18} className="text-yellow-500" />, id: "projects", content: <ProjectsApp /> },
+        { label: "About Me", icon: <User size={18} className="text-blue-500" />, id: "about", content: <AboutApp /> },
+        { label: "Experience", icon: <Briefcase size={18} className="text-purple-500" />, id: "experience", content: <ExperienceApp /> },
+        { label: "Resume", icon: <FileText size={18} className="text-red-500" />, id: "resume", content: <ResumeApp /> },
+        { label: "ESP Flasher", icon: <Zap size={18} className="text-orange-500" />, id: "esp32-flasher", content: <ESP32FlasherApp /> },
+        { label: "Blog", icon: <FileText size={18} className="text-teal-500" />, id: "blog", content: <BlogApp /> },
         { label: "GitHub", icon: <Github size={18} className="text-white" />, action: () => window.open("https://github.com/sddion", "_blank") },
     ]
 
@@ -52,14 +63,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                                     key={idx}
                                     onClick={() => {
                                         if (item.action) item.action()
-                                        else if (item.id) openWindow(item.id, item.label, null as any) // Content is handled by logic elsewhere or simplified here? 
-                                        // Wait, openWindow needs content. We should probably reuse logic or pass generic content placeholders if specific components needed.
-                                        // Actually checking Desktop.tsx, we pass specific components. 
-                                        // Simple fix: We'll instruct user to click desktop icons or handle this better.
-                                        // For now let's just trigger the 'openWindow' with a placeholder or handle it in Taskbar?
-                                        // Better yet, let's just replicate the desktop logic or import the apps here?
-                                        // To avoid circular deps, let's just close menu.
-                                        // Ideally we should move the app definitions to a config.
+                                        else if (item.id) openWindow(item.id, item.label, (item as any).content, item.icon)
                                         onClose()
                                     }}
                                     className="w-full flex items-center gap-3 p-2 hover:bg-zinc-800 rounded transition-colors text-zinc-300 hover:text-white text-sm"

@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Wifi, Bluetooth, Battery, Moon, Sun, Plane, Settings, Bell, X, AlertCircle } from "lucide-react"
+import { Wifi, Bluetooth, Battery, Moon, Sun, Plane, Settings, Bell, X, AlertCircle, Snowflake } from "lucide-react"
 import { format } from "date-fns"
 import { useNotifications } from "@/hooks/useNotifications"
 import { useGitHubActivity } from "@/hooks/useGitHubActivity"
 import { useBluetooth } from "@/hooks/useBluetooth"
+import { useWindowManager } from "@/components/os/WindowManager"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 
 interface NotificationShadeProps {
@@ -23,6 +24,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
     const { supported, permission, notifications, requestPermission, showNotification, clearNotifications } = useNotifications()
     const { commits, refetch } = useGitHubActivity("sddion", permission === "granted")
     const { supported: bluetoothSupported, device, connecting, error: bluetoothError, requestDevice } = useBluetooth()
+    const { showSnowfall, toggleSnowfall } = useWindowManager()
 
     React.useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000)
@@ -59,6 +61,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
         { icon: <Wifi size={20} />, label: "Wi-Fi", active: true },
         { icon: <Bluetooth size={20} />, label: "Bluetooth", active: !!device?.connected },
         { icon: <Bell size={20} />, label: "Notifications", active: permission === "granted" },
+        { icon: <Snowflake size={20} />, label: "Snow", active: showSnowfall },
         { icon: <Moon size={20} />, label: "Do Not Disturb", active: false },
     ])
 
@@ -81,6 +84,12 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
             return
         }
 
+        // Handle Snow toggle
+        if (toggle.label === "Snow") {
+            toggleSnowfall()
+            return
+        }
+
         // Regular toggles
         setToggles(prev => prev.map((t, i) =>
             i === index ? { ...t, active: !t.active } : t
@@ -92,9 +101,10 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
         setToggles(prev => prev.map(t => {
             if (t.label === "Bluetooth") return { ...t, active: !!device?.connected }
             if (t.label === "Notifications") return { ...t, active: permission === "granted" }
+            if (t.label === "Snow") return { ...t, active: showSnowfall }
             return t
         }))
-    }, [device, permission])
+    }, [device, permission, showSnowfall])
 
 
 

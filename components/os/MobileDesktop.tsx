@@ -18,6 +18,7 @@ import dynamic from "next/dynamic"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
+import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
@@ -158,7 +159,7 @@ export function MobileDesktop() {
 
     return (
         <div className="h-screen w-screen bg-black text-white overflow-hidden relative font-sans">
-
+            <SnowfallEffect />
             {/* Status Bar - Non-interactive background */}
             <div className="absolute top-0 left-0 right-0 z-40 px-6 pt-2 pb-1 flex items-center justify-between text-white text-xs bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
                 <span className="font-semibold">{format(time, "HH:mm")}</span>

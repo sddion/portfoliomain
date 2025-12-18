@@ -6,7 +6,7 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette, Zap } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
@@ -15,6 +15,8 @@ import { ExperienceApp } from "@/components/apps/ExperienceApp"
 import { CreditsApp } from "@/components/apps/CreditsApp"
 import { ConkyWidget } from "@/components/os/ConkyWidget"
 import { SettingsApp } from "@/components/apps/SettingsApp"
+import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
+import { BlogApp } from "@/components/apps/BlogApp"
 import dynamic from "next/dynamic"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
@@ -34,6 +36,18 @@ export function Desktop() {
     }
 
     const icons = [
+        {
+            id: "esp32-flasher",
+            label: "ESP Flasher",
+            icon: <Zap className="text-orange-500" size={32} />,
+            content: <ESP32FlasherApp />,
+        },
+        {
+            id: "blog",
+            label: "Blog",
+            icon: <FileText className="text-teal-400" size={32} />,
+            content: <BlogApp />,
+        },
         {
             id: "terminal",
             label: "Terminal",
@@ -77,6 +91,18 @@ export function Desktop() {
             label: "Settings",
             icon: <Settings className="text-zinc-400" size={32} />,
             content: <SettingsApp />,
+        },
+        {
+            id: "esp32-flasher",
+            label: "ESP Flasher",
+            icon: <Zap className="text-orange-500" size={32} />,
+            content: <ESP32FlasherApp />,
+        },
+        {
+            id: "blog",
+            label: "Blog",
+            icon: <FileText className="text-teal-400" size={32} />,
+            content: <BlogApp />,
         },
         {
             id: "github",
