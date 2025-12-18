@@ -4,9 +4,11 @@ export function AboutApp() {
     return (
         <div className="p-6 font-mono text-zinc-300 space-y-6 max-w-3xl mx-auto selection:bg-green-500/30">
             <div className="flex items-center gap-4 mb-6 border-b border-zinc-700 pb-4">
-                <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center text-xl font-bold text-green-500 border border-green-500/50">
-                    USER
-                </div>
+                <img
+                    src="https://avatars.githubusercontent.com/u/152778879?v=4"
+                    alt="Sanju"
+                    className="w-16 h-16 rounded-full border border-green-500/50 object-cover shadow-lg"
+                />
                 <div>
                     <h1 className="text-2xl font-bold text-white">Sanju</h1>
                     <p className="text-green-500">Full-Stack Developer & Security Engineer</p>
@@ -27,7 +29,7 @@ export function AboutApp() {
                     <span className="text-blue-400">Windows automation</span> and security scripting.
                 </p>
 
-                <blockquote className="border-l-2 border-green-500 pl-4 py-2 my-4 bg-zinc-900/50 italic text-zinc-400">
+                <blockquote className="border-l-2 border-green-500 pl-4 py-2 my-4 bg-zinc-900 italic text-zinc-400">
                     &quot;Fullstack dev, automation junkie, CLI wizard, professional code wrangler.
                     If it can be automated, I&apos;ll automate it. If it can&apos;t, I&apos;ll still try.&quot;
                 </blockquote>

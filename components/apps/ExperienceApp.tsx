@@ -114,7 +114,7 @@ export function ExperienceApp() {
                         </div>
 
                         {/* Content Card */}
-                        <div className="bg-zinc-900/50 border border-zinc-800 p-4 rounded hover:border-zinc-700 transition-colors group">
+                        <div className="bg-zinc-900 border border-zinc-800 p-4 rounded hover:border-zinc-700 transition-colors group">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                                 <div>
                                     <h3 className={`text-lg font-bold ${exp.type === 'builder' ? 'text-green-400' : 'text-white'

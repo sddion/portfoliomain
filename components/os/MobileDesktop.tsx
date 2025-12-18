@@ -5,7 +5,7 @@ import { useWindowManager } from "@/components/os/WindowManager"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Sparkles } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Palette } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
@@ -99,7 +99,7 @@ export function MobileDesktop() {
         {
             id: "credits",
             label: "Credits",
-            icon: <Sparkles className="text-yellow-400" size={24} />,
+            icon: <Palette className="text-yellow-400" size={24} />,
             bg: "bg-zinc-800",
             content: <CreditsApp />,
         },

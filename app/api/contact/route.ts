@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     // 3. Send to notification service
 
     // For now, we'll just log and return success
-    console.warn("[v0] Contact form submission:", { name, email, message })
+    console.warn("Contact form submission:", { name, email, message })
 
     // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 500))
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       { status: 200 },
     )
   } catch (error) {
-    console.error("[v0] Contact form error:", error)
+    console.error("Contact form error:", error)
     return NextResponse.json({ error: "Failed to send message. Please try again." }, { status: 500 })
   }
 }

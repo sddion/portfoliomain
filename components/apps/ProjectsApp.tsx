@@ -205,7 +205,7 @@ export function ProjectsApp() {
     return (
         <div className="flex h-full text-zinc-300 font-sans">
             {/* Sidebar */}
-            <div className="w-48 border-r border-zinc-700 bg-zinc-900/50 flex flex-col pt-2">
+            <div className="w-48 border-r border-zinc-700 bg-zinc-900 flex flex-col pt-2">
                 <div className="px-4 py-2 text-xs font-bold text-zinc-500 uppercase tracking-wider">Locations</div>
                 <button
                     onClick={() => setActiveCategory("all")}

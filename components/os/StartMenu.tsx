@@ -37,9 +37,11 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                     >
                         {/* Header */}
                         <div className="bg-zinc-800 p-3 border-b border-zinc-700 flex items-center gap-2">
-                            <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center font-bold text-black shadow-lg">
-                                S
-                            </div>
+                            <img
+                                src="https://avatars.githubusercontent.com/u/152778879?v=4"
+                                alt="User Avatar"
+                                className="w-8 h-8 rounded-full shadow-lg object-cover"
+                            />
                             <span className="font-bold text-zinc-200">SanjuOS</span>
                         </div>
 

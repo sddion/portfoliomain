@@ -19,14 +19,20 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
         return () => clearInterval(timer)
     }, [])
 
-    const toggles = [
+    const [toggles, setToggles] = useState([
         { icon: <Wifi size={20} />, label: "Wi-Fi", active: true },
         { icon: <Bluetooth size={20} />, label: "Bluetooth", active: true },
         { icon: <Battery size={20} />, label: "Battery Saver", active: false },
         { icon: <Moon size={20} />, label: "Do Not Disturb", active: false },
         { icon: <Plane size={20} />, label: "Airplane Mode", active: false },
         { icon: <Sun size={20} />, label: "Flashlight", active: false },
-    ]
+    ])
+
+    const handleToggle = (index: number) => {
+        setToggles(prev => prev.map((t, i) =>
+            i === index ? { ...t, active: !t.active } : t
+        ))
+    }
 
     const notifications = [
         {
@@ -77,17 +83,18 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                 </div>
                 <div className="flex gap-4 mb-1">
                     <Settings size={20} className="text-zinc-400" />
-                    <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center">
-                        <span className="text-xs font-bold">JD</span>
-                    </div>
                 </div>
             </div>
 
             {/* Quick Settings */}
             <div className="p-4 grid grid-cols-4 gap-4">
                 {toggles.map((t, i) => (
-                    <button key={i} className="flex flex-col items-center gap-2 group">
-                        <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${t.active ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'bg-zinc-800 text-zinc-400'}`}>
+                    <button
+                        key={i}
+                        className="flex flex-col items-center gap-2 group"
+                        onClick={() => handleToggle(i)}
+                    >
+                        <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${t.active ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.6)] scale-105' : 'bg-zinc-800 text-zinc-400'}`}>
                             {t.icon}
                         </div>
                         <span className="text-[10px] text-zinc-300 font-medium truncate w-full text-center">{t.label}</span>

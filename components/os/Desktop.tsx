@@ -6,7 +6,7 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Sparkles } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
@@ -62,7 +62,7 @@ export function Desktop() {
             id: "credits",
             label: "Credits",
             icon: <div className="w-8 h-8 rounded-md bg-zinc-800 flex items-center justify-center text-yellow-400 border border-zinc-700 shadow-lg">
-                <Sparkles size={20} />
+                <Palette size={20} />
             </div>,
             content: <CreditsApp />,
         },

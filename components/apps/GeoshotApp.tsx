@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Download, Globe, Github, Camera, MapPin, Shield, Layers, Zap } from "lucide-react"
+import { Download, Globe, Github, Camera, MapPin, Shield, Layers, Code2 } from "lucide-react"
 
 export function GeoshotApp() {
     return (
@@ -64,7 +64,7 @@ export function GeoshotApp() {
                             desc="Crystal clear images using native device APIs."
                         />
                         <FeatureCard
-                            icon={<Zap className="text-yellow-400" />}
+                            icon={<Code2 className="text-yellow-400" />}
                             title="Open Source"
                             desc="100% transparent code. Free and Ad-Free forever."
                         />
