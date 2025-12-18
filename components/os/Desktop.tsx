@@ -12,6 +12,7 @@ import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
+import { GeoshotApp } from "@/components/apps/GeoshotApp"
 import { ConkyWidget } from "@/components/os/ConkyWidget"
 import { SettingsApp } from "@/components/apps/SettingsApp"
 import dynamic from "next/dynamic"
@@ -56,6 +57,20 @@ export function Desktop() {
             label: "Projects",
             icon: <Folder className="text-yellow-400" size={32} />,
             content: <ProjectsApp />,
+        },
+        {
+            id: "geoshot",
+            label: "Geoshot",
+            icon: (
+                <div className="w-8 h-8 rounded-md overflow-hidden bg-zinc-900 border border-zinc-700">
+                    <img
+                        src="https://raw.githubusercontent.com/sddion/geoshot/main/docs/assets/android-icon-48x48.png"
+                        alt="Geoshot"
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+            ),
+            content: <GeoshotApp />,
         },
         {
             id: "resume",

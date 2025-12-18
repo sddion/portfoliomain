@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
+import { ProjectsApp } from "@/components/apps/ProjectsApp"
+import { Folder } from "lucide-react"
 
 export function TerminalApp() {
     const [history, setHistory] = useState<string[]>([
@@ -14,7 +16,7 @@ export function TerminalApp() {
 
     const commands: Record<string, (args: string[]) => void> = {
         help: () => {
-            addToHistory("Available commands: help, clear, whoami, projects, github, date")
+            addToHistory("Available commands: help, curl, clear, whoami, projects, github, date")
         },
         clear: () => {
             setHistory([])
@@ -30,10 +32,8 @@ export function TerminalApp() {
             window.open("https://github.com/sddion", "_blank")
         },
         projects: () => {
-            addToHistory("Listing projects...")
-            // TODO: List projects textually or open project window
-            addToHistory("- Bagley (AI Assistant)")
-            addToHistory("- Portfolio (This website)")
+            addToHistory("Opening Projects window...")
+            openWindow("projects", "Projects", <ProjectsApp />, <Folder className="text-yellow-400" size={32} />)
         },
         curl: async (args) => {
             const url = args[0]
@@ -64,7 +64,7 @@ export function TerminalApp() {
         const [command, ...args] = cmd.trim().split(" ")
         if (!command) return
 
-        addToHistory(`guest@sanju-portfolio:~$ ${cmd}`)
+        addToHistory(`guest@portfolio:~$ ${cmd}`)
 
         if (commands[command]) {
             commands[command](args)
