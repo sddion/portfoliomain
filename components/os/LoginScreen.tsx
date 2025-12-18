@@ -29,9 +29,9 @@ export function LoginScreen() {
 
                 {/* User Avatar - Anonymous Style */}
                 <div className="w-32 h-32 bg-zinc-900 rounded-full border-2 border-green-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,65,0.2)] overflow-hidden relative">
-                    {/* Anonymous Mask / Icon Vibe */}
-                    <User size={80} className="text-zinc-400 absolute bottom-0 translate-y-2" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                    {/* DedSec Logo */}
+                    <img src="/DedSec_logo.webp" alt="User" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                 </div>
 
                 <div className="text-center space-y-2">
