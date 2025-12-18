@@ -4,6 +4,8 @@ import React, { useState } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { User, Lock, ArrowRight } from "lucide-react"
 
+import { FloatingCode } from "@/components/os/FloatingCode"
+
 export function LoginScreen() {
     const { login } = useWindowManager()
     const [password, setPassword] = useState("")
@@ -21,8 +23,9 @@ export function LoginScreen() {
 
     return (
         <div className="h-screen w-screen flex flex-col items-center justify-center bg-zinc-950 text-green-500 font-mono relative overflow-hidden">
-            {/* Background Animation (Subtle) */}
+            {/* Background Animation (Floating Code) */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-900/20 via-zinc-950 to-zinc-950" />
+            <FloatingCode />
             <div className="crt-effect pointer-events-none" />
 
             <div className="z-10 flex flex-col items-center gap-8 w-full max-w-sm px-4">
