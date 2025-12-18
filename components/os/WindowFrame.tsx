@@ -34,22 +34,18 @@ export function WindowFrame({
             drag={!isMaximized}
             dragMomentum={false}
             dragConstraints={{ left: 0, top: 0, right: window.innerWidth - 100, bottom: window.innerHeight - 100 }}
-            initial={{ scale: 0.9, opacity: 0, x: "-50%", y: "-50%" }}
+            initial={{ scale: 0.9, opacity: 0, x: isMaximized ? 0 : "25vw", y: isMaximized ? 0 : "15vh" }}
             animate={{
                 scale: 1,
                 opacity: 1,
                 width: isMaximized ? "100vw" : "800px",
                 height: isMaximized ? "calc(100vh - 48px)" : "600px",
-                x: isMaximized ? 0 : "-50%",
-                y: isMaximized ? 0 : "-50%",
+                x: isMaximized ? 0 : undefined,
+                y: isMaximized ? 0 : undefined,
             }}
             exit={{ scale: 0.9, opacity: 0 }}
             onMouseDown={() => focusWindow(id)}
-            style={{
-                zIndex,
-                top: isMaximized ? 0 : "50%",
-                left: isMaximized ? 0 : "50%",
-            }}
+            style={{ zIndex }}
             className={cn(
                 "absolute bg-zinc-900 border border-zinc-700 shadow-xl overflow-hidden flex flex-col",
                 isMaximized ? "top-0 left-0 rounded-none" : "rounded-md"

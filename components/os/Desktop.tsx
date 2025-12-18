@@ -93,7 +93,7 @@ export function Desktop() {
     // The previous update appended duplicates. I will re-declare the list cleanly.
 
     return (
-        <div className="h-screen w-screen overflow-hidden bg-[url('/image_10463403.png')] bg-cover bg-center text-white relative">
+        <div className="h-screen w-screen overflow-hidden bg-[url('/cyber-bg.jpg')] bg-cover bg-center text-white relative">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
 
             {/* Conky Widget */}

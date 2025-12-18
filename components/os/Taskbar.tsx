@@ -3,15 +3,20 @@
 import React, { useState, useEffect } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { format } from "date-fns"
-import { Battery, BatteryCharging, Wifi, WifiOff, Volume2, VolumeX, Power } from "lucide-react"
+import { Battery, BatteryCharging, Wifi, WifiOff, Power } from "lucide-react"
+
+import { StartMenu } from "./StartMenu"
+import { WiFiMenu } from "./WiFiMenu"
 
 export function Taskbar() {
     const { windows, minimizeWindow, focusWindow, logout } = useWindowManager()
+    const [startOpen, setStartOpen] = useState(false)
+    const [wifiOpen, setWifiOpen] = useState(false)
     const [time, setTime] = useState(new Date())
     const [batteryLevel, setBatteryLevel] = useState(100)
     const [isCharging, setIsCharging] = useState(false)
     const [online, setOnline] = useState(true)
-    const [volume, setVolume] = useState(100) // Simulated volume since Web Audio API doesn't control system volume
+
 
     useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000)
@@ -47,8 +52,12 @@ export function Taskbar() {
     return (
         <div className="fixed bottom-0 left-0 right-0 h-10 bg-zinc-900/95 border-t border-zinc-700 flex items-center justify-between px-2 z-[9999] backdrop-blur-sm">
             {/* Start Button / Menu */}
-            <div className="flex items-center gap-2">
-                <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-800 rounded text-green-500 font-bold transition-colors">
+            <div className="relative flex items-center gap-2">
+                <StartMenu isOpen={startOpen} onClose={() => setStartOpen(false)} />
+                <button
+                    onClick={() => setStartOpen(!startOpen)}
+                    className={`flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-800 rounded font-bold transition-colors ${startOpen ? 'bg-zinc-800 text-green-400' : 'text-green-500'}`}
+                >
                     <div className="w-4 h-4 rounded-sm bg-green-500 relative flex items-center justify-center">
                         <span className="text-black text-[10px] font-bold">_</span>
                     </div>
@@ -79,26 +88,18 @@ export function Taskbar() {
             <div className="flex items-center gap-4 px-2 text-zinc-400 text-xs font-mono">
                 <div className="flex items-center gap-3">
                     {/* Wifi */}
-                    <div className="flex items-center gap-1" title={online ? "Connected" : "Offline"}>
-                        {online ? <Wifi size={14} /> : <WifiOff size={14} className="text-red-500" />}
+                    <div className="relative">
+                        <WiFiMenu isOpen={wifiOpen} onClose={() => setWifiOpen(false)} />
+                        <button
+                            onClick={() => setWifiOpen(!wifiOpen)}
+                            className={`flex items-center gap-1 hover:text-white transition-colors ${wifiOpen ? 'text-green-400' : ''}`}
+                            title={online ? "Connected" : "Offline"}
+                        >
+                            {online ? <Wifi size={14} /> : <WifiOff size={14} className="text-red-500" />}
+                        </button>
                     </div>
 
-                    {/* Volume (Simulated with hover slider) */}
-                    <div className="group relative flex items-center gap-1 cursor-pointer">
-                        {volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
-                        {/* Tooltip Slider */}
-                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-800 p-2 rounded hidden group-hover:flex flex-col items-center gap-1 border border-zinc-700 shadow-lg">
-                            <input
-                                type="range"
-                                min="0"
-                                max="100"
-                                value={volume}
-                                onChange={(e) => setVolume(Number(e.target.value))}
-                                className="h-24 -rotate-90 origin-center accent-green-500"
-                            />
-                            <span className="text-[10px]">{volume}%</span>
-                        </div>
-                    </div>
+
 
                     {/* Battery */}
                     <div className="flex items-center gap-1" title={`${batteryLevel}% ${isCharging ? '(Charging)' : ''}`}>
