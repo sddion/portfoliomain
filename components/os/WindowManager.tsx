@@ -76,34 +76,46 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     }, [])
 
     const focusWindow = useCallback((id: string) => {
-        if (id === activeWindowId) {
-            setWindows(prev => {
-                const win = prev.find(w => w.id === id)
-                if (win && win.isMinimized) {
-                    return prev.map(w => w.id === id ? { ...w, isMinimized: false } : w)
-                }
-                return prev
-            })
-            return
-        }
+        // Use a single setWindows call to handle both active ID and z-ordering
+        // to avoid nested state updates and unnecessary re-renders.
+        setWindows((prevWindows) => {
+            const existing = prevWindows.find(w => w.id === id);
 
-        const newZ = maxZIndex + 1
-        setMaxZIndex(newZ)
-        setActiveWindowId(id)
-        setWindows((prevWindows) =>
-            prevWindows.map((w) => (w.id === id ? { ...w, zIndex: newZ, isMinimized: false } : w))
-        )
-    }, [activeWindowId, maxZIndex])
+            // If window doesn't exist or is already focused and opened, do nothing.
+            // We use a functional update for setActiveWindowId below.
+
+            let updatedWindows = prevWindows;
+
+            // Increment zIndex locally based on maxZIndex
+            // Note: We'll update maxZIndex separately if needed, but for focus we can just use the current top + 1.
+            const currentMaxZ = Math.max(...prevWindows.map(w => w.zIndex), 10);
+            const newZ = currentMaxZ + 1;
+
+            updatedWindows = prevWindows.map((w) =>
+                w.id === id ? { ...w, zIndex: newZ, isMinimized: false } : w
+            );
+
+            // Only update active ID if it changed
+            setActiveWindowId(id);
+            setMaxZIndex(newZ);
+
+            return updatedWindows;
+        });
+    }, []);
 
     const openWindow = useCallback((id: string, title: string, content: React.ReactNode, icon?: React.ReactNode, options?: WindowOptions) => {
         setWindows((prev) => {
-            const existing = prev.find((w) => w.id === id)
+            const existing = prev.find((w) => w.id === id);
             if (existing) {
-                focusWindow(id)
-                return prev
+                // If it exists, we just need to focus it. 
+                // We'll call focusWindow which is now stable.
+                setTimeout(() => focusWindow(id), 0);
+                return prev;
             }
 
-            const newZ = maxZIndex + 1
+            const currentMaxZ = Math.max(...prev.map(w => w.zIndex), 10);
+            const newZ = currentMaxZ + 1;
+
             const newCtx: WindowState = {
                 id,
                 title,
@@ -115,14 +127,13 @@ export function WindowProvider({ children }: { children: ReactNode }) {
                 icon,
                 width: options?.width,
                 height: options?.height,
-            }
-            setMaxZIndex(newZ)
-            setWindows(current => [...current, newCtx])
-            setActiveWindowId(id)
+            };
 
-            return prev
-        })
-    }, [focusWindow, maxZIndex])
+            setMaxZIndex(newZ);
+            setActiveWindowId(id);
+            return [...prev, newCtx];
+        });
+    }, [focusWindow]);
 
     const closeWindow = useCallback((id: string) => {
         setWindows((prev) => prev.filter((w) => w.id !== id))
@@ -139,6 +150,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         setWindows((prev) =>
             prev.map((w) => (w.id === id ? { ...w, isMaximized: !w.isMaximized } : w))
         )
+        // focusWindow is now stable (no dependencies), so we can call it safely
         focusWindow(id)
     }, [focusWindow])
 
