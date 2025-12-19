@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Github, Code, Terminal, Quote } from "lucide-react"
+import { Github, Code, Terminal, Quote, Activity } from "lucide-react"
 import { format } from "date-fns"
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useWindowManager } from "@/components/os/WindowManager"
 
 interface GithubStats {
     public_repos: number
@@ -16,10 +17,27 @@ interface LanguageStats {
 }
 
 export function ConkyWidget() {
+    const { windows } = useWindowManager()
     const [stats, setStats] = useState<GithubStats | null>(null)
     const [time, setTime] = useState(new Date())
     const [logs, setLogs] = useState<string[]>([])
     const [languages, setLanguages] = useState<{ name: string; percent: number; color: string; textColor: string }[]>([])
+    const [memMetrics, setMemMetrics] = useState({ used: 0, total: 0 })
+
+    useEffect(() => {
+        const updateMem = () => {
+            const mem = (performance as any).memory
+            if (mem) {
+                setMemMetrics({
+                    used: Math.round(mem.usedJSHeapSize / 1048576),
+                    total: Math.round(mem.jsHeapLimit / 1048576)
+                })
+            }
+        }
+        updateMem()
+        const interval = setInterval(updateMem, 3000)
+        return () => clearInterval(interval)
+    }, [])
 
     // Fake system logs
     useEffect(() => {
@@ -119,9 +137,50 @@ export function ConkyWidget() {
                             <span>OS:</span>
                             <span className="text-foreground">SanjuOS v2.0</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span>KERNEL:</span>
-                            <span className="text-foreground">Linux 6.8.0-kali</span>
+                        <div className="flex justify-between mb-2">
+                            <span>RAM:</span>
+                            <span className="text-foreground">{memMetrics.used}MB / {memMetrics.total}MB</span>
+                        </div>
+
+                        {/* Progress Bar for Total RAM */}
+                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-[var(--primary)] transition-all duration-1000"
+                                style={{ width: `${(memMetrics.used / memMetrics.total) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Top Processes */}
+                    <div className="mb-4">
+                        <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
+                            <Activity size={12} /> Top Processes
+                        </h3>
+                        <div className="space-y-1">
+                            {windows.length > 0 ? (
+                                windows.slice(0, 4).map(win => (
+                                    <div key={win.id} className="flex justify-between items-center group">
+                                        <span className="truncate w-32 group-hover:text-[var(--primary)] transition-colors">
+                                            {win.title.toLowerCase().replace(/\s+/g, '-')}
+                                        </span>
+                                        <div className="flex gap-3 text-[10px]">
+                                            <span className="text-blue-400">{(Math.random() * 2 + 0.1).toFixed(1)}%</span>
+                                            <span className="text-foreground/60 w-10 text-right">
+                                                {Math.round((memMetrics.used / (windows.length + 2)) + (Math.random() * 10))}M
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-zinc-600 italic">No active processes</div>
+                            )}
+                            <div className="flex justify-between items-center opacity-40">
+                                <span>task-monitor</span>
+                                <div className="flex gap-3 text-[10px]">
+                                    <span className="text-blue-400">0.4%</span>
+                                    <span className="text-foreground/60 w-10 text-right">32M</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

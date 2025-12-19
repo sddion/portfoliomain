@@ -20,6 +20,15 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
     const [urlInput, setUrlInput] = useState("")
     const inputRef = useRef<HTMLInputElement>(null)
 
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768)
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
+
     const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0]
 
     // Focus address bar when active tab changes or is home
@@ -113,75 +122,95 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
 
     return (
         <div className="h-full bg-[var(--background)] flex flex-col font-sans select-none overflow-hidden">
-            {/* Tab Bar */}
-            <div className="h-10 bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-end px-2 gap-1 overflow-x-auto no-scrollbar shrink-0">
-                {tabs.map((tab) => (
-                    <div
-                        key={tab.id}
-                        onClick={() => {
-                            setActiveTabId(tab.id)
-                            setUrlInput(tab.url === "about:home" ? "" : tab.url)
-                        }}
-                        className={cn(
-                            "group flex items-center gap-2 px-3 py-1.5 min-w-[120px] max-w-[200px] rounded-t-lg text-xs font-medium cursor-pointer transition-all border-x border-t border-transparent",
-                            activeTabId === tab.id
-                                ? "bg-[var(--background)] border-[var(--os-border)] text-[var(--foreground)]"
-                                : "text-[var(--muted-foreground)] hover:bg-white/5"
-                        )}
-                    >
-                        <Globe size={12} className="shrink-0" />
-                        <span className="truncate flex-1">{tab.isHome ? "Home" : tab.url.replace(/^https?:\/\/(www\.)?/, '')}</span>
-                        <button
-                            onClick={(e) => closeTab(tab.id, e)}
-                            className="p-0.5 rounded-full hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+            {/* Tab Bar - Hidden on mobile */}
+            {!isMobile && (
+                <div className="h-10 bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-end px-2 gap-1 overflow-x-auto no-scrollbar shrink-0">
+                    {tabs.map((tab) => (
+                        <div
+                            key={tab.id}
+                            onClick={() => {
+                                setActiveTabId(tab.id)
+                                setUrlInput(tab.url === "about:home" ? "" : tab.url)
+                            }}
+                            className={cn(
+                                "group flex items-center gap-2 px-3 py-1.5 min-w-[120px] max-w-[200px] rounded-t-lg text-xs font-medium cursor-pointer transition-all border-x border-t border-transparent",
+                                activeTabId === tab.id
+                                    ? "bg-[var(--background)] border-[var(--os-border)] text-[var(--foreground)]"
+                                    : "text-[var(--muted-foreground)] hover:bg-white/5"
+                            )}
                         >
-                            <X size={10} />
-                        </button>
-                    </div>
-                ))}
-                <button
-                    onClick={addTab}
-                    className="p-2 mb-1 rounded-md text-[var(--muted-foreground)] hover:bg-white/10 transition-colors"
-                >
-                    <Plus size={14} />
-                </button>
-            </div>
-
-            {/* Browser Toolbar */}
-            <div className="h-12 bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-center gap-2 px-3 shrink-0">
-                <div className="flex items-center gap-1 shrink-0">
-                    <button className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
-                        <ChevronLeft size={18} />
-                    </button>
-                    <button className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
-                        <ChevronRight size={18} />
-                    </button>
-                    <button onClick={() => navigate(activeTab.url)} className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
-                        <RotateCcw size={18} />
-                    </button>
-                    <button onClick={() => navigate("about:home")} className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
-                        <Home size={18} />
+                            <Globe size={12} className="shrink-0" />
+                            <span className="truncate flex-1">{tab.isHome ? "Home" : tab.url.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                            <button
+                                onClick={(e) => closeTab(tab.id, e)}
+                                className="p-0.5 rounded-full hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                                <X size={10} />
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        onClick={addTab}
+                        className="p-2 mb-1 rounded-md text-[var(--muted-foreground)] hover:bg-white/10 transition-colors"
+                    >
+                        <Plus size={14} />
                     </button>
                 </div>
+            )}
 
-                <form onSubmit={handleSearch} className="flex-1 max-w-2xl mx-auto flex items-center relative">
+            {/* Browser Toolbar */}
+            <div className={cn(
+                "bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-center gap-2 shrink-0",
+                isMobile ? "h-16 px-4" : "h-12 px-3"
+            )}>
+                {!isMobile && (
+                    <div className="flex items-center gap-1 shrink-0">
+                        <button className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
+                            <ChevronLeft size={18} />
+                        </button>
+                        <button className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
+                            <ChevronRight size={18} />
+                        </button>
+                        <button onClick={() => navigate(activeTab.url)} className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
+                            <RotateCcw size={18} />
+                        </button>
+                        <button onClick={() => navigate("about:home")} className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
+                            <Home size={18} />
+                        </button>
+                    </div>
+                )}
+
+                <form onSubmit={handleSearch} className="flex-1 flex items-center relative">
                     <div className="absolute left-3 text-[var(--muted-foreground)]">
-                        <Globe size={14} />
+                        {isMobile ? <Globe size={16} className="text-primary/60" /> : <Globe size={14} />}
                     </div>
                     <input
                         ref={inputRef}
                         type="text"
                         value={urlInput}
                         onChange={(e) => setUrlInput(e.target.value)}
-                        placeholder="Search or enter URL..."
-                        className="w-full h-8 bg-black/40 border border-[var(--os-border)] rounded-full pl-9 pr-4 text-xs font-medium outline-none focus:border-primary/50 transition-colors text-[var(--foreground)]"
+                        placeholder={isMobile ? "Search..." : "Search or enter URL..."}
+                        className={cn(
+                            "w-full bg-black/40 border border-[var(--os-border)] outline-none focus:border-primary/50 transition-colors text-[var(--foreground)]",
+                            isMobile ? "h-10 pl-10 pr-4 rounded-xl text-sm font-bold" : "h-8 pl-9 pr-4 rounded-full text-xs font-medium"
+                        )}
                     />
-                    <button type="submit" className="absolute right-3 text-[var(--muted-foreground)] hover:text-primary transition-colors">
-                        <Search size={14} />
-                    </button>
+                    {isMobile && tabs.length > 1 && (
+                        <div className="absolute right-3 flex items-center">
+                            <span className="bg-white/10 text-white/50 w-5 h-5 rounded flex items-center justify-center text-[10px] font-black">{tabs.length}</span>
+                        </div>
+                    )}
                 </form>
 
-                <div className="w-24 shrink-0" />
+                {isMobile ? (
+                    <div className="flex gap-1">
+                        <button onClick={() => navigate(activeTab.url)} className="p-2 text-[var(--muted-foreground)] active:text-primary transition-colors">
+                            <RotateCcw size={20} />
+                        </button>
+                    </div>
+                ) : (
+                    <div className="w-24 shrink-0" />
+                )}
             </div>
 
             {/* Browser Content */}

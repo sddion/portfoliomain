@@ -16,7 +16,7 @@ import { ConkyWidget } from "@/components/os/ConkyWidget"
 import { SettingsApp } from "@/components/apps/SettingsApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
-import { ResourceMonitorApp } from "@/components/apps/ResourceMonitorApp"
+import { TaskMonitor } from "@/components/apps/TaskMonitor"
 import { IoTControlApp } from "@/components/apps/IoTControlApp"
 import { BrowserApp } from "@/components/apps/BrowserApp"
 import dynamic from "next/dynamic"
@@ -58,9 +58,9 @@ export function Desktop() {
         },
         {
             id: "sys-monitor",
-            label: "Sys Monitor",
+            label: "Task Monitor",
             icon: <Activity className="text-emerald-500" size={32} />,
-            content: <ResourceMonitorApp />,
+            content: <TaskMonitor />,
         },
         {
             id: "iot-control",
