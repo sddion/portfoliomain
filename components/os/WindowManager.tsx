@@ -145,7 +145,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
             setActiveWindowId(id);
             return [...prev, newCtx];
         });
-    }, [focusWindow]);
+    }, []);
 
     const closeWindow = useCallback((id: string) => {
         setWindows((prev) => prev.filter((w) => w.id !== id))
