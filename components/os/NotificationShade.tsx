@@ -1,14 +1,13 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Wifi, Bluetooth, Battery, Moon, Sun, Plane, Settings, Bell, X, AlertCircle, Snowflake } from "lucide-react"
 import { format } from "date-fns"
 import { useNotifications } from "@/hooks/useNotifications"
 import { useGitHubActivity } from "@/hooks/useGitHubActivity"
 import { useBluetooth } from "@/hooks/useBluetooth"
 import { useWindowManager } from "@/components/os/WindowManager"
-import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 
 import { MobileSettings } from "@/components/os/MobileSettings"
 
@@ -19,12 +18,11 @@ interface NotificationShadeProps {
 
 export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
     const [time, setTime] = useState(new Date())
-    const [brightness, setBrightness] = useState(80)
     const [githubStats, setGithubStats] = useState({ repos: 0, followers: 0 })
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
     // Hooks
-    const { supported, permission, notifications, requestPermission, showNotification, clearNotifications } = useNotifications()
+    const { supported, permission, notifications, requestPermission, showNotification, clearNotifications, removeNotification } = useNotifications()
     const { commits, refetch } = useGitHubActivity("sddion", permission === "granted")
     const { supported: bluetoothSupported, device, connecting, error: bluetoothError, requestDevice } = useBluetooth()
     const { showSnowfall, toggleSnowfall } = useWindowManager()
@@ -73,6 +71,10 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
 
         // Handle Bluetooth toggle
         if (toggle.label === "Bluetooth") {
+            if (!bluetoothSupported) {
+                showNotification("Bluetooth", { body: "Bluetooth is not supported on this device" })
+                return
+            }
             if (!device?.connected) {
                 await requestDevice()
             }
@@ -119,7 +121,13 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
         }
     }, [bluetoothError, showNotification])
 
-
+    // Periodically refetch GitHub activity when notifications are supported and enabled
+    useEffect(() => {
+        if (supported && permission === "granted") {
+            const interval = setInterval(() => refetch(), 60000)
+            return () => clearInterval(interval)
+        }
+    }, [supported, permission, refetch])
 
     return (
         <motion.div
@@ -178,6 +186,19 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                 </div>
             )}
 
+            {/* GitHub Stats */}
+            <div className="px-4 pb-2">
+                <div className="bg-[var(--os-surface)] border border-[var(--os-border)] rounded-lg p-3 flex justify-around">
+                    <div className="text-center">
+                        <span className="text-lg font-bold text-[var(--foreground)]">{githubStats.repos}</span>
+                        <p className="text-[10px] text-[var(--muted-foreground)]">Repos</p>
+                    </div>
+                    <div className="text-center">
+                        <span className="text-lg font-bold text-[var(--foreground)]">{githubStats.followers}</span>
+                        <p className="text-[10px] text-[var(--muted-foreground)]">Followers</p>
+                    </div>
+                </div>
+            </div>
 
 
             {/* Notifications */}
@@ -201,22 +222,38 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                         <p className="text-sm text-zinc-500">No notifications</p>
                     </div>
                 ) : (
-                    notifications.map(n => (
-                        <div key={n.id} className="bg-[var(--os-surface)] rounded-2xl p-4 flex gap-3 border border-[var(--os-border)]">
-                            <div className="w-8 h-8 rounded-full bg-[var(--os-surface-hover)] flex items-center justify-center text-[var(--muted-foreground)]">
-                                <Bell size={16} />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                    <span className="text-xs font-medium text-[var(--muted-foreground)]">{n.title}</span>
-                                    <span className="text-[10px] text-[var(--muted-foreground)] opacity-60">
-                                        {format(n.timestamp, "HH:mm")}
-                                    </span>
+                    <AnimatePresence mode="popLayout">
+                        {notifications.map(n => (
+                            <motion.div
+                                key={n.id}
+                                drag="x"
+                                dragConstraints={{ left: 0, right: 0 }}
+                                dragElastic={0.5}
+                                onDragEnd={(_, info) => {
+                                    if (Math.abs(info.offset.x) > 100) {
+                                        removeNotification(n.id)
+                                    }
+                                }}
+                                initial={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 200 }}
+                                whileDrag={{ scale: 0.98, opacity: 0.8 }}
+                                className="bg-[var(--os-surface)] rounded-2xl p-4 flex gap-3 border border-[var(--os-border)] cursor-grab active:cursor-grabbing"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-[var(--os-surface-hover)] flex items-center justify-center text-[var(--muted-foreground)]">
+                                    <Bell size={16} />
                                 </div>
-                                <p className="text-xs text-[var(--foreground)] opacity-80 mt-0.5 leading-relaxed">{n.body}</p>
-                            </div>
-                        </div>
-                    ))
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-xs font-medium text-[var(--muted-foreground)]">{n.title}</span>
+                                        <span className="text-[10px] text-[var(--muted-foreground)] opacity-60">
+                                            {format(n.timestamp, "HH:mm")}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-[var(--foreground)] opacity-80 mt-0.5 leading-relaxed">{n.body}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 )}
             </div>
 

@@ -408,20 +408,7 @@ export function MobileDesktop() {
                             )}
                         </motion.div>
 
-                        {/* Page Indicators */}
-                        {totalPages > 1 && (
-                            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 pointer-events-none">
-                                {Array.from({ length: totalPages }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className={cn(
-                                            "h-1 rounded-full transition-all duration-300",
-                                            i === currentPage ? "w-6 bg-white" : "w-1 bg-white/20"
-                                        )}
-                                    />
-                                ))}
-                            </div>
-                        )}
+
                     </div>
                 </div>
             </div>
