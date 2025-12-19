@@ -4,7 +4,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { EditorToolbar } from '@/components/image-editor/EditorToolbar'
+import { ExportDialog, ExportFormat } from '@/components/image-editor/ExportDialog'
 import { useBackgroundRemoval } from '@/components/image-editor/useBackgroundRemoval'
+import { CanvasStageRef } from '@/components/image-editor/CanvasStage'
 
 // Dynamically import CanvasStage with no SSR because Konva uses window
 const CanvasStage = dynamic(
@@ -14,13 +16,19 @@ const CanvasStage = dynamic(
 
 export function ImageEditorApp() {
     const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null)
+    const [isCropping, setIsCropping] = useState(false)
+    const [showExportDialog, setShowExportDialog] = useState(false)
+
+    // Refs
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const stageRef = useRef<CanvasStageRef>(null)
 
     // Background removal hook
     const {
         removeBackground,
         resultUrl,
         isProcessing,
+        progress,
         error,
         reset
     } = useBackgroundRemoval()
@@ -29,16 +37,13 @@ export function ImageEditorApp() {
         const file = e.target.files?.[0]
         if (!file) return
 
+        // Cleanup previous if exists
+        if (originalImageUrl) URL.revokeObjectURL(originalImageUrl)
+
         const url = URL.createObjectURL(file)
         setOriginalImageUrl(url)
-        // Reset result when new image is loaded
-        // Note: useBackgroundRemoval reset logic is handled if we called reset(), 
-        // but here we just want to clear the result display, handled by prop passed to CanvasStage?
-        // Actually, we should call reset() from the hook if we want to clear the hook's state.
-        // But the hook exposes `removeBackground`, `resultUrl`. 
-        // We can just ignore the old resultUrl or wrap the reset.
-        // Let's implement reset in the App state or use the hook's reset if I added it.
-        // I added `reset` to the hook.
+        reset() // Reset previous results
+        setIsCropping(false)
     }
 
     const triggerFileSelect = () => {
@@ -51,11 +56,26 @@ export function ImageEditorApp() {
         }
     }
 
-    const handleDownload = () => {
-        if (resultUrl) {
+    const handleToggleCrop = () => {
+        setIsCropping(prev => !prev)
+    }
+
+    const handleConfirmCrop = () => {
+        stageRef.current?.applyCrop()
+        setIsCropping(false)
+    }
+
+    const handleExport = async (format: ExportFormat, quality: number, pixelRatio: number) => {
+        if (!stageRef.current) return
+
+        const dataUrl = stageRef.current.exportImage(format, quality, pixelRatio)
+
+        if (dataUrl) {
             const link = document.createElement('a')
-            link.href = resultUrl
-            link.download = 'removed-background.png'
+            link.href = dataUrl
+            // Determine extension
+            const ext = format.split('/')[1]
+            link.download = `edited-image.${ext}`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -63,7 +83,9 @@ export function ImageEditorApp() {
     }
 
     const handleReset = () => {
+        if (originalImageUrl) URL.revokeObjectURL(originalImageUrl)
         setOriginalImageUrl(null)
+        setIsCropping(false)
         if (fileInputRef.current) fileInputRef.current.value = ''
         reset()
     }
@@ -81,9 +103,14 @@ export function ImageEditorApp() {
                 hasImage={!!originalImageUrl}
                 hasResult={!!resultUrl}
                 isProcessing={isProcessing}
+                isCropping={isCropping}
+                progress={progress}
                 onOpenImage={triggerFileSelect}
                 onRemoveBackground={handleRemoveBackground}
-                onDownload={handleDownload}
+                onToggleCrop={handleToggleCrop}
+                onConfirmCrop={handleConfirmCrop}
+                onCancelCrop={() => setIsCropping(false)}
+                onExport={() => setShowExportDialog(true)}
                 onReset={handleReset}
             />
 
@@ -97,8 +124,10 @@ export function ImageEditorApp() {
 
             <div className="flex-1 relative">
                 <CanvasStage
+                    ref={stageRef}
                     originalImageUrl={originalImageUrl}
                     resultImageUrl={resultUrl}
+                    isCropping={isCropping}
                 />
 
                 {error && (
@@ -109,6 +138,12 @@ export function ImageEditorApp() {
                     </div>
                 )}
             </div>
+
+            <ExportDialog
+                open={showExportDialog}
+                onOpenChange={setShowExportDialog}
+                onExport={handleExport}
+            />
 
             {/* Attribution / Info */}
             <div className="bg-zinc-900 border-t border-zinc-800 p-1 text-[10px] text-zinc-500 text-center select-none">

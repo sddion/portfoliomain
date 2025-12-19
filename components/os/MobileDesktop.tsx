@@ -6,7 +6,7 @@ import { useNotifications } from "@/hooks/useNotifications"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard, X } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard, X, Minus } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
@@ -42,9 +42,6 @@ export function MobileDesktop() {
         return () => clearInterval(timer)
     }, [])
 
-    const [backPressCount, setBackPressCount] = useState(0)
-    const { showNotification } = useNotifications()
-
     React.useEffect(() => {
         const handlePopState = (event: PopStateEvent) => {
             if (isRecentsOpen) {
@@ -53,37 +50,18 @@ export function MobileDesktop() {
             }
 
             if (activeWindowId) {
-                // Double tap logic
-                if (backPressCount === 0) {
-                    // First press
-                    showNotification("System", { body: "Press back again to close app" })
-                    setBackPressCount(1)
-
-                    // Push state back so we don't actually leave (unless fast enough)
-                    // But wait, if we push state back, we create a loop.
-                    // Instead, let's just use the current history logic but add a guard?
-                    // "Double tap to exit" implies intercepting the BACK action.
-                    // The standard way on web is tricky. 
-                    // Let's stick to the user request: "double tap back button which for closing my apps"
-
-                    // If we are here, the user PRESSED back, so the browser ALREADY popped the state.
-                    // If we want to "cancel" it, we must push it back.
-                    window.history.pushState({ appId: activeWindowId }, "")
-
-                    setTimeout(() => setBackPressCount(0), 2000)
-                } else {
-                    // Second press - let it go (it will trigger popstate again? No, we need to manually close)
-                    // Actually, if we pushed state back, the second press will trigger popstate AGAIN.
-                    // So we check backPressCount.
-                    closeWindow(activeWindowId)
-                    setBackPressCount(0)
+                // Formatting back functionality to be standard:
+                // If the user navigates back (popstate), we effectively close the current window
+                // provided the new state isn't the same app (which shouldn't happen with our pushes)
+                if (!event.state || event.state.appId !== activeWindowId) {
+                     closeWindow(activeWindowId)
                 }
             }
         }
 
         window.addEventListener('popstate', handlePopState)
         return () => window.removeEventListener('popstate', handlePopState)
-    }, [activeWindowId, closeWindow, isRecentsOpen, backPressCount, showNotification])
+    }, [activeWindowId, closeWindow, isRecentsOpen])
 
     const apps = [
         {
@@ -303,8 +281,25 @@ export function MobileDesktop() {
                             exit={{ opacity: 0, scale: 0.95 }}
                             className="h-full bg-[var(--background)] rounded-2xl overflow-hidden relative border border-[var(--os-border)] shadow-2xl"
                         >
-                            <div className="absolute top-4 left-4 z-50">
-                                {/* Back button removed for native navigation */}
+                            <div className="absolute top-0 left-0 right-0 h-10 bg-[var(--os-surface)]/90 backdrop-blur-md border-b border-[var(--os-border)] flex items-center justify-between px-4 z-50">
+                                <span className="text-xs font-bold opacity-70 tracking-wide">{activeApp.label}</span>
+                                <div className="flex gap-3">
+                                    <button 
+                                        onClick={goHome}
+                                        className="p-1.5 rounded-full bg-yellow-500/20 text-yellow-500 active:scale-90 transition-transform"
+                                    >
+                                        <Minus size={14} />
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            closeWindow(activeApp.id)
+                                            window.history.back() // Sync history
+                                        }}
+                                        className="p-1.5 rounded-full bg-red-500/20 text-red-500 active:scale-90 transition-transform"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
                             </div>
                             <div className="h-full pt-14 pb-4 px-2 overflow-y-auto custom-scrollbar">
                                 {activeApp.content}
@@ -367,7 +362,7 @@ export function MobileDesktop() {
 
                                     {/* Page 2 */}
                                     {totalPages > 1 && (
-                                        <div className="min-w-full px-4 grid grid-cols-4 grid-rows-4 auto-rows-max gap-y-8 gap-x-4 pt-6 content-start">
+                                        <div className="min-w-full pl-12 pr-0 grid grid-cols-4 grid-rows-4 auto-rows-max gap-y-8 gap-x-4 pt-6 content-start">
                                             {page2Apps.map((app) => (
                                                 <button
                                                     key={app.id}
