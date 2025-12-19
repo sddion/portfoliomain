@@ -87,15 +87,13 @@ export function WindowProvider({ children }: { children: ReactNode }) {
             return
         }
 
+        const newZ = maxZIndex + 1
+        setMaxZIndex(newZ)
         setActiveWindowId(id)
-        setMaxZIndex((prevZ) => {
-            const newZ = prevZ + 1
-            setWindows((prevWindows) =>
-                prevWindows.map((w) => (w.id === id ? { ...w, zIndex: newZ, isMinimized: false } : w))
-            )
-            return newZ
-        })
-    }, [activeWindowId])
+        setWindows((prevWindows) =>
+            prevWindows.map((w) => (w.id === id ? { ...w, zIndex: newZ, isMinimized: false } : w))
+        )
+    }, [activeWindowId, maxZIndex])
 
     const openWindow = useCallback((id: string, title: string, content: React.ReactNode, icon?: React.ReactNode, options?: WindowOptions) => {
         setWindows((prev) => {
@@ -105,28 +103,26 @@ export function WindowProvider({ children }: { children: ReactNode }) {
                 return prev
             }
 
-            setMaxZIndex((prevZ) => {
-                const newZ = prevZ + 1
-                const newCtx: WindowState = {
-                    id,
-                    title,
-                    content,
-                    isOpen: true,
-                    isMinimized: false,
-                    isMaximized: false,
-                    zIndex: newZ,
-                    icon,
-                    width: options?.width,
-                    height: options?.height,
-                }
-                setWindows(current => [...current, newCtx])
-                setActiveWindowId(id)
-                return newZ
-            })
+            const newZ = maxZIndex + 1
+            const newCtx: WindowState = {
+                id,
+                title,
+                content,
+                isOpen: true,
+                isMinimized: false,
+                isMaximized: false,
+                zIndex: newZ,
+                icon,
+                width: options?.width,
+                height: options?.height,
+            }
+            setMaxZIndex(newZ)
+            setWindows(current => [...current, newCtx])
+            setActiveWindowId(id)
 
             return prev
         })
-    }, [focusWindow])
+    }, [focusWindow, maxZIndex])
 
     const closeWindow = useCallback((id: string) => {
         setWindows((prev) => prev.filter((w) => w.id !== id))

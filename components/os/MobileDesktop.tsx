@@ -357,9 +357,8 @@ export function MobileDesktop() {
                                     {/* Page 1 */}
                                     <div className="min-w-full px-4 flex flex-col">
                                         {/* Mobile Conky Widget - Only on Page 1 */}
-                                        <div className="pt-6 pb-4 space-y-4">
+                                        <div className="pt-6 pb-4">
                                             <MobileConkyWidget />
-                                            <AdWidget />
                                         </div>
 
                                         <div className="grid grid-cols-4 grid-rows-2 gap-y-8 gap-x-4 pt-2">
@@ -380,19 +379,24 @@ export function MobileDesktop() {
 
                                     {/* Page 2 */}
                                     {totalPages > 1 && (
-                                        <div className="min-w-full pl-12 pr-0 grid grid-cols-4 grid-rows-4 auto-rows-max gap-y-8 gap-x-4 pt-6 content-start">
-                                            {page2Apps.map((app) => (
-                                                <button
-                                                    key={app.id}
-                                                    onClick={() => handleAppClick(app)}
-                                                    className="flex flex-col items-center gap-2 group h-min"
-                                                >
-                                                    <div className={`w-14 h-14 ${app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
-                                                        {app.icon}
-                                                    </div>
-                                                    <span className="text-[10px] text-[var(--muted-foreground)] font-medium tracking-wide">{app.label}</span>
-                                                </button>
-                                            ))}
+                                        <div className="min-w-full pl-12 pr-0 flex flex-col pt-6 content-start h-full">
+                                            <div className="grid grid-cols-4 grid-rows-4 auto-rows-max gap-y-8 gap-x-4 flex-1">
+                                                {page2Apps.map((app) => (
+                                                    <button
+                                                        key={app.id}
+                                                        onClick={() => handleAppClick(app)}
+                                                        className="flex flex-col items-center gap-2 group h-min"
+                                                    >
+                                                        <div className={`w-14 h-14 ${app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
+                                                            {app.icon}
+                                                        </div>
+                                                        <span className="text-[10px] text-[var(--muted-foreground)] font-medium tracking-wide">{app.label}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <div className="mt-auto pb-4">
+                                                <AdWidget />
+                                            </div>
                                         </div>
                                     )}
                                 </motion.div>

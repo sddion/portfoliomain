@@ -23,7 +23,7 @@ export function AdWidget() {
 
     return (
         <div
-            className="w-full md:absolute md:top-[340px] md:right-10 md:w-80 font-mono text-xs z-0 select-none text-primary/80 border border-primary/20 bg-black/40 p-4 rounded-lg transition-all hover:bg-black/60 group"
+            className="w-full md:absolute md:top-[20px] md:right-[370px] md:w-80 font-mono text-xs z-0 select-none text-primary/80 border border-primary/20 bg-black/40 p-4 rounded-lg transition-all hover:bg-black/60 group"
         >
             {/* Header */}
             <div className="flex items-center justify-between mb-2 pb-1 border-b border-primary/30 uppercase font-bold text-primary">
