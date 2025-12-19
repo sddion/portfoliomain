@@ -65,7 +65,7 @@ export function ResumeApp() {
             </div>
 
             {/* Resume Content */}
-            <div className="flex-1 p-8 sm:p-12 md:p-16 max-w-[850px] mx-auto w-full bg-white print:p-0 print:max-w-full">
+            <div className="resume-paper flex-1 p-8 sm:p-12 md:p-16 max-w-[850px] mx-auto w-full bg-white print:p-0 print:max-w-full">
                 {/* Header */}
                 <header className="border-b-2 border-zinc-900 pb-8 mb-10 flex flex-col sm:flex-row justify-between items-start gap-6">
                     <div>
@@ -151,7 +151,7 @@ export function ResumeApp() {
                             </div>
                         </section>
 
-                   
+
                     </div>
                 </div>
 

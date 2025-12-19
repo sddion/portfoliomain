@@ -352,15 +352,19 @@ export function MobileDesktop() {
                             }}
                             animate={{ x: currentPage === 0 ? 0 : -window.innerWidth }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="flex flex-1 w-full"
+                            className="flex flex-1 w-full overflow-visible"
+                            style={{ width: `${totalPages * 100}%` }}
                         >
                             {/* Page 1 */}
-                            <div className="min-w-full px-2 flex flex-col h-full overflow-hidden">
+                            <div className="min-w-full w-screen shrink-0 px-2 flex flex-col h-full overflow-hidden">
                                 {/* Conky Widget - Only on Page 1 */}
                                 <div className="pt-2 pb-2">
                                     <MobileConkyWidget />
                                 </div>
-                                <div className="grid grid-cols-4 gap-y-8 gap-x-4 pt-2">
+                                {/* Flexible spacer to push app icons to bottom */}
+                                <div className="flex-1" />
+                                {/* App icons at bottom like Android */}
+                                <div className="grid grid-cols-4 gap-y-6 gap-x-4 pb-8">
                                     {page1Apps.map((app) => (
                                         <button
                                             key={app.id}
@@ -382,7 +386,7 @@ export function MobileDesktop() {
 
                             {/* Page 2 - Icons start from top */}
                             {totalPages > 1 && (
-                                <div className="min-w-full px-6 flex flex-col h-full overflow-hidden pt-4">
+                                <div className="min-w-full w-screen shrink-0 px-6 flex flex-col h-full overflow-hidden pt-4">
                                     <div className="grid grid-cols-4 gap-y-8 gap-x-4">
                                         {page2Apps.map((app) => (
                                             <button
