@@ -10,6 +10,8 @@ import { useBluetooth } from "@/hooks/useBluetooth"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 
+import { MobileSettings } from "@/components/os/MobileSettings"
+
 interface NotificationShadeProps {
     isOpen: boolean
     onClose: () => void
@@ -19,6 +21,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
     const [time, setTime] = useState(new Date())
     const [brightness, setBrightness] = useState(80)
     const [githubStats, setGithubStats] = useState({ repos: 0, followers: 0 })
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
     // Hooks
     const { supported, permission, notifications, requestPermission, showNotification, clearNotifications } = useNotifications()
@@ -139,9 +142,16 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                     <span className="text-sm text-[var(--muted-foreground)]">{format(time, "EEEE, MMMM d")}</span>
                 </div>
                 <div className="flex gap-4 mb-1">
-                    <Settings size={20} className="text-[var(--muted-foreground)]" />
+                    <button
+                        onClick={() => setIsSettingsOpen(true)}
+                        className="p-2 -mr-2 rounded-full active:bg-white/10"
+                    >
+                        <Settings size={22} className="text-[var(--muted-foreground)]" />
+                    </button>
                 </div>
             </div>
+
+            <MobileSettings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
 
             {/* Quick Settings */}
@@ -160,15 +170,6 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                 ))}
             </div>
 
-            {/* Bluetooth Status */}
-            {bluetoothError && (
-                <div className="px-4 pb-2">
-                    <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-2 flex items-center gap-2">
-                        <AlertCircle size={14} className="text-red-400" />
-                        <span className="text-[10px] text-red-300">{bluetoothError}</span>
-                    </div>
-                </div>
-            )}
             {connecting && (
                 <div className="px-4 pb-2">
                     <div className="bg-[var(--primary)]/20 border border-[var(--primary)]/30 rounded-lg p-2 text-center">
@@ -177,18 +178,6 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
                 </div>
             )}
 
-            {/* Notification Permission Prompt */}
-            {supported && permission === "default" && (
-                <div className="px-4 pb-2">
-                    <button
-                        onClick={requestPermission}
-                        className="w-full bg-[var(--primary)] hover:opacity-80 text-[var(--primary-foreground)] rounded-lg p-3 text-sm font-medium transition-opacity flex items-center justify-center gap-2"
-                    >
-                        <Bell size={16} />
-                        Enable Notifications
-                    </button>
-                </div>
-            )}
 
 
             {/* Notifications */}

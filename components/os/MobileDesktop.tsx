@@ -137,13 +137,7 @@ export function MobileDesktop() {
             bg: "bg-orange-600",
             content: <ESP32FlasherApp />,
         },
-        {
-            id: "settings",
-            label: "Settings",
-            icon: <Settings className="text-zinc-400" size={24} />,
-            bg: "bg-zinc-800",
-            content: <SettingsApp />,
-        },
+
     ]
 
     const activeApp = apps.find(app => windows.find(w => w.id === app.id)?.isOpen)
@@ -182,10 +176,17 @@ export function MobileDesktop() {
     }
 
     return (
-        <div className="h-screen w-screen bg-[var(--background)] text-[var(--foreground)] overflow-hidden relative font-sans">
+        <div
+            className="h-screen w-screen bg-cover bg-center text-[var(--foreground)] overflow-hidden relative font-sans transition-[background-image] duration-500 ease-in-out"
+            style={{ backgroundImage: "var(--mobile-bg)" }}
+        >
             <SnowfallEffect />
             {/* Status Bar - Non-interactive background */}
-            <div className="absolute top-0 left-0 right-0 z-40 px-6 pt-2 pb-1 flex items-center justify-between text-[var(--foreground)] text-xs bg-gradient-to-b from-[var(--background)]/80 to-transparent pointer-events-none">
+            {/* Status Bar - Interactive to toggle shade */}
+            <div
+                className="absolute top-0 left-0 right-0 z-[55] px-6 pt-2 pb-6 flex items-center justify-between text-[var(--foreground)] text-xs bg-gradient-to-b from-black/40 to-transparent cursor-pointer active:bg-white/5 transition-colors"
+                onClick={() => setNotificationOpen(prev => !prev)}
+            >
                 <span className="font-semibold">{format(time, "HH:mm")}</span>
                 <div className="flex items-center gap-2">
                     <Wifi size={16} className="opacity-80" />
@@ -413,13 +414,7 @@ export function MobileDesktop() {
                 />
             </div>
 
-            {/* Background Image */}
-            <div
-                className="absolute inset-0 bg-cover bg-center -z-10 transition-[background-image] duration-500 ease-in-out bg-[var(--background)]"
-                style={{ backgroundImage: "var(--mobile-bg)" }}
-            >
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
-            </div>
+
         </div>
     )
 }

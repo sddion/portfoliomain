@@ -64,6 +64,16 @@ export function useNotifications() {
   const showNotification = useCallback(
     (title: string, options?: NotificationOptions & { data?: any }) => {
       try {
+        // Deduplication: check if same notification exists in last 5 seconds
+        const fiveSecondsAgo = new Date(Date.now() - 5000);
+        const isDuplicate = notifications.some(n => 
+          n.title === title && 
+          n.body === (options?.body || "") && 
+          n.timestamp > fiveSecondsAgo
+        );
+
+        if (isDuplicate) return null;
+
         // ALWAYS add to internal history first
         const newNotification: Notification = {
           id: `notif-${Date.now()}-${Math.random()}`,
@@ -87,7 +97,7 @@ export function useNotifications() {
         return null;
       }
     },
-    [supported, permission]
+    [supported, permission, notifications]
   );
 
   const clearNotifications = useCallback(() => {
