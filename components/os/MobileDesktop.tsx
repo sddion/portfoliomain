@@ -6,7 +6,7 @@ import { useNotifications } from "@/hooks/useNotifications"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard, X, Minus } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard, X, Minus, Activity, Cpu, Radio } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
@@ -14,6 +14,8 @@ import { ExperienceApp } from "@/components/apps/ExperienceApp"
 import { SettingsApp } from "@/components/apps/SettingsApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
+import { ResourceMonitorApp } from "@/components/apps/ResourceMonitorApp"
+import { IoTControlApp } from "@/components/apps/IoTControlApp"
 import dynamic from "next/dynamic"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
@@ -54,7 +56,7 @@ export function MobileDesktop() {
                 // If the user navigates back (popstate), we effectively close the current window
                 // provided the new state isn't the same app (which shouldn't happen with our pushes)
                 if (!event.state || event.state.appId !== activeWindowId) {
-                     closeWindow(activeWindowId)
+                    closeWindow(activeWindowId)
                 }
             }
         }
@@ -67,9 +69,23 @@ export function MobileDesktop() {
         {
             id: "terminal",
             label: "Terminal",
-            icon: <Terminal className="text-green-500" size={24} />,
+            icon: <Terminal className="text-white" size={24} />,
             bg: "bg-zinc-800",
             content: <TerminalApp />,
+        },
+        {
+            id: "sys-monitor",
+            label: "Monitor",
+            icon: <Activity className="text-white" size={24} />,
+            bg: "bg-emerald-600",
+            content: <ResourceMonitorApp />,
+        },
+        {
+            id: "iot-control",
+            label: "IoT",
+            icon: <Cpu className="text-white" size={24} />,
+            bg: "bg-blue-600",
+            content: <IoTControlApp />,
         },
         {
             id: "about",
@@ -284,13 +300,13 @@ export function MobileDesktop() {
                             <div className="absolute top-0 left-0 right-0 h-10 bg-[var(--os-surface)]/90 backdrop-blur-md border-b border-[var(--os-border)] flex items-center justify-between px-4 z-50">
                                 <span className="text-xs font-bold opacity-70 tracking-wide">{activeApp.label}</span>
                                 <div className="flex gap-3">
-                                    <button 
+                                    <button
                                         onClick={goHome}
                                         className="p-1.5 rounded-full bg-yellow-500/20 text-yellow-500 active:scale-90 transition-transform"
                                     >
                                         <Minus size={14} />
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             closeWindow(activeApp.id)
                                             window.history.back() // Sync history

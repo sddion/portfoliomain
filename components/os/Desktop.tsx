@@ -6,7 +6,7 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette, CircuitBoard } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette, CircuitBoard, Activity, Cpu, Radio } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
@@ -16,6 +16,8 @@ import { ConkyWidget } from "@/components/os/ConkyWidget"
 import { SettingsApp } from "@/components/apps/SettingsApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
+import { ResourceMonitorApp } from "@/components/apps/ResourceMonitorApp"
+import { IoTControlApp } from "@/components/apps/IoTControlApp"
 import dynamic from "next/dynamic"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
@@ -52,6 +54,18 @@ export function Desktop() {
             label: "Terminal",
             icon: <Terminal size={32} className="text-[var(--primary)]" />,
             content: <TerminalApp />,
+        },
+        {
+            id: "sys-monitor",
+            label: "Sys Monitor",
+            icon: <Activity className="text-emerald-500" size={32} />,
+            content: <ResourceMonitorApp />,
+        },
+        {
+            id: "iot-control",
+            label: "IoT Control",
+            icon: <Cpu className="text-blue-500" size={32} />,
+            content: <IoTControlApp />,
         },
         {
             id: "about",
