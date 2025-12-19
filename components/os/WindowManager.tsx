@@ -11,11 +11,18 @@ export interface WindowState {
     isMaximized: boolean
     zIndex: number
     icon?: React.ReactNode
+    width?: string
+    height?: string
+}
+
+interface WindowOptions {
+    width?: string
+    height?: string
 }
 
 interface WindowContextType {
     windows: WindowState[]
-    openWindow: (id: string, title: string, content: React.ReactNode, icon?: React.ReactNode) => void
+    openWindow: (id: string, title: string, content: React.ReactNode, icon?: React.ReactNode, options?: WindowOptions) => void
     closeWindow: (id: string) => void
     minimizeWindow: (id: string) => void
     maximizeWindow: (id: string) => void
@@ -77,7 +84,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         )
     }
 
-    const openWindow = (id: string, title: string, content: React.ReactNode, icon?: React.ReactNode) => {
+    const openWindow = (id: string, title: string, content: React.ReactNode, icon?: React.ReactNode, options?: WindowOptions) => {
         setWindows((prev) => {
             const existing = prev.find((w) => w.id === id)
             if (existing) {
@@ -93,6 +100,8 @@ export function WindowProvider({ children }: { children: ReactNode }) {
                 isMaximized: false,
                 zIndex: maxZIndex + 1,
                 icon,
+                width: options?.width,
+                height: options?.height,
             }
             setMaxZIndex(newCtx.zIndex)
             return [...prev, newCtx]

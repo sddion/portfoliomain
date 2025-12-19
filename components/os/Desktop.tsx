@@ -16,6 +16,7 @@ import { ConkyWidget } from "@/components/os/ConkyWidget"
 import { SettingsApp } from "@/components/apps/SettingsApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
+import { ImageEditorApp } from "@/components/apps/ImageEditorApp"
 import dynamic from "next/dynamic"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
@@ -46,6 +47,12 @@ export function Desktop() {
             label: "Blog",
             icon: <FileText className="text-teal-400" size={32} />,
             content: <BlogApp />,
+        },
+        {
+            id: "image-editor",
+            label: "Image Editor",
+            icon: <Palette className="text-pink-400" size={32} />,
+            content: <ImageEditorApp />,
         },
         {
             id: "terminal",
@@ -83,18 +90,7 @@ export function Desktop() {
             icon: <Settings className="text-zinc-400" size={32} />,
             content: <SettingsApp />,
         },
-        {
-            id: "esp32-flasher",
-            label: "ESP Flasher",
-            icon: <CircuitBoard className="text-orange-500" size={32} />,
-            content: <ESP32FlasherApp />,
-        },
-        {
-            id: "blog",
-            label: "Blog",
-            icon: <FileText className="text-teal-400" size={32} />,
-            content: <BlogApp />,
-        },
+
         {
             id: "github",
             label: "GitHub",
@@ -149,7 +145,11 @@ export function Desktop() {
                             if (icon.action) {
                                 icon.action()
                             } else {
-                                openWindow(icon.id, icon.label, icon.content, icon.icon)
+                                if (icon.id === "esp32-flasher") {
+                                    openWindow(icon.id, icon.label, icon.content, icon.icon, { width: "95vw", height: "90vh" })
+                                } else {
+                                    openWindow(icon.id, icon.label, icon.content, icon.icon)
+                                }
                             }
                         }}
                     />

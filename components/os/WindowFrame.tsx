@@ -14,6 +14,8 @@ interface WindowFrameProps {
     isMaximized: boolean
     zIndex: number
     icon?: React.ReactNode
+    width?: string
+    height?: string
 }
 
 export function WindowFrame({
@@ -24,6 +26,8 @@ export function WindowFrame({
     isMaximized,
     zIndex,
     icon,
+    width = "800px",
+    height = "600px",
 }: WindowFrameProps) {
     const { closeWindow, minimizeWindow, maximizeWindow, focusWindow } = useWindowManager()
 
@@ -38,8 +42,8 @@ export function WindowFrame({
             animate={{
                 scale: 1,
                 opacity: 1,
-                width: isMaximized ? "100vw" : "800px",
-                height: isMaximized ? "calc(100vh - 48px)" : "600px",
+                width: isMaximized ? "100vw" : width,
+                height: isMaximized ? "calc(100vh - 48px)" : height,
                 x: isMaximized ? 0 : undefined,
                 y: isMaximized ? 0 : undefined,
             }}

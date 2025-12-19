@@ -177,27 +177,37 @@ export function TerminalApp() {
         endRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [history])
 
+    // Termux-style slide up animation
     return (
         <div
-            className="h-full bg-[var(--terminal-bg)] text-[var(--primary)] font-mono p-4 text-sm overflow-auto"
+            className="h-full w-full overflow-hidden bg-[var(--terminal-bg)]"
             onClick={() => document.getElementById("terminal-input")?.focus()}
         >
-            {history.map((line, i) => (
-                <div key={i} className="whitespace-pre-wrap mb-1">{line}</div>
-            ))}
-            <form onSubmit={handleSubmit} className="flex gap-2">
-                <span className="text-[var(--accent)]">guest@sanju-portfolio:~$</span>
-                <input
-                    id="terminal-input"
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    className="flex-1 bg-transparent outline-none text-[var(--primary)]"
-                    autoFocus
-                    autoComplete="off"
-                />
-            </form>
-            <div ref={endRef} />
+            <div className="h-full flex flex-col font-mono text-sm md:text-base p-4 overflow-auto">
+                {/* Mobile Header (Termux style) */}
+                <div className="md:hidden text-[10px] text-white/50 mb-4 border-b border-white/10 pb-2">
+                    Welcome to SanjuOS Terminal - v2.0.4
+                </div>
+
+                <div className="flex-1">
+                    {history.map((line, i) => (
+                        <div key={i} className="whitespace-pre-wrap mb-1 text-[12px] md:text-sm leading-tight text-green-500">{line}</div>
+                    ))}
+                    <form onSubmit={handleSubmit} className="flex gap-2 text-[12px] md:text-sm">
+                        <span className="text-[var(--accent)] shrink-0">guest@portfolio:~$</span>
+                        <input
+                            id="terminal-input"
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            className="flex-1 bg-transparent outline-none text-[var(--primary)] min-w-0"
+                            autoFocus
+                            autoComplete="off"
+                        />
+                    </form>
+                    <div ref={endRef} />
+                </div>
+            </div>
         </div>
     )
 }

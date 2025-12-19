@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
+import { useNotifications } from "@/hooks/useNotifications"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
@@ -41,6 +42,9 @@ export function MobileDesktop() {
         return () => clearInterval(timer)
     }, [])
 
+    const [backPressCount, setBackPressCount] = useState(0)
+    const { showNotification } = useNotifications()
+
     React.useEffect(() => {
         const handlePopState = (event: PopStateEvent) => {
             if (isRecentsOpen) {
@@ -49,16 +53,37 @@ export function MobileDesktop() {
             }
 
             if (activeWindowId) {
-                // If we have an active app and the new state is not that app, close it
-                if (!event.state || event.state.appId !== activeWindowId) {
+                // Double tap logic
+                if (backPressCount === 0) {
+                    // First press
+                    showNotification("System", { body: "Press back again to close app" })
+                    setBackPressCount(1)
+
+                    // Push state back so we don't actually leave (unless fast enough)
+                    // But wait, if we push state back, we create a loop.
+                    // Instead, let's just use the current history logic but add a guard?
+                    // "Double tap to exit" implies intercepting the BACK action.
+                    // The standard way on web is tricky. 
+                    // Let's stick to the user request: "double tap back button which for closing my apps"
+
+                    // If we are here, the user PRESSED back, so the browser ALREADY popped the state.
+                    // If we want to "cancel" it, we must push it back.
+                    window.history.pushState({ appId: activeWindowId }, "")
+
+                    setTimeout(() => setBackPressCount(0), 2000)
+                } else {
+                    // Second press - let it go (it will trigger popstate again? No, we need to manually close)
+                    // Actually, if we pushed state back, the second press will trigger popstate AGAIN.
+                    // So we check backPressCount.
                     closeWindow(activeWindowId)
+                    setBackPressCount(0)
                 }
             }
         }
 
         window.addEventListener('popstate', handlePopState)
         return () => window.removeEventListener('popstate', handlePopState)
-    }, [activeWindowId, closeWindow, isRecentsOpen])
+    }, [activeWindowId, closeWindow, isRecentsOpen, backPressCount, showNotification])
 
     const apps = [
         {
@@ -293,9 +318,8 @@ export function MobileDesktop() {
                             exit={{ opacity: 0 }}
                             className="h-full flex flex-col pb-14"
                         >
-                            {/* Mobile Conky Widget - Added to home screen */}
-                            <div className="px-4 pt-6 pb-4">
-                                <MobileConkyWidget />
+                            <div className="px-4 pb-4">
+                                {/* Deprecated here, moved to Page 1 specific render */}
                             </div>
 
                             {/* App Grid Container - Flex-grow to push pagination down */}
@@ -319,29 +343,36 @@ export function MobileDesktop() {
                                     className="flex w-full"
                                 >
                                     {/* Page 1 */}
-                                    <div className="min-w-full px-4 grid grid-cols-4 grid-rows-2 gap-y-8 gap-x-4">
-                                        {page1Apps.map((app) => (
-                                            <button
-                                                key={app.id}
-                                                onClick={() => handleAppClick(app)}
-                                                className="flex flex-col items-center gap-2 group"
-                                            >
-                                                <div className={`w-14 h-14 ${app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
-                                                    {app.icon}
-                                                </div>
-                                                <span className="text-[10px] text-[var(--muted-foreground)] font-medium tracking-wide">{app.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
+                                    <div className="min-w-full px-4 flex flex-col">
+                                        {/* Mobile Conky Widget - Only on Page 1 */}
+                                        <div className="pt-6 pb-4">
+                                            <MobileConkyWidget />
+                                        </div>
 
-                                    {/* Page 2 */}
-                                    {totalPages > 1 && (
-                                        <div className="min-w-full px-4 grid grid-cols-4 grid-rows-2 gap-y-8 gap-x-4">
-                                            {page2Apps.map((app) => (
+                                        <div className="grid grid-cols-4 grid-rows-2 gap-y-8 gap-x-4 pt-2">
+                                            {page1Apps.map((app) => (
                                                 <button
                                                     key={app.id}
                                                     onClick={() => handleAppClick(app)}
                                                     className="flex flex-col items-center gap-2 group"
+                                                >
+                                                    <div className={`w-14 h-14 ${app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
+                                                        {app.icon}
+                                                    </div>
+                                                    <span className="text-[10px] text-[var(--muted-foreground)] font-medium tracking-wide">{app.label}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Page 2 */}
+                                    {totalPages > 1 && (
+                                        <div className="min-w-full px-4 grid grid-cols-4 grid-rows-4 auto-rows-max gap-y-8 gap-x-4 pt-6 content-start">
+                                            {page2Apps.map((app) => (
+                                                <button
+                                                    key={app.id}
+                                                    onClick={() => handleAppClick(app)}
+                                                    className="flex flex-col items-center gap-2 group h-min"
                                                 >
                                                     <div className={`w-14 h-14 ${app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg} rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform`}>
                                                         {app.icon}
