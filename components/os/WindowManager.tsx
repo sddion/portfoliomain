@@ -107,10 +107,22 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         setWindows((prev) => {
             const existing = prev.find((w) => w.id === id);
             if (existing) {
-                // If it exists, we just need to focus it. 
-                // We'll call focusWindow which is now stable.
-                setTimeout(() => focusWindow(id), 0);
-                return prev;
+                // If it exists, we update the content and options, then focus it.
+                setActiveWindowId(id);
+                setMaxZIndex((prevZ) => prevZ + 1);
+
+                return prev.map((w) =>
+                    w.id === id
+                        ? {
+                            ...w,
+                            content: content, // Update content to catch prop changes (like initialUrl)
+                            width: options?.width || w.width,
+                            height: options?.height || w.height,
+                            isMinimized: false,
+                            zIndex: Math.max(...prev.map(win => win.zIndex)) + 1
+                        }
+                        : w
+                );
             }
 
             const currentMaxZ = Math.max(...prev.map(w => w.zIndex), 10);

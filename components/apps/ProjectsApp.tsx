@@ -139,7 +139,7 @@ export function ProjectsApp() {
         }
 
         return (
-            <div className="p-6 overflow-y-auto h-full">
+            <div className="p-6">
                 <div className="flex flex-col items-center mb-8">
                     <div className="w-24 h-24 bg-[var(--os-surface)] rounded-2xl flex items-center justify-center text-[var(--muted-foreground)] shadow-xl mb-4">
                         {getIconForCategory(selectedProject.category)}
@@ -170,7 +170,6 @@ export function ProjectsApp() {
                             <button
                                 onClick={() => {
                                     openWindow("browser", "Browser", <BrowserApp initialUrl={selectedProject.githubUrl} />, <Globe size={18} />)
-                                    window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.githubUrl } }))
                                 }}
                                 className="flex items-center justify-center gap-2 bg-[var(--os-surface-hover)] text-[var(--foreground)] py-3 rounded-lg font-medium hover:opacity-80 transition-opacity"
                             >
@@ -181,7 +180,6 @@ export function ProjectsApp() {
                             <button
                                 onClick={() => {
                                     openWindow("browser", "Browser", <BrowserApp initialUrl={selectedProject.liveUrl} />, <Globe size={18} />)
-                                    window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.liveUrl } }))
                                 }}
                                 className="flex items-center justify-center gap-2 bg-[var(--primary)] text-[var(--primary-foreground)] py-3 rounded-lg font-medium hover:opacity-80 transition-opacity shadow-lg shadow-[var(--primary)]/20"
                             >
@@ -197,16 +195,6 @@ export function ProjectsApp() {
     if (isMobile) {
         return (
             <div className="h-full bg-black/40 flex flex-col font-sans backdrop-blur-sm">
-                {/* Mobile Header (Breadcrumb-ish) */}
-                {viewMode !== 'home' && (
-                    <div className="h-14 border-b border-[var(--os-border)] flex items-center px-4 bg-[var(--os-surface)]">
-                        {/* We rely on native back button, but visual cue is helpful or just current title */}
-                        <span className="font-bold text-lg text-[var(--foreground)]">
-                            {viewMode === 'list' ? 'Projects' : 'Details'}
-                        </span>
-                    </div>
-                )}
-
                 <div className="flex-1 overflow-y-auto">
                     {viewMode === 'home' && renderMobileHome()}
                     {viewMode === 'list' && renderMobileList()}
@@ -310,7 +298,6 @@ export function ProjectsApp() {
                                                 <button
                                                     onClick={() => {
                                                         openWindow("browser", "Browser", <BrowserApp initialUrl={selectedProject.githubUrl} />, <Globe size={18} />)
-                                                        window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.githubUrl } }))
                                                     }}
                                                     className="flex items-center gap-2 bg-[var(--os-surface-hover)] hover:opacity-80 px-3 py-2 rounded text-[var(--foreground)] transition-opacity w-full text-left"
                                                 >
@@ -321,7 +308,6 @@ export function ProjectsApp() {
                                                 <button
                                                     onClick={() => {
                                                         openWindow("browser", "Browser", <BrowserApp initialUrl={selectedProject.liveUrl} />, <Globe size={18} />)
-                                                        window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.liveUrl } }))
                                                     }}
                                                     className="flex items-center gap-2 bg-[var(--primary)] hover:opacity-80 text-[var(--primary-foreground)] px-3 py-2 rounded transition-opacity w-full text-left"
                                                 >

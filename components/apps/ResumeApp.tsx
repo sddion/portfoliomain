@@ -1,194 +1,189 @@
 "use client"
 
-import React, { useState } from "react"
-import { FileText, AlertCircle, Layout, Calendar, Briefcase, GraduationCap, Code, Star, Download, ChevronRight } from "lucide-react"
-import { Document, Page, pdfjs } from 'react-pdf'
-
-// Set worker source for pdf.js to CDN to ensure correct version and avoid build issues
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+import React from "react"
+import { Printer, Mail, MapPin, Globe, Linkedin, Github, ExternalLink, Briefcase, GraduationCap, Star, Code } from "lucide-react"
 
 export function ResumeApp() {
-    const [numPages, setNumPages] = useState<number>(0)
-    const [isInteractive, setIsInteractive] = useState(true)
-
-    function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-        setNumPages(numPages)
+    const handlePrint = () => {
+        window.print()
     }
 
     const experience = [
         {
-            company: "Self-Employed / Open Source",
-            role: "Security Researcher & Full-Stack Dev",
-            period: "2022 - Present",
-            desc: "Developed SanjuOS, a browser-based operating system. Built advanced IoT tools and contributed to security research."
+            company: "Zomato",
+            role: "Delivery Operations",
+            period: "Post-Zepto → July 2025",
+            desc: "Managed high-pressure delivery operations, optimizing for real-time routing and field execution. Developed a deep understanding of hyper-local logistics and ground-level systems."
         },
         {
-            company: "DeepMind Collaborative Project",
-            role: "Frontend Engineer (Contract)",
-            period: "2023 - 2024",
-            desc: "Optimized interactive UIs for agentic AI applications. Focused on performance and responsive design."
+            company: "Zepto",
+            role: "Quick Commerce Operations",
+            period: "Jan 2025 (Bangalore)",
+            desc: "Executed speed-driven workflows in a quick-commerce environment. Focused on logistics flow, local delivery systems, and operational efficiency under tight deadlines."
+        },
+        {
+            company: "Independent / Builder Phase",
+            role: "Full-Stack Developer & Security Researcher",
+            period: "2022 - Present",
+            desc: "Dedicated thousands of hours to self-taught programming and system building. Developed SanjuOS (Portfolio), GeoShot (Geolocation Camera), and various IoT/Embedded tools."
+        },
+        {
+            company: "Apparel & Merchandise Business",
+            role: "Founder & Operator",
+            period: "2017 - 2018",
+            desc: "Built and managed a custom apparel printing business. Handled everything from hardware maintenance and production to marketing and sales via social platforms."
+        },
+        {
+            company: "Swiggy",
+            role: "Delivery & Operations",
+            period: "June 2021 - Jan 2022",
+            desc: "Gained foundational experience in logistics and ground-level operations, focusing on dead-line management and routing efficiency."
         }
     ]
 
     const skills = [
-        { name: "React / Next.js", level: 95 },
-        { name: "Node.js / Express", level: 88 },
-        { name: "Embedded (C++/ESP32)", level: 85 },
-        { name: "Cybersecurity (Web/Network)", level: 92 },
-        { name: "TypeScript / UI/UX", level: 90 }
+        { name: "React / Next.js / TypeScript", level: 95 },
+        { name: "JavaScript / Node.js", level: 90 },
+        { name: "Embedded Systems (C++ / ESP32)", level: 85 },
+        { name: "Operations & Logistics", level: 92 },
+        { name: "UI/UX & Design Systems", level: 88 }
     ]
 
     return (
-        <div className="h-full flex flex-col overflow-hidden bg-[var(--background)]">
-            {/* Toolbar */}
-            <div className="h-12 bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-center justify-between px-4 shrink-0">
-                <div className="flex items-center gap-4">
-                    <div className="flex bg-black/40 p-1 rounded-lg border border-white/5">
-                        <button
-                            onClick={() => setIsInteractive(true)}
-                            className={`px-3 py-1 rounded text-[10px] uppercase font-bold flex items-center gap-1.5 transition-all ${isInteractive ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-slate-500 hover:text-slate-300'}`}
-                        >
-                            <Layout size={12} /> Interactive
-                        </button>
-                        <button
-                            onClick={() => setIsInteractive(false)}
-                            className={`px-3 py-1 rounded text-[10px] uppercase font-bold flex items-center gap-1.5 transition-all ${!isInteractive ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-slate-500 hover:text-slate-300'}`}
-                        >
-                            <FileText size={12} /> PDF
-                        </button>
+        <div className="h-full flex flex-col bg-white text-zinc-900 overflow-auto selection:bg-blue-100 print:overflow-visible">
+            {/* Toolbar - Hidden on Print */}
+            <div className="h-14 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between px-6 shrink-0 print:hidden sticky top-0 z-50">
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Recruiter Tool</span>
+                </div>
+                <button
+                    onClick={handlePrint}
+                    className="flex items-center gap-2 bg-zinc-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-zinc-800 transition-all active:scale-95 shadow-lg shadow-zinc-200"
+                >
+                    <Printer size={14} /> Print
+                </button>
+            </div>
+
+            {/* Resume Content */}
+            <div className="flex-1 p-8 sm:p-12 md:p-16 max-w-[850px] mx-auto w-full bg-white print:p-0 print:max-w-full">
+                {/* Header */}
+                <header className="border-b-2 border-zinc-900 pb-8 mb-10 flex flex-col sm:flex-row justify-between items-start gap-6">
+                    <div>
+                        <h1 className="text-5xl font-black tracking-tighter mb-2">SANJU SDN</h1>
+                        <p className="text-xl font-bold text-blue-600 uppercase tracking-widest">Full-Stack Developer & Ops Specialist</p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-zinc-500">
+                        <div className="flex items-center gap-2"><Mail size={12} className="text-zinc-400" /> sddion@icloud.com</div>
+                        <div className="flex items-center gap-2"><MapPin size={12} className="text-zinc-400" /> Bangalore, IN</div>
+                        <div className="flex items-center gap-2"><Github size={12} className="text-zinc-400" /> github.com/sddion</div>
+                        <div className="flex items-center gap-2"><Globe size={12} className="text-zinc-400" /> sanjuos.xyz</div>
+                    </div>
+                </header>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    {/* Main Column */}
+                    <div className="md:col-span-2 space-y-12">
+                        {/* Profile Section */}
+                        <section className="space-y-4">
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
+                                <Star size={14} /> Professional Profile
+                            </h2>
+                            <p className="text-zinc-700 leading-relaxed font-medium">
+                                A high-execution developer with a background in field operations and logistics.
+                                Transitioned from real-world systems management to digital architecture,
+                                building high-performance web applications and embedded IoT tools.
+                                Focused on the "Builder Mindset" where execution trumps credentials.
+                            </p>
+                        </section>
+
+                        {/* Experience Section */}
+                        <section className="space-y-8">
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
+                                <Briefcase size={14} /> Experience
+                            </h2>
+                            <div className="space-y-10">
+                                {experience.map((exp, i) => (
+                                    <div key={i} className="group">
+                                        <div className="flex justify-between items-baseline mb-2">
+                                            <h3 className="text-xl font-black">{exp.company}</h3>
+                                            <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-tighter shrink-0 ml-4">{exp.period}</span>
+                                        </div>
+                                        <p className="text-sm font-bold text-zinc-500 mb-3 italic">{exp.role}</p>
+                                        <p className="text-sm text-zinc-600 leading-relaxed font-medium">{exp.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Sidebar */}
+                    <div className="space-y-12">
+                        {/* Skills */}
+                        <section className="space-y-6">
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
+                                <Code size={14} /> Core Tech
+                            </h2>
+                            <div className="space-y-6 text-zinc-800">
+                                {skills.map(skill => (
+                                    <div key={skill.name} className="space-y-2">
+                                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                            <span>{skill.name}</span>
+                                            <span>{skill.level}%</span>
+                                        </div>
+                                        <div className="h-1 w-full bg-zinc-100 rounded-full overflow-hidden">
+                                            <div className="h-full bg-zinc-900 rounded-full" style={{ width: `${skill.level}%` }} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* Education */}
+                        <section className="space-y-4">
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
+                                <GraduationCap size={14} /> Evolution
+                            </h2>
+                            <div className="p-5 bg-zinc-50 border border-zinc-100 rounded-xl space-y-2">
+                                <h4 className="font-black text-zinc-900 text-sm">Self-Taught Path</h4>
+                                <p className="text-xs text-zinc-500 font-bold leading-relaxed uppercase tracking-tight">
+                                    Intensive independent study in Computer Science, Network Security, and Embedded systems. 10,000+ hours in code.
+                                </p>
+                            </div>
+                        </section>
+
+                        {/* Availability */}
+                        <section className="p-6 bg-zinc-900 text-white rounded-2xl space-y-4 print:bg-white print:text-zinc-900 print:border print:border-zinc-200">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Status_Update</h3>
+                            <p className="text-xs leading-loose font-bold uppercase">
+                                Open to specialized contract roles in frontend engineering and secure systems building.
+                            </p>
+                        </section>
                     </div>
                 </div>
-                <a href="/resume.pdf" download className="flex items-center gap-2 px-3 py-1 bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/30 rounded text-xs font-bold transition-all">
-                    <Download size={14} /> Resume.pdf
-                </a>
+
+                {/* Footer */}
+                <footer className="mt-20 pt-8 border-t border-zinc-100 transition-opacity">
+                    <p className="text-[10px] text-zinc-400 font-black text-center uppercase tracking-widest leading-loose">
+                        Generated by SanjuOS • Integrated System v2.0
+                    </p>
+                </footer>
             </div>
 
-            {/* Content Area */}
-            <div className="flex-1 overflow-auto bg-[var(--background)]">
-                {isInteractive ? (
-                    <div className="max-w-4xl mx-auto p-6 sm:p-12 space-y-12">
-                        {/* Summary Header */}
-                        <header className="space-y-4 text-center sm:text-left">
-                            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-[var(--foreground)]">SANJU<span className="text-[var(--primary)]">.SYS</span></h1>
-                            <p className="text-lg text-[var(--foreground)]/60 font-medium max-w-2xl leading-relaxed">
-                                Security-focused full-stack developer with a passion for building complex, browser-based systems and hardware integrations.
-                            </p>
-                        </header>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                            {/* Main Content */}
-                            <div className="md:col-span-2 space-y-12">
-                                <section className="space-y-6">
-                                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[var(--primary)] flex items-center gap-2">
-                                        <Briefcase size={14} /> Experience History
-                                    </h3>
-                                    <div className="space-y-8">
-                                        {experience.map((exp, i) => (
-                                            <div key={i} className="relative pl-8 border-l border-[var(--os-border)]">
-                                                <div className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-[var(--primary)]" />
-                                                <div className="space-y-1">
-                                                    <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest">{exp.period}</span>
-                                                    <h4 className="text-xl font-bold text-[var(--foreground)]">{exp.role}</h4>
-                                                    <p className="text-sm font-bold text-[var(--foreground)]/40 italic">{exp.company}</p>
-                                                    <p className="text-sm text-[var(--foreground)]/70 mt-2 leading-relaxed">{exp.desc}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </section>
-
-                                <section className="space-y-6">
-                                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[var(--primary)] flex items-center gap-2">
-                                        <GraduationCap size={14} /> Education & Research
-                                    </h3>
-                                    <div className="p-6 bg-[var(--os-surface)] border border-[var(--os-border)] rounded-2xl">
-                                        <h4 className="text-lg font-bold text-[var(--foreground)]">Computer Science & Cyber Security</h4>
-                                        <p className="text-sm text-[var(--foreground)]/60 italic">Advanced Self-Taught Curriculum</p>
-                                        <div className="mt-4 flex flex-wrap gap-2 text-[10px] font-black uppercase">
-                                            {['Network Security', 'Reverse Engineering', 'Microcontroller Logic', 'System Architecture'].map(t => (
-                                                <span key={t} className="px-3 py-1 bg-white/5 border border-white/5 rounded-full">{t}</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </section>
-                            </div>
-
-                            {/* Sidebar Stats */}
-                            <div className="space-y-12">
-                                <section className="space-y-6">
-                                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[var(--primary)] flex items-center gap-2">
-                                        <Star size={14} /> Tech Proficiency
-                                    </h3>
-                                    <div className="space-y-6">
-                                        {skills.map(skill => (
-                                            <div key={skill.name} className="space-y-2">
-                                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-[var(--foreground)]/60">
-                                                    <span>{skill.name}</span>
-                                                    <span>{skill.level}%</span>
-                                                </div>
-                                                <div className="h-1.5 w-full bg-[var(--os-border)] rounded-full overflow-hidden">
-                                                    <div className="h-full bg-[var(--primary)] rounded-full" style={{ width: `${skill.level}%` }} />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </section>
-
-                                <section className="p-6 bg-[var(--primary)]/5 border border-[var(--primary)]/20 rounded-2xl space-y-4">
-                                    <h3 className="text-xs font-black uppercase text-[var(--primary)] tracking-widest">Connect_Direct</h3>
-                                    <p className="text-xs text-[var(--foreground)]/50 leading-loose uppercase font-bold">
-                                        Available for contract security audits and performant frontend development.
-                                    </p>
-                                    <button className="w-full py-3 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[var(--primary)]/20 hover:opacity-90 transition-opacity">
-                                        Request Interview
-                                    </button>
-                                </section>
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="p-8 flex justify-center">
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="shadow-2xl">
-                                <Document
-                                    file="/resume.pdf"
-                                    onLoadSuccess={onDocumentLoadSuccess}
-                                    onLoadError={(error) => {
-                                        console.error("Error loading PDF:", error)
-                                    }}
-                                    error={
-                                        <div className="bg-red-900/20 border border-red-500/50 p-6 rounded-lg text-center max-w-md">
-                                            <AlertCircle className="mx-auto text-red-500 mb-2" size={32} />
-                                            <h3 className="text-red-400 font-bold mb-1">Failed to load PDF</h3>
-                                            <p className="text-zinc-400 text-sm mb-4">The PDF file could not be rendered.</p>
-                                            <a href="/resume.pdf" download className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded text-sm font-bold inline-flex items-center gap-2">
-                                                <FileText size={16} /> Download PDF
-                                            </a>
-                                        </div>
-                                    }
-                                    loading={
-                                        <div className="flex flex-col items-center gap-2 text-zinc-500 py-10">
-                                            <div className="animate-spin w-6 h-6 border-2 border-zinc-500 border-t-transparent rounded-full" />
-                                            <span className="text-sm">Loading resume...</span>
-                                        </div>
-                                    }
-                                    className="flex flex-col gap-4"
-                                >
-                                    {numPages > 0 && Array.from(new Array(numPages), (el, index) => (
-                                        <Page
-                                            key={`page_${index + 1}`}
-                                            pageNumber={index + 1}
-                                            renderTextLayer={false}
-                                            renderAnnotationLayer={false}
-                                            scale={1.2}
-                                        />
-                                    ))}
-                                </Document>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        margin: 0;
+                        size: A4;
+                    }
+                    body {
+                        background: white;
+                        color: black;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar {
+                        display: none;
+                    }
+                }
+            `}</style>
         </div>
     )
 }

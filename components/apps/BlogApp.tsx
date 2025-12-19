@@ -224,83 +224,122 @@ export function BlogApp() {
     )
 
     const renderMobile = () => (
-        <div className="h-full bg-[var(--background)] text-[var(--foreground)] font-sans flex flex-col">
+        <div className="h-full bg-[var(--background)] text-[var(--foreground)] font-sans flex flex-col overflow-hidden relative">
+            {/* Background Accent */}
+            <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-[var(--primary)]/10 to-transparent pointer-events-none" />
+
             {selectedPost ? (
-                <div className="flex-1 flex flex-col overflow-hidden">
-                    {/* Floating Back Button */}
-                    <button
-                        onClick={() => setSelectedPost(null)}
-                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-full font-black text-sm shadow-[0_8px_30px_rgba(37,99,235,0.4)] border border-[var(--primary)]/50 flex items-center gap-2 active:scale-95 transition-transform"
-                    >
-                        <ArrowLeft size={18} />
-                        BACK TO FEED
-                    </button>
-                    <div className="flex-1 overflow-y-auto bg-black/20">
+                <div className="flex-1 flex flex-col overflow-hidden relative z-10">
+                    {/* Compact Header for Post */}
+                    <div className="h-14 flex items-center px-4 bg-black/40 backdrop-blur-xl border-b border-white/5 shrink-0">
+                        <button
+                            onClick={() => setSelectedPost(null)}
+                            className="p-2 rounded-full hover:bg-white/5 active:scale-95 transition-all text-[var(--muted-foreground)]"
+                        >
+                            <ArrowLeft size={20} />
+                        </button>
+                        <div className="ml-4 truncate">
+                            <h2 className="text-sm font-black truncate text-[var(--foreground)]">{selectedPost.title}</h2>
+                            <p className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest">{selectedPost.category}</p>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/10">
                         {renderPostContent(selectedPost)}
                     </div>
                 </div>
             ) : (
-                <div className="flex-1 flex flex-col overflow-hidden">
-                    {/* Android Style Header */}
-                    <div className="px-6 pt-12 pb-6 bg-gradient-to-b from-[var(--primary)]/20 to-transparent">
-                        <h1 className="text-4xl font-black tracking-tighter mb-2">Sanju<span className="text-[var(--primary)]">Blog</span></h1>
-                        <p className="text-[var(--muted-foreground)] font-medium mb-6">Explore the latest tech insights</p>
-
-                        <div className="relative mb-6">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Search tutorials..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-[var(--os-surface)] border border-[var(--os-border)] rounded-2xl pl-12 pr-4 py-4 text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all"
-                            />
+                <div className="flex-1 flex flex-col overflow-hidden relative z-10">
+                    {/* Modern Mobile Header */}
+                    <div className="px-6 pt-10 pb-6 shrink-0">
+                        <div className="flex items-center justify-between mb-2">
+                            <h1 className="text-3xl font-black tracking-tighter">Archive<span className="text-[var(--primary)]">.</span></h1>
+                            <div className="w-10 h-10 rounded-2xl bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex items-center justify-center text-[var(--primary)]">
+                                <Book size={20} />
+                            </div>
                         </div>
+                        <p className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-[0.2em] mb-6 opacity-60">Field Research & Intel Repository</p>
 
-                        {/* Category Pills */}
-                        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                            <button
-                                onClick={() => setSelectedCategory(null)}
-                                className={`shrink-0 px-5 py-2 rounded-full text-xs font-bold transition-all ${!selectedCategory ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--os-surface)] text-[var(--muted-foreground)]'}`}
-                            >
-                                ALL
-                            </button>
-                            {categories.map(cat => (
+                        {/* Search & Categories Bar */}
+                        <div className="space-y-4">
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] group-focus-within:text-[var(--primary)] transition-colors" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Search repository..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]/50 focus:bg-white/[0.05] transition-all placeholder:text-[var(--muted-foreground)]/30"
+                                />
+                            </div>
+
+                            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                                 <button
-                                    key={cat}
-                                    onClick={() => setSelectedCategory(cat)}
-                                    className={`shrink-0 px-5 py-2 rounded-full text-xs font-bold transition-all ${selectedCategory === cat ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--os-surface)] text-[var(--muted-foreground)]'}`}
+                                    onClick={() => setSelectedCategory(null)}
+                                    className={`shrink-0 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${!selectedCategory ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20' : 'bg-white/5 border-white/10 text-[var(--muted-foreground)] hover:bg-white/10'}`}
                                 >
-                                    {cat.toUpperCase()}
+                                    ALL
                                 </button>
-                            ))}
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setSelectedCategory(cat)}
+                                        className={`shrink-0 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${selectedCategory === cat ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20' : 'bg-white/5 border-white/10 text-[var(--muted-foreground)] hover:bg-white/10'}`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Card List */}
-                    <div className="flex-1 overflow-y-auto px-6 pb-24 space-y-6">
+                    {/* Card List View */}
+                    <div className="flex-1 overflow-y-auto px-6 pb-24 space-y-6 pt-2 custom-scrollbar">
                         {filteredPosts.map(post => (
                             <article
                                 key={post.id}
                                 onClick={() => setSelectedPost(post)}
-                                className="bg-[var(--os-surface)] border border-[var(--os-border)] rounded-3xl overflow-hidden active:scale-[0.98] transition-all"
+                                className="group bg-[var(--os-surface)] border border-white/5 rounded-[2rem] overflow-hidden active:scale-[0.97] transition-all relative"
                             >
-                                <div className="aspect-video bg-black/20">
+                                <div className="absolute top-4 left-4 z-10">
+                                    <span className="px-3 py-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-[9px] font-black text-white uppercase tracking-widest">
+                                        {post.category}
+                                    </span>
+                                </div>
+                                <div className="aspect-[16/9] bg-black/20 relative">
                                     <div
-                                        className="h-full w-full bg-cover bg-center bg-no-repeat opacity-80"
+                                        className="h-full w-full bg-cover bg-center bg-no-repeat opacity-80 transition-transform duration-700 group-hover:scale-105"
                                         style={{ backgroundImage: `url(${post.featuredImage})`, backgroundSize: '100% 100%' }}
                                     />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                 </div>
-                                <div className="p-6">
-                                    <div className="flex items-center justify-between mb-3 text-[10px] font-black tracking-widest uppercase">
-                                        <span className="text-[var(--primary)]">{post.category}</span>
-                                        <span className="text-[var(--muted-foreground)]">{new Date(post.date).toLocaleDateString()}</span>
+                                <div className="p-6 relative">
+                                    <h2 className="text-xl font-black mb-3 leading-tight text-white group-hover:text-[var(--primary)] transition-colors line-clamp-2">{post.title}</h2>
+                                    <p className="text-[var(--muted-foreground)] text-xs line-clamp-2 leading-relaxed font-medium mb-4 opacity-70">{post.description}</p>
+                                    <div className="flex items-center justify-between text-[9px] font-black text-zinc-500 uppercase tracking-widest">
+                                        <span className="flex items-center gap-1.5">
+                                            <Calendar size={12} className="text-[var(--primary)]" />
+                                            {new Date(post.date).toLocaleDateString()}
+                                        </span>
+                                        <div className="flex items-center gap-1 text-[var(--primary)]">
+                                            View Intel <ChevronRight size={14} />
+                                        </div>
                                     </div>
-                                    <h2 className="text-xl font-bold mb-3 leading-tight text-[var(--foreground)]">{post.title}</h2>
-                                    <p className="text-[var(--muted-foreground)] text-xs line-clamp-2 leading-relaxed">{post.description}</p>
                                 </div>
                             </article>
                         ))}
+
+                        {filteredPosts.length === 0 && (
+                            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-zinc-600">
+                                    <Search size={32} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-[var(--foreground)]">No entries found</h3>
+                                    <p className="text-xs text-[var(--muted-foreground)]">Adjust your encryption filters</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

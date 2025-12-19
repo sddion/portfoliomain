@@ -93,7 +93,7 @@ export function IoTControlApp() {
     return (
         <div className="h-full bg-[#0a0a0c] text-slate-300 flex flex-col font-mono">
             {/* Header */}
-            <div className="p-4 bg-slate-900/40 border-b border-white/5 flex flex-wrap items-center justify-between gap-3">
+            <div className="p-4 bg-slate-900/40 border-b border-white/5 flex flex-wrap items-center justify-between gap-3 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${connected ? 'bg-green-500/10 text-green-500 animate-pulse' : 'bg-slate-500/10 text-slate-500'}`}>
                         <Cpu size={20} />

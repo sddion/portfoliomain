@@ -124,7 +124,6 @@ export function TerminalApp() {
         github: () => {
             addToHistory("Opening GitHub in Browser...")
             openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />)
-            window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://github.com/sddion" } }))
         },
         projects: () => {
             addToHistory("Opening Projects window...")
@@ -185,11 +184,6 @@ export function TerminalApp() {
             onClick={() => document.getElementById("terminal-input")?.focus()}
         >
             <div className="h-full flex flex-col font-mono text-sm md:text-base p-4 overflow-auto">
-                {/* Mobile Header (Termux style) */}
-                <div className="md:hidden text-[10px] text-white/50 mb-4 border-b border-white/10 pb-2">
-                    Welcome to SanjuOS Terminal - v2.0.4
-                </div>
-
                 <div className="flex-1">
                     {history.map((line, i) => (
                         <div key={i} className="whitespace-pre-wrap mb-1 text-[12px] md:text-sm leading-tight text-green-500">{line}</div>

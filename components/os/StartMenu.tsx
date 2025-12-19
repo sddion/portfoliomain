@@ -33,7 +33,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
         { label: "Blog", icon: <FileText size={18} className="text-teal-500" />, id: "blog", content: <BlogApp /> },
         { label: "Browser", icon: <Globe size={18} className="text-blue-400" />, id: "browser", content: <BrowserApp /> },
         { label: "Snowfall", icon: <Snowflake size={18} className={showSnowfall ? "text-blue-300" : "text-zinc-500"} />, action: toggleSnowfall },
-        { label: "GitHub", icon: <Github size={18} className="text-white" />, action: () => { openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />); window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://github.com/sddion" } })); } },
+        { label: "GitHub", icon: <Github size={18} className="text-white" />, action: () => { openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />); } },
     ]
 
     return (

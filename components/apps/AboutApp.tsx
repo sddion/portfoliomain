@@ -65,7 +65,6 @@ export function AboutApp() {
                     <button
                         onClick={() => {
                             openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />)
-                            window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://github.com/sddion" } }))
                         }}
                         className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100 font-bold"
                     >
@@ -74,7 +73,6 @@ export function AboutApp() {
                     <button
                         onClick={() => {
                             openWindow("browser", "Browser", <BrowserApp initialUrl="https://gitlab.com/0xd3ds3c" />, <Globe size={18} />)
-                            window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://gitlab.com/0xd3ds3c" } }))
                         }}
                         className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100 font-bold"
                     >

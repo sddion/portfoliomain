@@ -46,7 +46,7 @@ export function AdWidget() {
                     Integration example for Google AdSense:
                     <ins className="adsbygoogle"
                          style={{ display: 'block' }}
-                         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                         data-ad-client="ca-pub-5565716152868775"
                          data-ad-slot="XXXXXXXXXX"
                          data-ad-format="auto"
                          data-full-width-responsive="true"></ins>
