@@ -8,9 +8,8 @@ $iconPath = "$env:USERPROFILE\Pictures\sanjuos.ico"
 
 Write-Host "Installing $appName..."
 
-# Download icon (Note: converting png to ico is complex in powershell, 
-# so we just use the png and Windows will handle it or we use a default icon)
-# For simplicity, we'll try to use a Chrome/Edge app shortcut.
+# Download the high-quality branded icon
+Invoke-WebRequest -Uri "https://sddion.vercel.app/favicon.ico" -OutFile "$iconPath" -ErrorAction SilentlyContinue
 
 $WshShell = New-Object -ComObject WScript.Shell
 $ShortcutPath = "$env:USERPROFILE\Desktop\$appName.lnk"
@@ -27,6 +26,7 @@ if (Test-Path "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe") 
 }
 
 $Shortcut.Arguments = "--app=$appUrl"
+$Shortcut.IconLocation = "$iconPath"
 $Shortcut.Description = "Advanced ESP32 Web Flasher & Security Portfolio"
 $Shortcut.Save()
 

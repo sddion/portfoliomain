@@ -126,7 +126,7 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
             initial={{ y: "-100%" }}
             animate={{ y: isOpen ? 0 : "-100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[100] bg-[var(--background)]/90 backdrop-blur-md text-[var(--foreground)] flex flex-col"
+            className="fixed inset-0 z-[300] bg-[var(--background)]/90 backdrop-blur-md text-[var(--foreground)] flex flex-col"
             drag="y"
             dragConstraints={{ top: -window.innerHeight, bottom: 0 }}
             onDragEnd={(_, info) => {

@@ -250,30 +250,30 @@ export function BlogApp() {
                 </div>
             ) : (
                 <div className="flex-1 flex flex-col overflow-hidden relative z-10">
-                    {/* Modern Mobile Header */}
-                    <div className="px-6 pt-10 pb-6 shrink-0">
-                        <div className="flex items-center justify-between mb-2">
-                            <h1 className="text-3xl font-black tracking-tighter">Archive<span className="text-[var(--primary)]">.</span></h1>
-                            <div className="w-10 h-10 rounded-2xl bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex items-center justify-center text-[var(--primary)]">
-                                <Book size={20} />
+                    {/* Modern Mobile Header - Condensed */}
+                    <div className="px-6 pt-6 pb-4 shrink-0">
+                        <div className="flex items-center justify-between mb-1">
+                            <h1 className="text-2xl font-black tracking-tighter">Archive<span className="text-[var(--primary)]">.</span></h1>
+                            <div className="w-8 h-8 rounded-xl bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex items-center justify-center text-[var(--primary)]">
+                                <Book size={16} />
                             </div>
                         </div>
-                        <p className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-[0.2em] mb-6 opacity-60">Field Research & Intel Repository</p>
+                        <p className="text-[9px] font-black text-[var(--muted-foreground)] uppercase tracking-[0.2em] mb-3 opacity-60">Intel Repository</p>
 
-                        {/* Search & Categories Bar */}
-                        <div className="space-y-4">
+                        {/* Search & Categories Bar - Condensed */}
+                        <div className="space-y-2.5">
                             <div className="relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] group-focus-within:text-[var(--primary)] transition-colors" size={18} />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] group-focus-within:text-[var(--primary)] transition-colors" size={16} />
                                 <input
                                     type="text"
                                     placeholder="Search repository..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]/50 focus:bg-white/[0.05] transition-all placeholder:text-[var(--muted-foreground)]/30"
+                                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl pl-11 pr-4 py-2.5 text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]/50 focus:bg-white/[0.05] transition-all placeholder:text-[var(--muted-foreground)]/30"
                                 />
                             </div>
 
-                            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                                 <button
                                     onClick={() => setSelectedCategory(null)}
                                     className={`shrink-0 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${!selectedCategory ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20' : 'bg-white/5 border-white/10 text-[var(--muted-foreground)] hover:bg-white/10'}`}

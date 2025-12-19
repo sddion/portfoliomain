@@ -105,17 +105,17 @@ export function TaskMonitor() {
                 </div>
             </div>
 
-            {/* Performance Stats Overlay */}
-            <div className="mb-4 text-white flex flex-wrap gap-x-12 gap-y-2 font-bold">
-                <div className="flex items-center gap-2">
+            {/* Performance Stats Overlay - Fixed height to prevent layout shifts */}
+            <div className="mb-4 text-white flex flex-wrap gap-x-12 gap-y-2 font-bold min-h-[20px]">
+                <div className="flex items-center gap-2 shrink-0">
                     <span className="text-zinc-500">FPS:</span>
                     <span className={metrics.fps < 30 ? "text-red-500" : "text-emerald-400"}>{metrics.fps}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                     <span className="text-zinc-500">ENGINE:</span>
                     <span className="text-cyan-400 underline decoration-dotted">V8</span>
                 </div>
-                <div className="hidden sm:flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-2 shrink-0">
                     <span className="text-zinc-500">MODE:</span>
                     <span className="text-yellow-400">JIT_OPTIMIZED</span>
                 </div>

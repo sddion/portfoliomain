@@ -174,8 +174,12 @@ export function MobileDesktop() {
 
     return (
         <div
-            className="h-screen w-screen bg-cover bg-center text-[var(--foreground)] overflow-hidden relative font-sans transition-[background-image] duration-500 ease-in-out"
-            style={{ backgroundImage: "var(--mobile-bg)" }}
+            className="h-[100dvh] w-screen bg-cover bg-center text-[var(--foreground)] overflow-hidden relative font-sans transition-[background-image] duration-500 ease-in-out"
+            style={{
+                backgroundImage: "var(--mobile-bg)",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+            }}
         >
             <SnowfallEffect />
 
@@ -325,13 +329,18 @@ export function MobileDesktop() {
                 )}
             </AnimatePresence>
 
-            {/* Home Screen Layer */}
+            {/* Home Screen Layer - No scroll, fixed viewport */}
             <div className={cn(
-                "h-full w-full pt-12 pb-20 px-4 overflow-y-auto transition-all duration-500",
+                "h-full w-full pt-12 pb-16 px-4 overflow-hidden transition-all duration-500",
                 activeApp ? "opacity-0 scale-95 blur-xl pointer-events-none" : "opacity-100 scale-100 blur-0"
             )}>
                 <div className="h-full flex flex-col">
-                    <div className="flex-1 flex items-start pt-6 relative overflow-hidden">
+                    <div className="flex-1 flex flex-col relative overflow-hidden">
+                        {/* Status Widget Area */}
+                        <div className="pt-2 pb-2">
+                            <MobileConkyWidget />
+                        </div>
+
                         <motion.div
                             drag="x"
                             dragConstraints={{ left: totalPages > 1 ? -window.innerWidth : 0, right: 0 }}
@@ -347,29 +356,25 @@ export function MobileDesktop() {
                             }}
                             animate={{ x: currentPage === 0 ? 0 : -window.innerWidth }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="flex w-full h-full"
+                            className="flex flex-1 w-full"
                         >
                             {/* Page 1 */}
-                            <div className="min-w-full px-4 flex flex-col h-full overflow-y-auto no-scrollbar pb-20">
-                                <div className="pt-6 pb-4">
-                                    <MobileConkyWidget />
-                                </div>
-
-                                <div className="grid grid-cols-4 gap-y-10 gap-x-4 pt-8">
+                            <div className="min-w-full px-2 flex flex-col h-full overflow-hidden">
+                                <div className="grid grid-cols-4 gap-y-8 gap-x-4 pt-4">
                                     {page1Apps.map((app) => (
                                         <button
                                             key={app.id}
                                             onClick={() => handleAppClick(app)}
-                                            className="flex flex-col items-center gap-2.5 group"
+                                            className="flex flex-col items-center gap-2 group active:scale-95 transition-transform"
                                         >
                                             <div className={cn(
-                                                "w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-xl group-active:scale-90 transition-transform relative overflow-hidden",
+                                                "w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] flex items-center justify-center shadow-xl relative overflow-hidden",
                                                 app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg
                                             )}>
                                                 <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors" />
-                                                {app.icon}
+                                                {React.cloneElement(app.icon as React.ReactElement<any>, { size: 28 })}
                                             </div>
-                                            <span className="text-[11px] text-white/70 font-bold tracking-wide">{app.label}</span>
+                                            <span className="text-[10px] text-white/80 font-bold tracking-tight truncate w-full text-center">{app.label}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -377,22 +382,22 @@ export function MobileDesktop() {
 
                             {/* Page 2 */}
                             {totalPages > 1 && (
-                                <div className="min-w-full px-8 flex flex-col pt-8 h-full overflow-y-auto no-scrollbar pb-20">
-                                    <div className="grid grid-cols-4 gap-y-10 gap-x-4">
+                                <div className="min-w-full px-2 flex flex-col h-full overflow-hidden">
+                                    <div className="grid grid-cols-4 gap-y-8 gap-x-4 pt-4">
                                         {page2Apps.map((app) => (
                                             <button
                                                 key={app.id}
                                                 onClick={() => handleAppClick(app)}
-                                                className="flex flex-col items-center gap-2.5 group"
+                                                className="flex flex-col items-center gap-2 group active:scale-95 transition-transform"
                                             >
                                                 <div className={cn(
-                                                    "w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-xl group-active:scale-90 transition-transform relative overflow-hidden",
+                                                    "w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] flex items-center justify-center shadow-xl relative overflow-hidden",
                                                     app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg
                                                 )}>
                                                     <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors" />
-                                                    {app.icon}
+                                                    {React.cloneElement(app.icon as React.ReactElement<any>, { size: 28 })}
                                                 </div>
-                                                <span className="text-[11px] text-white/70 font-bold tracking-wide">{app.label}</span>
+                                                <span className="text-[10px] text-white/80 font-bold tracking-tight truncate w-full text-center">{app.label}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -401,14 +406,14 @@ export function MobileDesktop() {
                         </motion.div>
 
                         {/* Page Indicators */}
-                        {totalPages > 1 && (currentPage === 0 || currentPage === 1) && (
-                            <div className="absolute bottom-24 left-0 right-0 flex justify-center gap-2.5 pointer-events-none">
+                        {totalPages > 1 && (
+                            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 pointer-events-none">
                                 {Array.from({ length: totalPages }).map((_, i) => (
                                     <div
                                         key={i}
                                         className={cn(
-                                            "h-1.5 rounded-full transition-all duration-300",
-                                            i === currentPage ? "w-8 bg-white" : "w-1.5 bg-white/20"
+                                            "h-1 rounded-full transition-all duration-300",
+                                            i === currentPage ? "w-6 bg-white" : "w-1 bg-white/20"
                                         )}
                                     />
                                 ))}

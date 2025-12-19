@@ -121,6 +121,9 @@ export function ConkyWidget() {
         <Dialog>
             <DialogTrigger asChild>
                 <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label="System status dashboard"
                     title="Click to view system details"
                     className="absolute top-[20px] right-10 w-80 font-mono text-xs z-0 select-none text-primary/80 hidden md:block cursor-pointer hover:bg-black/20 p-4 rounded-lg transition-colors text-left max-h-[calc(100vh-80px)] overflow-y-auto scrollbar-hide"
                 >
@@ -185,21 +188,21 @@ export function ConkyWidget() {
                     </div>
 
                     {/* Quote */}
-                    <div className="mb-4">
+                    <div className="mb-4 min-h-[44px]">
                         <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Quote size={12} /> MOTD
                         </h3>
-                        <blockquote className="italic text-[var(--muted-foreground)] border-l-2 border-[var(--primary)]/50 pl-2">
+                        <blockquote className="italic text-[var(--muted-foreground)] border-l-2 border-[var(--primary)]/50 pl-2 line-clamp-2">
                             "A jack of all trades is a master of none, but oftentimes better than a master of one."
                         </blockquote>
                     </div>
 
                     {/* Logs */}
-                    <div className="mb-4">
+                    <div className="mb-4 h-[48px]">
                         <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Terminal size={12} /> System Logs
                         </h3>
-                        <div className="flex flex-col gap-1 opacity-80">
+                        <div className="flex flex-col gap-1 opacity-80 overflow-hidden">
                             {logs.map((log, i) => (
                                 <span key={i} className={`truncate ${i === 0 ? "text-[var(--primary)] font-bold" : "text-[var(--muted-foreground)]"}`} style={{ opacity: 1 - i * 0.15 }}>
                                     {log}
