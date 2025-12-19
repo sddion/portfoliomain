@@ -6,7 +6,7 @@ import { useNotifications } from "@/hooks/useNotifications"
 import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard, X, Minus, Activity, Cpu, Radio } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard, X, Minus, Activity, Cpu, Radio, Globe } from "lucide-react"
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
@@ -21,6 +21,7 @@ import dynamic from "next/dynamic"
 import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 import { AdWidget } from "@/components/os/AdWidget"
+import { BrowserApp } from "@/components/apps/BrowserApp"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 import { LoginScreen } from "@/components/os/LoginScreen"
 
@@ -117,25 +118,11 @@ export function MobileDesktop() {
             content: <ResumeApp />,
         },
         {
-            id: "github",
-            label: "GitHub",
-            icon: <Github className="text-white" size={24} />,
-            bg: "bg-black",
-            action: () => window.open("https://github.com/sddion", "_blank"),
-        },
-        {
-            id: "gitlab",
-            label: "GitLab",
-            icon: <Gitlab className="text-white" size={24} />,
-            bg: "bg-orange-600",
-            action: () => window.open("https://gitlab.com/0xd3ds3c", "_blank"),
-        },
-        {
-            id: "instagram",
-            label: "Instagram",
-            icon: <Instagram className="text-white" size={24} />,
-            bg: "bg-pink-600",
-            action: () => window.open("https://instagram.com/wordswires", "_blank"),
+            id: "browser",
+            label: "Browser",
+            icon: <Globe className="text-white" size={24} />,
+            bg: "bg-blue-600",
+            content: <BrowserApp />,
         },
         {
             id: "blog",
@@ -157,13 +144,6 @@ export function MobileDesktop() {
             icon: <Settings className="text-zinc-400" size={24} />,
             bg: "bg-zinc-800",
             content: <SettingsApp />,
-        },
-        {
-            id: "whatsapp",
-            label: "WhatsApp",
-            icon: <MessageCircle className="text-green-500" size={24} />,
-            bg: "bg-green-600",
-            action: () => window.open("https://wa.me/91882292607", "_blank"),
         },
     ]
 
@@ -296,7 +276,7 @@ export function MobileDesktop() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="h-full bg-[var(--background)] rounded-2xl overflow-hidden relative border border-[var(--os-border)] shadow-2xl"
+                            className="h-full bg-[var(--background)] overflow-hidden relative"
                         >
                             <div className="absolute top-0 left-0 right-0 h-10 bg-[var(--os-surface)]/90 backdrop-blur-md border-b border-[var(--os-border)] flex items-center justify-between px-4 z-50">
                                 <span className="text-xs font-bold opacity-70 tracking-wide">{activeApp.label}</span>
@@ -394,7 +374,7 @@ export function MobileDesktop() {
                                                     </button>
                                                 ))}
                                             </div>
-                                            <div className="mt-auto pb-4">
+                                            <div className="mt-auto pb-14">
                                                 <AdWidget />
                                             </div>
                                         </div>

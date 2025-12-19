@@ -1,6 +1,10 @@
 import React from "react"
+import { useWindowManager } from "@/components/os/WindowManager"
+import { BrowserApp } from "@/components/apps/BrowserApp"
+import { Globe } from "lucide-react"
 
 export function AboutApp() {
+    const { openWindow } = useWindowManager()
     return (
         <div className="p-6 font-mono text-[var(--foreground)]/80 space-y-6 max-w-3xl mx-auto selection:bg-[var(--primary)]/30">
             <div className="flex items-center gap-4 mb-6 border-b border-[var(--os-border)] pb-4">
@@ -58,8 +62,24 @@ export function AboutApp() {
                 </div>
 
                 <div className="flex gap-4 pt-4">
-                    <a href="https://github.com/sddion" target="_blank" className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100">GitHub</a>
-                    <a href="https://gitlab.com/0xd3ds3c" target="_blank" className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100">GitLab</a>
+                    <button
+                        onClick={() => {
+                            openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                            window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://github.com/sddion" } }))
+                        }}
+                        className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100 font-bold"
+                    >
+                        GitHub
+                    </button>
+                    <button
+                        onClick={() => {
+                            openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                            window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://gitlab.com/0xd3ds3c" } }))
+                        }}
+                        className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100 font-bold"
+                    >
+                        GitLab
+                    </button>
                 </div>
             </div>
         </div>

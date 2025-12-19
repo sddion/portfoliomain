@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
-import { Folder } from "lucide-react"
+import { BrowserApp } from "@/components/apps/BrowserApp"
+import { Folder, Globe } from "lucide-react"
 
 export function TerminalApp() {
     const [history, setHistory] = useState<string[]>([
-        "Welcome to SanjuOS v2.0.4",
         "Type 'help' for a list of commands.",
     ])
     const [input, setInput] = useState("")
@@ -122,8 +122,9 @@ export function TerminalApp() {
             addToHistory(new Date().toString())
         },
         github: () => {
-            addToHistory("Opening GitHub...")
-            window.open("https://github.com/sddion", "_blank")
+            addToHistory("Opening GitHub in Browser...")
+            openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+            window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://github.com/sddion" } }))
         },
         projects: () => {
             addToHistory("Opening Projects window...")

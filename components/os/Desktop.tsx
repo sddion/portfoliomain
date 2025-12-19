@@ -6,7 +6,7 @@ import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette, CircuitBoard, Activity, Cpu, Radio } from "lucide-react"
+import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette, CircuitBoard, Activity, Cpu, Radio, Globe } from "lucide-react"
 
 import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
@@ -19,6 +19,7 @@ import { BlogApp } from "@/components/apps/BlogApp"
 import { ResourceMonitorApp } from "@/components/apps/ResourceMonitorApp"
 import { IoTControlApp } from "@/components/apps/IoTControlApp"
 import { AdWidget } from "@/components/os/AdWidget"
+import { BrowserApp } from "@/components/apps/BrowserApp"
 import dynamic from "next/dynamic"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
@@ -100,28 +101,10 @@ export function Desktop() {
         },
 
         {
-            id: "github",
-            label: "GitHub",
-            icon: <Github className="text-white" size={32} />,
-            action: () => window.open("https://github.com/sddion", "_blank"),
-        },
-        {
-            id: "gitlab",
-            label: "GitLab",
-            icon: <Gitlab className="text-orange-500" size={32} />,
-            action: () => window.open("https://gitlab.com/0xd3ds3c", "_blank"),
-        },
-        {
-            id: "instagram",
-            label: "Instagram",
-            icon: <Instagram className="text-pink-500" size={32} />,
-            action: () => window.open("https://instagram.com/wordswires", "_blank"),
-        },
-        {
-            id: "whatsapp",
-            label: "WhatsApp",
-            icon: <MessageCircle className="text-green-500" size={32} />,
-            action: () => window.open("https://wa.me/918822972607", "_blank"),
+            id: "browser",
+            label: "Browser",
+            icon: <Globe className="text-blue-400" size={32} />,
+            content: <BrowserApp />,
         },
     ]
 
@@ -153,8 +136,8 @@ export function Desktop() {
                         label={icon.label}
                         icon={icon.icon}
                         onDoubleClick={() => {
-                            if (icon.action) {
-                                icon.action()
+                            if ((icon as any).action) {
+                                (icon as any).action()
                             } else {
                                 if (icon.id === "esp32-flasher") {
                                     openWindow(icon.id, icon.label, icon.content, icon.icon, { width: "95vw", height: "90vh" })

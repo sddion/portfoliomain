@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Power, Terminal, User, Folder, Briefcase, FileText, Github, CircuitBoard, Snowflake } from "lucide-react"
+import { Power, Terminal, User, Folder, Briefcase, FileText, Github, CircuitBoard, Snowflake, Globe } from "lucide-react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { motion, AnimatePresence } from "framer-motion"
 import { TerminalApp } from "@/components/apps/TerminalApp"
@@ -10,6 +10,7 @@ import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
+import { BrowserApp } from "@/components/apps/BrowserApp"
 import dynamic from "next/dynamic"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
@@ -30,8 +31,9 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
         { label: "Resume", icon: <FileText size={18} className="text-red-500" />, id: "resume", content: <ResumeApp /> },
         { label: "ESP Flasher", icon: <CircuitBoard size={18} className="text-orange-500" />, id: "esp32-flasher", content: <ESP32FlasherApp /> },
         { label: "Blog", icon: <FileText size={18} className="text-teal-500" />, id: "blog", content: <BlogApp /> },
+        { label: "Browser", icon: <Globe size={18} className="text-blue-400" />, id: "browser", content: <BrowserApp /> },
         { label: "Snowfall", icon: <Snowflake size={18} className={showSnowfall ? "text-blue-300" : "text-zinc-500"} />, action: toggleSnowfall },
-        { label: "GitHub", icon: <Github size={18} className="text-white" />, action: () => window.open("https://github.com/sddion", "_blank") },
+        { label: "GitHub", icon: <Github size={18} className="text-white" />, action: () => { openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />); window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://github.com/sddion" } })); } },
     ]
 
     return (

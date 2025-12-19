@@ -11,6 +11,7 @@ export function IoTControlApp() {
     const [baudRate, setBaudRate] = useState(115200)
     const [chartData, setChartData] = useState<number[]>([])
     const logEndRef = useRef<HTMLDivElement>(null)
+    const readerRef = useRef<ReadableStreamDefaultReader | null>(null)
 
     useEffect(() => {
         logEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -39,6 +40,7 @@ export function IoTControlApp() {
             addLog(`SYSTEM: Connected to port at ${baudRate} baud`, 'out')
 
             const reader = selectedPort.readable.getReader()
+            readerRef.current = reader
             try {
                 while (true) {
                     const { value, done } = await reader.read()
@@ -47,9 +49,12 @@ export function IoTControlApp() {
                     addLog(text)
                 }
             } catch (err) {
-                addLog(`ERROR: ${err}`, 'out')
+                if (err instanceof Error && err.name !== 'AbortError') {
+                    addLog(`ERROR: ${err}`, 'out')
+                }
             } finally {
                 reader.releaseLock()
+                readerRef.current = null
             }
         } catch (err) {
             addLog(`SYSTEM: Connection failed - ${err}`, 'out')
@@ -58,10 +63,20 @@ export function IoTControlApp() {
 
     const disconnect = async () => {
         if (port) {
-            await port.close()
-            setPort(null)
-            setConnected(false)
-            addLog("SYSTEM: Disconnected", 'out')
+            try {
+                if (readerRef.current) {
+                    await readerRef.current.cancel()
+                }
+                await port.close()
+                setPort(null)
+                setConnected(false)
+                addLog("SYSTEM: Disconnected", 'out')
+            } catch (err) {
+                addLog(`SYSTEM: Disconnect failed - ${err}`, 'out')
+                // Force state reset even if port close fails
+                setPort(null)
+                setConnected(false)
+            }
         }
     }
 
@@ -78,7 +93,7 @@ export function IoTControlApp() {
     return (
         <div className="h-full bg-[#0a0a0c] text-slate-300 flex flex-col font-mono">
             {/* Header */}
-            <div className="p-4 bg-slate-900/40 border-b border-white/5 flex items-center justify-between">
+            <div className="p-4 bg-slate-900/40 border-b border-white/5 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${connected ? 'bg-green-500/10 text-green-500 animate-pulse' : 'bg-slate-500/10 text-slate-500'}`}>
                         <Cpu size={20} />
@@ -102,8 +117,8 @@ export function IoTControlApp() {
                     <button
                         onClick={connected ? disconnect : connect}
                         className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${connected
-                                ? 'bg-red-500/20 text-red-500 border border-red-500/30'
-                                : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20'
+                            ? 'bg-red-500/20 text-red-500 border border-red-500/30'
+                            : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20'
                             }`}
                     >
                         <Power size={14} />

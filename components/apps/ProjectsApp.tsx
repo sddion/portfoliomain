@@ -4,8 +4,11 @@ import React, { useState } from "react"
 import { projects, categories } from "@/lib/projects-data"
 import { Folder, FileCode, Search, Server, Cpu, Globe, Shield, Star, GitBranch } from "lucide-react"
 import { GeoshotApp } from "@/components/apps/GeoshotApp"
+import { BrowserApp } from "@/components/apps/BrowserApp"
+import { useWindowManager } from "@/components/os/WindowManager"
 
 export function ProjectsApp() {
+    const { openWindow } = useWindowManager()
     const [viewMode, setViewMode] = useState<'home' | 'list' | 'detail'>('home')
     const [activeCategory, setActiveCategory] = useState("all")
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -164,14 +167,26 @@ export function ProjectsApp() {
 
                     <div className="grid grid-cols-2 gap-4 pt-4">
                         {selectedProject.githubUrl && (
-                            <a href={selectedProject.githubUrl} target="_blank" className="flex items-center justify-center gap-2 bg-[var(--os-surface-hover)] text-[var(--foreground)] py-3 rounded-lg font-medium hover:opacity-80 transition-opacity">
+                            <button
+                                onClick={() => {
+                                    openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                                    window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.githubUrl } }))
+                                }}
+                                className="flex items-center justify-center gap-2 bg-[var(--os-surface-hover)] text-[var(--foreground)] py-3 rounded-lg font-medium hover:opacity-80 transition-opacity"
+                            >
                                 <GitBranch size={18} /> Code
-                            </a>
+                            </button>
                         )}
                         {selectedProject.liveUrl && (
-                            <a href={selectedProject.liveUrl} target="_blank" className="flex items-center justify-center gap-2 bg-[var(--primary)] text-[var(--primary-foreground)] py-3 rounded-lg font-medium hover:opacity-80 transition-opacity shadow-lg shadow-[var(--primary)]/20">
+                            <button
+                                onClick={() => {
+                                    openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                                    window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.liveUrl } }))
+                                }}
+                                className="flex items-center justify-center gap-2 bg-[var(--primary)] text-[var(--primary-foreground)] py-3 rounded-lg font-medium hover:opacity-80 transition-opacity shadow-lg shadow-[var(--primary)]/20"
+                            >
                                 <Globe size={18} /> Demo
-                            </a>
+                            </button>
                         )}
                     </div>
                 </div>
@@ -292,14 +307,26 @@ export function ProjectsApp() {
 
                                         <div className="flex flex-col gap-2 pt-2">
                                             {selectedProject.githubUrl && (
-                                                <a href={selectedProject.githubUrl} target="_blank" className="flex items-center gap-2 bg-[var(--os-surface-hover)] hover:opacity-80 px-3 py-2 rounded text-[var(--foreground)] transition-opacity">
+                                                <button
+                                                    onClick={() => {
+                                                        openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                                                        window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.githubUrl } }))
+                                                    }}
+                                                    className="flex items-center gap-2 bg-[var(--os-surface-hover)] hover:opacity-80 px-3 py-2 rounded text-[var(--foreground)] transition-opacity w-full text-left"
+                                                >
                                                     <GitBranch size={14} /> Source Code
-                                                </a>
+                                                </button>
                                             )}
                                             {selectedProject.liveUrl && (
-                                                <a href={selectedProject.liveUrl} target="_blank" className="flex items-center gap-2 bg-[var(--primary)] hover:opacity-80 text-[var(--primary-foreground)] px-3 py-2 rounded transition-opacity">
+                                                <button
+                                                    onClick={() => {
+                                                        openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                                                        window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.liveUrl } }))
+                                                    }}
+                                                    className="flex items-center gap-2 bg-[var(--primary)] hover:opacity-80 text-[var(--primary-foreground)] px-3 py-2 rounded transition-opacity w-full text-left"
+                                                >
                                                     <Globe size={14} /> Live Demo
-                                                </a>
+                                                </button>
                                             )}
                                         </div>
                                     </div>
