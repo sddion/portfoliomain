@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+"use client";
+
+import React, { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 
 export interface Notification {
   id: string;
@@ -10,7 +12,19 @@ export interface Notification {
   data?: any;
 }
 
-export function useNotifications() {
+interface NotificationContextType {
+  supported: boolean;
+  permission: NotificationPermission;
+  notifications: Notification[];
+  requestPermission: () => Promise<boolean>;
+  showNotification: (title: string, options?: NotificationOptions & { data?: any }) => globalThis.Notification | null;
+  clearNotifications: () => void;
+  removeNotification: (id: string) => void;
+}
+
+const NotificationContext = createContext<NotificationContextType | null>(null);
+
+export function NotificationProvider({ children }: { children: ReactNode }) {
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [supported, setSupported] = useState(false);
@@ -41,9 +55,7 @@ export function useNotifications() {
 
   // Save notifications to localStorage whenever they change
   useEffect(() => {
-    if (notifications.length > 0) {
-      localStorage.setItem("notification-history", JSON.stringify(notifications.slice(0, 20)));
-    }
+    localStorage.setItem("notification-history", JSON.stringify(notifications.slice(0, 20)));
   }, [notifications]);
 
   const requestPermission = useCallback(async () => {
@@ -66,9 +78,9 @@ export function useNotifications() {
       try {
         // Deduplication: check if same notification exists in last 5 seconds
         const fiveSecondsAgo = new Date(Date.now() - 5000);
-        const isDuplicate = notifications.some(n => 
-          n.title === title && 
-          n.body === (options?.body || "") && 
+        const isDuplicate = notifications.some(n =>
+          n.title === title &&
+          n.body === (options?.body || "") &&
           n.timestamp > fiveSecondsAgo
         );
 
@@ -109,13 +121,27 @@ export function useNotifications() {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
-  return {
-    supported,
-    permission,
-    notifications,
-    requestPermission,
-    showNotification,
-    clearNotifications,
-    removeNotification,
-  };
+  return (
+    <NotificationContext.Provider
+      value={{
+        supported,
+        permission,
+        notifications,
+        requestPermission,
+        showNotification,
+        clearNotifications,
+        removeNotification,
+      }}
+    >
+      {children}
+    </NotificationContext.Provider>
+  );
+}
+
+export function useNotifications() {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error("useNotifications must be used within a NotificationProvider");
+  }
+  return context;
 }

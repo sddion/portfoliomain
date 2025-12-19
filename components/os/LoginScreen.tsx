@@ -147,7 +147,7 @@ export function LoginScreen() {
 
 
     const renderMobile = () => (
-        <div className="h-screen w-full relative bg-[var(--background)] overflow-hidden font-sans">
+        <div className="h-[100dvh] w-screen relative bg-[var(--background)] overflow-hidden font-sans">
             {/* High Quality Background */}
             <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-1000"

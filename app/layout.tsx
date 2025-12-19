@@ -8,6 +8,7 @@ import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 import { WindowProvider } from "@/components/os/WindowManager"
 import { SnowfallEffect } from '@/components/ui/snowfall-effect';
+import { NotificationProvider } from "@/hooks/useNotifications"
 
 
 export const metadata: Metadata = {
@@ -109,10 +110,12 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <WindowProvider>
-            <SnowfallEffect snowflakeCount={150} color="#2ae704c5" />
-            {children}
-          </WindowProvider>
+          <NotificationProvider>
+            <WindowProvider>
+              <SnowfallEffect snowflakeCount={150} color="#2ae704c5" />
+              {children}
+            </WindowProvider>
+          </NotificationProvider>
         </ThemeProvider>
       </body>
     </html >
