@@ -59,7 +59,7 @@ export function AboutApp() {
 
                 <div className="flex gap-4 pt-4">
                     <a href="https://github.com/sddion" target="_blank" className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100">GitHub</a>
-                    <a href="https://gitlab.com/dedsec" target="_blank" className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100">GitLab</a>
+                    <a href="https://gitlab.com/0xd3ds3c" target="_blank" className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100">GitLab</a>
                 </div>
             </div>
         </div>

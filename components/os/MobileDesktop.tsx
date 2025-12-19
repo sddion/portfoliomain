@@ -111,7 +111,7 @@ export function MobileDesktop() {
             label: "GitLab",
             icon: <Gitlab className="text-white" size={24} />,
             bg: "bg-orange-600",
-            action: () => window.open("https://gitlab.com/0xdeds3c", "_blank"),
+            action: () => window.open("https://gitlab.com/0xd3ds3c", "_blank"),
         },
         {
             id: "instagram",

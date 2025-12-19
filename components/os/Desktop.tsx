@@ -94,7 +94,7 @@ export function Desktop() {
             id: "gitlab",
             label: "GitLab",
             icon: <Gitlab className="text-orange-500" size={32} />,
-            action: () => window.open("https://gitlab.com/0xdeds3c", "_blank"),
+            action: () => window.open("https://gitlab.com/0xd3ds3c", "_blank"),
         },
         {
             id: "instagram",
