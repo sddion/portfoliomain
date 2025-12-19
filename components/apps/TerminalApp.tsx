@@ -123,7 +123,7 @@ export function TerminalApp() {
         },
         github: () => {
             addToHistory("Opening GitHub in Browser...")
-            openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+            openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />)
             window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: "https://github.com/sddion" } }))
         },
         projects: () => {

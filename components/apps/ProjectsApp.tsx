@@ -169,7 +169,7 @@ export function ProjectsApp() {
                         {selectedProject.githubUrl && (
                             <button
                                 onClick={() => {
-                                    openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                                    openWindow("browser", "Browser", <BrowserApp initialUrl={selectedProject.githubUrl} />, <Globe size={18} />)
                                     window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.githubUrl } }))
                                 }}
                                 className="flex items-center justify-center gap-2 bg-[var(--os-surface-hover)] text-[var(--foreground)] py-3 rounded-lg font-medium hover:opacity-80 transition-opacity"
@@ -180,7 +180,7 @@ export function ProjectsApp() {
                         {selectedProject.liveUrl && (
                             <button
                                 onClick={() => {
-                                    openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                                    openWindow("browser", "Browser", <BrowserApp initialUrl={selectedProject.liveUrl} />, <Globe size={18} />)
                                     window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.liveUrl } }))
                                 }}
                                 className="flex items-center justify-center gap-2 bg-[var(--primary)] text-[var(--primary-foreground)] py-3 rounded-lg font-medium hover:opacity-80 transition-opacity shadow-lg shadow-[var(--primary)]/20"
@@ -309,7 +309,7 @@ export function ProjectsApp() {
                                             {selectedProject.githubUrl && (
                                                 <button
                                                     onClick={() => {
-                                                        openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                                                        openWindow("browser", "Browser", <BrowserApp initialUrl={selectedProject.githubUrl} />, <Globe size={18} />)
                                                         window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.githubUrl } }))
                                                     }}
                                                     className="flex items-center gap-2 bg-[var(--os-surface-hover)] hover:opacity-80 px-3 py-2 rounded text-[var(--foreground)] transition-opacity w-full text-left"
@@ -320,7 +320,7 @@ export function ProjectsApp() {
                                             {selectedProject.liveUrl && (
                                                 <button
                                                     onClick={() => {
-                                                        openWindow("browser", "Browser", <BrowserApp />, <Globe size={18} />)
+                                                        openWindow("browser", "Browser", <BrowserApp initialUrl={selectedProject.liveUrl} />, <Globe size={18} />)
                                                         window.dispatchEvent(new CustomEvent("browser:open-url", { detail: { url: selectedProject.liveUrl } }))
                                                     }}
                                                     className="flex items-center gap-2 bg-[var(--primary)] hover:opacity-80 text-[var(--primary-foreground)] px-3 py-2 rounded transition-opacity w-full text-left"
