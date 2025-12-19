@@ -117,7 +117,7 @@ export function Desktop() {
             id: "whatsapp",
             label: "WhatsApp",
             icon: <MessageCircle className="text-green-500" size={32} />,
-            action: () => window.open("https://wa.me/91882292607", "_blank"),
+            action: () => window.open("https://wa.me/918822972607", "_blank"),
         },
     ]
 
