@@ -20,7 +20,6 @@ import dynamic from "next/dynamic"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
-import { AdWidget } from "@/components/os/AdWidget"
 import { BrowserApp } from "@/components/apps/BrowserApp"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 import { LoginScreen } from "@/components/os/LoginScreen"
@@ -373,9 +372,6 @@ export function MobileDesktop() {
                                                         <span className="text-[10px] text-[var(--muted-foreground)] font-medium tracking-wide">{app.label}</span>
                                                     </button>
                                                 ))}
-                                            </div>
-                                            <div className="mt-auto pb-14">
-                                                <AdWidget />
                                             </div>
                                         </div>
                                     )}

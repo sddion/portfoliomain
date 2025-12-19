@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Printer, Mail, MapPin, Globe, Linkedin, Github, ExternalLink, Briefcase, GraduationCap, Star, Code } from "lucide-react"
+import { Printer, Mail, MapPin, Globe, Github, Briefcase, GraduationCap, Star, Code } from "lucide-react"
 
 export function ResumeApp() {
     const handlePrint = () => {
@@ -69,14 +69,14 @@ export function ResumeApp() {
                 {/* Header */}
                 <header className="border-b-2 border-zinc-900 pb-8 mb-10 flex flex-col sm:flex-row justify-between items-start gap-6">
                     <div>
-                        <h1 className="text-5xl font-black tracking-tighter mb-2">SANJU SDN</h1>
+                        <h1 className="text-5xl font-black tracking-tighter mb-2">SAN JU</h1>
                         <p className="text-xl font-bold text-blue-600 uppercase tracking-widest">Full-Stack Developer & Ops Specialist</p>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-zinc-500">
-                        <div className="flex items-center gap-2"><Mail size={12} className="text-zinc-400" /> sddion@icloud.com</div>
+                        <div className="flex items-center gap-2"><Mail size={12} className="text-zinc-400" /> devopsanju@gmail.com</div>
                         <div className="flex items-center gap-2"><MapPin size={12} className="text-zinc-400" /> Bangalore, IN</div>
                         <div className="flex items-center gap-2"><Github size={12} className="text-zinc-400" /> github.com/sddion</div>
-                        <div className="flex items-center gap-2"><Globe size={12} className="text-zinc-400" /> sanjuos.xyz</div>
+                        <div className="flex items-center gap-2"><Globe size={12} className="text-zinc-400" /> sddion.vercel.app</div>
                     </div>
                 </header>
 
@@ -151,13 +151,7 @@ export function ResumeApp() {
                             </div>
                         </section>
 
-                        {/* Availability */}
-                        <section className="p-6 bg-zinc-900 text-white rounded-2xl space-y-4 print:bg-white print:text-zinc-900 print:border print:border-zinc-200">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Status_Update</h3>
-                            <p className="text-xs leading-loose font-bold uppercase">
-                                Open to specialized contract roles in frontend engineering and secure systems building.
-                            </p>
-                        </section>
+                   
                     </div>
                 </div>
 

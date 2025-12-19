@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
-import { ProjectsApp } from "@/components/apps/ProjectsApp"
-import { BrowserApp } from "@/components/apps/BrowserApp"
 import { Folder, Globe } from "lucide-react"
 
 export function TerminalApp() {
@@ -18,7 +16,7 @@ export function TerminalApp() {
 
     const commands: Record<string, (args: string[]) => void> = {
         help: () => {
-            addToHistory("Available commands: help, curl, clear, whoami, projects, github, date, esp")
+            addToHistory("Available commands: help, curl, clear, whoami, date, esp")
         },
         esp: async (args) => {
             const subCommand = args[0]
@@ -121,14 +119,6 @@ export function TerminalApp() {
         date: () => {
             addToHistory(new Date().toString())
         },
-        github: () => {
-            addToHistory("Opening GitHub in Browser...")
-            openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />)
-        },
-        projects: () => {
-            addToHistory("Opening Projects window...")
-            openWindow("projects", "Projects", <ProjectsApp />, <Folder className="text-yellow-400" size={32} />)
-        },
         curl: async (args) => {
             const url = args[0]
             if (!url) {
@@ -176,8 +166,6 @@ export function TerminalApp() {
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [history])
-
-    // Termux-style slide up animation
     return (
         <div
             className="h-full w-full overflow-hidden bg-[var(--terminal-bg)]"
