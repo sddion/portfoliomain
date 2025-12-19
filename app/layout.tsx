@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 
 import "./globals.css"
+import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 import { WindowProvider } from "@/components/os/WindowManager"
 import { SnowfallEffect } from '@/components/ui/snowfall-effect';
@@ -58,6 +59,7 @@ export const metadata: Metadata = {
   },
   other: {
     "google-adsense-account": "ca-pub-5565716152868775",
+    "revisit-after": "7 days",
   },
 }
 
@@ -68,6 +70,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5565716152868775"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased bg-neutral-950 text-neutral-50`}
       >
