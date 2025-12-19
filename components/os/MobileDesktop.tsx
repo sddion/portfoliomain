@@ -336,10 +336,6 @@ export function MobileDesktop() {
             )}>
                 <div className="h-full flex flex-col">
                     <div className="flex-1 flex flex-col relative overflow-hidden">
-                        {/* Status Widget Area */}
-                        <div className="pt-2 pb-2">
-                            <MobileConkyWidget />
-                        </div>
 
                         <motion.div
                             drag="x"
@@ -360,7 +356,11 @@ export function MobileDesktop() {
                         >
                             {/* Page 1 */}
                             <div className="min-w-full px-2 flex flex-col h-full overflow-hidden">
-                                <div className="grid grid-cols-4 gap-y-8 gap-x-4 pt-4">
+                                {/* Conky Widget - Only on Page 1 */}
+                                <div className="pt-2 pb-2">
+                                    <MobileConkyWidget />
+                                </div>
+                                <div className="grid grid-cols-4 gap-y-8 gap-x-4 pt-2">
                                     {page1Apps.map((app) => (
                                         <button
                                             key={app.id}
@@ -380,10 +380,10 @@ export function MobileDesktop() {
                                 </div>
                             </div>
 
-                            {/* Page 2 */}
+                            {/* Page 2 - Icons start from top */}
                             {totalPages > 1 && (
-                                <div className="min-w-full px-2 flex flex-col h-full overflow-hidden">
-                                    <div className="grid grid-cols-4 gap-y-8 gap-x-4 pt-4">
+                                <div className="min-w-full px-6 flex flex-col h-full overflow-hidden pt-4">
+                                    <div className="grid grid-cols-4 gap-y-8 gap-x-4">
                                         {page2Apps.map((app) => (
                                             <button
                                                 key={app.id}

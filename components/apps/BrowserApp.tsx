@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { Search, Globe, ChevronLeft, ChevronRight, RotateCcw, Home, ExternalLink, Github, Gitlab, Instagram, MessageCircle, Plus, X, ShieldAlert } from "lucide-react"
+import { Search, Globe, ChevronLeft, ChevronRight, RotateCcw, Home, ExternalLink, Github, Gitlab, Instagram, MessageCircle, Star, Plus, X, ShieldAlert } from "lucide-react"
+import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 
 interface Tab {
@@ -10,15 +11,50 @@ interface Tab {
     title: string
     favicon?: string
     isHome?: boolean
+    history: string[]
+    historyIndex: number
+}
+
+interface Bookmark {
+    url: string
+    title: string
+    favicon?: string
+}
+
+interface HistoryItem {
+    url: string
+    title: string
+    timestamp: number
 }
 
 export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
     const [tabs, setTabs] = useState<Tab[]>([
-        { id: "1", url: "about:home", title: "New Tab", isHome: true }
+        { id: "1", url: "about:home", title: "New Tab", isHome: true, history: ["about:home"], historyIndex: 0 }
     ])
     const [activeTabId, setActiveTabId] = useState("1")
     const [urlInput, setUrlInput] = useState("")
+    const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
+    const [globalHistory, setGlobalHistory] = useState<HistoryItem[]>([])
+    const [showHistoryMenu, setShowHistoryMenu] = useState(false)
+    const [showBookmarksMenu, setShowBookmarksMenu] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
+
+    // Load persistent data
+    useEffect(() => {
+        const savedBookmarks = localStorage.getItem("sanjuos_bookmarks")
+        const savedHistory = localStorage.getItem("sanjuos_history")
+        if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks))
+        if (savedHistory) setGlobalHistory(JSON.parse(savedHistory))
+    }, [])
+
+    // Sync persistent data
+    useEffect(() => {
+        localStorage.setItem("sanjuos_bookmarks", JSON.stringify(bookmarks))
+    }, [bookmarks])
+
+    useEffect(() => {
+        localStorage.setItem("sanjuos_history", JSON.stringify(globalHistory))
+    }, [globalHistory])
 
     const [isMobile, setIsMobile] = useState(false)
 
@@ -46,7 +82,9 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
                 const newTab: Tab = {
                     id: newId,
                     url: url,
-                    title: "Loading..."
+                    title: "Loading...",
+                    history: [url],
+                    historyIndex: 0
                 }
                 setTabs(prev => [...prev, newTab])
                 setActiveTabId(newId)
@@ -68,23 +106,26 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
         return () => window.removeEventListener("browser:open-url", onOpenUrlEvent)
     }, [initialUrl])
 
-    const addTab = () => {
+    const addTab = (url: string = "about:home") => {
         const newId = Math.random().toString(36).substr(2, 9)
+        const isHome = url === "about:home"
         const newTab: Tab = {
             id: newId,
-            url: "about:home",
-            title: "New Tab",
-            isHome: true
+            url: url,
+            title: isHome ? "New Tab" : url,
+            isHome: isHome,
+            history: [url],
+            historyIndex: 0
         }
         setTabs(prev => [...prev, newTab])
         setActiveTabId(newId)
-        setUrlInput("")
+        setUrlInput(isHome ? "" : url)
     }
 
     const closeTab = (id: string, e: React.MouseEvent) => {
         e.stopPropagation()
         if (tabs.length === 1) {
-            setTabs([{ id: "1", url: "about:home", title: "New Tab", isHome: true }])
+            setTabs([{ id: "1", url: "about:home", title: "New Tab", isHome: true, history: ["about:home"], historyIndex: 0 }])
             setActiveTabId("1")
             return
         }
@@ -95,16 +136,70 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
         }
     }
 
-    const navigate = (url: string) => {
+    const navigate = (url: string, updateHistory: boolean = true) => {
         let targetUrl = url
         if (!url.startsWith("http") && !url.startsWith("about:")) {
             targetUrl = `https://www.google.com/search?q=${encodeURIComponent(url)}`
         }
 
-        setTabs(prev => prev.map(t =>
-            t.id === activeTabId ? { ...t, url: targetUrl, title: targetUrl, isHome: targetUrl === "about:home" } : t
-        ))
+        setTabs(prev => prev.map(t => {
+            if (t.id === activeTabId) {
+                const newHistory = updateHistory
+                    ? [...t.history.slice(0, t.historyIndex + 1), targetUrl]
+                    : t.history
+                const newIndex = updateHistory ? newHistory.length - 1 : t.historyIndex
+
+                return {
+                    ...t,
+                    url: targetUrl,
+                    title: targetUrl,
+                    isHome: targetUrl === "about:home",
+                    history: newHistory,
+                    historyIndex: newIndex
+                }
+            }
+            return t
+        }))
+
+        // Add to global history
+        if (targetUrl !== "about:home") {
+            setGlobalHistory(prev => [
+                { url: targetUrl, title: targetUrl, timestamp: Date.now() },
+                ...prev.slice(0, 99) // Keep last 100
+            ])
+        }
+
         setUrlInput(targetUrl === "about:home" ? "" : targetUrl)
+    }
+
+    const goBack = () => {
+        if (activeTab.historyIndex > 0) {
+            const prevUrl = activeTab.history[activeTab.historyIndex - 1]
+            setTabs(prev => prev.map(t =>
+                t.id === activeTabId ? { ...t, url: prevUrl, historyIndex: t.historyIndex - 1, isHome: prevUrl === "about:home" } : t
+            ))
+            setUrlInput(prevUrl === "about:home" ? "" : prevUrl)
+        }
+    }
+
+    const goForward = () => {
+        if (activeTab.historyIndex < activeTab.history.length - 1) {
+            const nextUrl = activeTab.history[activeTab.historyIndex + 1]
+            setTabs(prev => prev.map(t =>
+                t.id === activeTabId ? { ...t, url: nextUrl, historyIndex: t.historyIndex + 1, isHome: nextUrl === "about:home" } : t
+            ))
+            setUrlInput(nextUrl === "about:home" ? "" : nextUrl)
+        }
+    }
+
+    const toggleBookmark = () => {
+        if (activeTab.isHome) return
+        const exists = bookmarks.find(b => b.url === activeTab.url)
+        if (exists) {
+            setBookmarks(prev => prev.filter(b => b.url !== activeTab.url))
+        } else {
+            setBookmarks(prev => [...prev, { url: activeTab.url, title: activeTab.title }])
+        }
     }
 
     const handleSearch = (e: React.FormEvent) => {
@@ -150,7 +245,7 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
                         </div>
                     ))}
                     <button
-                        onClick={addTab}
+                        onClick={() => addTab()}
                         className="p-2 mb-1 rounded-md text-[var(--muted-foreground)] hover:bg-white/10 transition-colors"
                     >
                         <Plus size={14} />
@@ -160,18 +255,26 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
 
             {/* Browser Toolbar */}
             <div className={cn(
-                "bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-center gap-2 shrink-0",
+                "bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-center gap-2 shrink-0 relative",
                 isMobile ? "h-16 px-4" : "h-12 px-3"
             )}>
                 {!isMobile && (
                     <div className="flex items-center gap-1 shrink-0">
-                        <button className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
+                        <button
+                            disabled={activeTab.historyIndex === 0}
+                            onClick={goBack}
+                            className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] disabled:opacity-20 transition-colors"
+                        >
                             <ChevronLeft size={18} />
                         </button>
-                        <button className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
+                        <button
+                            disabled={activeTab.historyIndex === activeTab.history.length - 1}
+                            onClick={goForward}
+                            className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] disabled:opacity-20 transition-colors"
+                        >
                             <ChevronRight size={18} />
                         </button>
-                        <button onClick={() => navigate(activeTab.url)} className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
+                        <button onClick={() => navigate(activeTab.url, false)} className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
                             <RotateCcw size={18} />
                         </button>
                         <button onClick={() => navigate("about:home")} className="p-1.5 hover:bg-white/10 rounded-md text-[var(--muted-foreground)] transition-colors">
@@ -186,32 +289,127 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
                     </div>
                     <input
                         ref={inputRef}
-                        type="text"
+                        type="search"
                         value={urlInput}
                         onChange={(e) => setUrlInput(e.target.value)}
-                        placeholder={isMobile ? "Search..." : "Search or enter URL..."}
+                        placeholder={isMobile ? "Search repository..." : "Search or enter URL..."}
                         className={cn(
                             "w-full bg-black/40 border border-[var(--os-border)] outline-none focus:border-primary/50 transition-colors text-[var(--foreground)]",
-                            isMobile ? "h-10 pl-10 pr-4 rounded-xl text-sm font-bold" : "h-8 pl-9 pr-4 rounded-full text-xs font-medium"
+                            isMobile ? "h-10 pl-10 pr-10 rounded-xl text-sm font-bold" : "h-8 pl-9 pr-10 rounded-full text-xs font-medium"
                         )}
                     />
-                    {isMobile && tabs.length > 1 && (
-                        <div className="absolute right-3 flex items-center">
-                            <span className="bg-white/10 text-white/50 w-5 h-5 rounded flex items-center justify-center text-[10px] font-black">{tabs.length}</span>
-                        </div>
-                    )}
+                    <button
+                        type="button"
+                        onClick={toggleBookmark}
+                        className={cn(
+                            "absolute right-3 transition-colors",
+                            bookmarks.some(b => b.url === activeTab.url) ? "text-yellow-500" : "text-[var(--muted-foreground)] hover:text-white"
+                        )}
+                    >
+                        {bookmarks.some(b => b.url === activeTab.url) ? <Star size={16} className="fill-yellow-500" /> : <Star size={16} />}
+                    </button>
                 </form>
 
-                {isMobile ? (
-                    <div className="flex gap-1">
-                        <button onClick={() => navigate(activeTab.url)} className="p-2 text-[var(--muted-foreground)] active:text-primary transition-colors">
-                            <RotateCcw size={20} />
+                <div className="flex items-center gap-1 shrink-0">
+                    <button
+                        onClick={() => {
+                            setShowHistoryMenu(!showHistoryMenu)
+                            setShowBookmarksMenu(false)
+                        }}
+                        className={cn("p-1.5 hover:bg-white/10 rounded-md transition-colors", showHistoryMenu ? "bg-white/10 text-primary" : "text-[var(--muted-foreground)]")}
+                    >
+                        <RotateCcw size={isMobile ? 22 : 18} />
+                    </button>
+                    {!isMobile && (
+                        <button
+                            onClick={() => {
+                                setShowBookmarksMenu(!showBookmarksMenu)
+                                setShowHistoryMenu(false)
+                            }}
+                            className={cn("p-1.5 hover:bg-white/10 rounded-md transition-colors", showBookmarksMenu ? "bg-white/10 text-primary" : "text-[var(--muted-foreground)]")}
+                        >
+                            <Star size={18} />
                         </button>
+                    )}
+                </div>
+
+                {/* Overlays */}
+                {showHistoryMenu && (
+                    <div className="absolute top-full right-4 mt-2 w-72 bg-[var(--os-surface)] border border-[var(--os-border)] rounded-xl shadow-2xl z-[200] p-2 overflow-hidden flex flex-col max-h-[400px]">
+                        <div className="p-2 border-b border-white/5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Local History</div>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar">
+                            {globalHistory.length === 0 ? (
+                                <div className="p-8 text-center text-xs text-white/20 italic">No history yet</div>
+                            ) : (
+                                globalHistory.map((h, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => {
+                                            navigate(h.url)
+                                            setShowHistoryMenu(false)
+                                        }}
+                                        className="w-full text-left p-2 hover:bg-white/5 rounded-lg transition-colors group flex items-center gap-3"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                                            <Globe size={14} className="text-[var(--muted-foreground)]" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="text-xs font-bold truncate text-[var(--foreground)]">{h.url}</div>
+                                            <div className="text-[9px] text-[var(--muted-foreground)]">{format(h.timestamp, "MMM d, HH:mm")}</div>
+                                        </div>
+                                    </button>
+                                ))
+                            )}
+                        </div>
                     </div>
-                ) : (
-                    <div className="w-24 shrink-0" />
+                )}
+
+                {showBookmarksMenu && (
+                    <div className="absolute top-full right-4 mt-2 w-72 bg-[var(--os-surface)] border border-[var(--os-border)] rounded-xl shadow-2xl z-[200] p-2 overflow-hidden flex flex-col max-h-[400px]">
+                        <div className="p-2 border-b border-white/5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Bookmarks</div>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar">
+                            {bookmarks.length === 0 ? (
+                                <div className="p-8 text-center text-xs text-white/20 italic">No bookmarks yet</div>
+                            ) : (
+                                bookmarks.map((b, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => {
+                                            navigate(b.url)
+                                            setShowBookmarksMenu(false)
+                                        }}
+                                        className="w-full text-left p-2 hover:bg-white/5 rounded-lg transition-colors group flex items-center gap-3"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center shrink-0">
+                                            <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="text-xs font-bold truncate text-[var(--foreground)]">{b.title}</div>
+                                            <div className="text-[9px] text-[var(--muted-foreground)] truncate">{b.url}</div>
+                                        </div>
+                                    </button>
+                                ))
+                            )}
+                        </div>
+                    </div>
                 )}
             </div>
+
+            {/* Desktop Bookmarks Bar */}
+            {!isMobile && bookmarks.length > 0 && (
+                <div className="h-8 bg-[var(--os-surface)] border-b border-[var(--os-border)] flex items-center px-4 gap-4 shrink-0 overflow-x-auto no-scrollbar">
+                    {bookmarks.slice(0, 8).map((b, i) => (
+                        <button
+                            key={i}
+                            onClick={() => navigate(b.url)}
+                            className="flex items-center gap-2 text-[10px] font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors whitespace-nowrap"
+                        >
+                            <Globe size={12} className="text-primary/60" />
+                            {b.title.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {/* Browser Content */}
             <div className="flex-1 overflow-hidden relative">
