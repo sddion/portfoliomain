@@ -18,6 +18,7 @@ import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
 import { ResourceMonitorApp } from "@/components/apps/ResourceMonitorApp"
 import { IoTControlApp } from "@/components/apps/IoTControlApp"
+import { AdWidget } from "@/components/os/AdWidget"
 import dynamic from "next/dynamic"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
@@ -134,6 +135,9 @@ export function Desktop() {
 
             {/* Conky Widget */}
             <ConkyWidget />
+
+            {/* Ad Widget */}
+            <AdWidget />
 
             {/* Snowfall Effect */}
             <SnowfallEffect />

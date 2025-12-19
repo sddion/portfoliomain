@@ -20,6 +20,7 @@ import dynamic from "next/dynamic"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
+import { AdWidget } from "@/components/os/AdWidget"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 import { LoginScreen } from "@/components/os/LoginScreen"
 
@@ -356,8 +357,9 @@ export function MobileDesktop() {
                                     {/* Page 1 */}
                                     <div className="min-w-full px-4 flex flex-col">
                                         {/* Mobile Conky Widget - Only on Page 1 */}
-                                        <div className="pt-6 pb-4">
+                                        <div className="pt-6 pb-4 space-y-4">
                                             <MobileConkyWidget />
+                                            <AdWidget />
                                         </div>
 
                                         <div className="grid grid-cols-4 grid-rows-2 gap-y-8 gap-x-4 pt-2">

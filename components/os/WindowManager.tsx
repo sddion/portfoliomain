@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react"
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react"
 
 export interface WindowState {
     id: string
@@ -62,78 +62,93 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
-    const login = () => {
+    const login = useCallback(() => {
         setIsLoggedIn(true)
         setBooting(true) // Trigger boot on login
         localStorage.setItem("sanjuos_login", Date.now().toString())
-    }
+    }, [])
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setIsLoggedIn(false)
         setWindows([]) // Clear windows on logout
         setBooting(false)
         localStorage.removeItem("sanjuos_login")
-    }
+    }, [])
 
-    const focusWindow = (id: string) => {
-        if (id === activeWindowId) return
+    const focusWindow = useCallback((id: string) => {
+        if (id === activeWindowId) {
+            setWindows(prev => {
+                const win = prev.find(w => w.id === id)
+                if (win && win.isMinimized) {
+                    return prev.map(w => w.id === id ? { ...w, isMinimized: false } : w)
+                }
+                return prev
+            })
+            return
+        }
 
         setActiveWindowId(id)
-        setMaxZIndex((prev) => {
-            const newZ = prev + 1
+        setMaxZIndex((prevZ) => {
+            const newZ = prevZ + 1
             setWindows((prevWindows) =>
                 prevWindows.map((w) => (w.id === id ? { ...w, zIndex: newZ, isMinimized: false } : w))
             )
             return newZ
         })
-    }
+    }, [activeWindowId])
 
-    const openWindow = (id: string, title: string, content: React.ReactNode, icon?: React.ReactNode, options?: WindowOptions) => {
+    const openWindow = useCallback((id: string, title: string, content: React.ReactNode, icon?: React.ReactNode, options?: WindowOptions) => {
         setWindows((prev) => {
             const existing = prev.find((w) => w.id === id)
             if (existing) {
                 focusWindow(id)
-                return prev.map((w) => (w.id === id ? { ...w, isOpen: true, isMinimized: false } : w))
+                return prev
             }
-            const newZ = maxZIndex + 1
-            const newCtx: WindowState = {
-                id,
-                title,
-                content,
-                isOpen: true,
-                isMinimized: false,
-                isMaximized: false,
-                zIndex: newZ,
-                icon,
-                width: options?.width,
-                height: options?.height,
-            }
-            setMaxZIndex(newZ)
-            return [...prev, newCtx]
+
+            setMaxZIndex((prevZ) => {
+                const newZ = prevZ + 1
+                const newCtx: WindowState = {
+                    id,
+                    title,
+                    content,
+                    isOpen: true,
+                    isMinimized: false,
+                    isMaximized: false,
+                    zIndex: newZ,
+                    icon,
+                    width: options?.width,
+                    height: options?.height,
+                }
+                setWindows(current => [...current, newCtx])
+                setActiveWindowId(id)
+                return newZ
+            })
+
+            return prev
         })
-    }
+    }, [focusWindow])
 
-    const closeWindow = (id: string) => {
+    const closeWindow = useCallback((id: string) => {
         setWindows((prev) => prev.filter((w) => w.id !== id))
-        if (activeWindowId === id) setActiveWindowId(null)
-    }
+        setActiveWindowId(prev => prev === id ? null : prev)
+    }, [])
 
-    const minimizeWindow = (id: string) => {
+    const minimizeWindow = useCallback((id: string) => {
         setWindows((prev) =>
             prev.map((w) => (w.id === id ? { ...w, isMinimized: true } : w))
         )
-    }
+    }, [])
 
-    const maximizeWindow = (id: string) => {
+    const maximizeWindow = useCallback((id: string) => {
         setWindows((prev) =>
             prev.map((w) => (w.id === id ? { ...w, isMaximized: !w.isMaximized } : w))
         )
         focusWindow(id)
-    }
+    }, [focusWindow])
 
     const [showSnowfall, setShowSnowfall] = useState(true)
 
-    const toggleSnowfall = () => setShowSnowfall(prev => !prev)
+    const toggleSnowfall = useCallback(() => setShowSnowfall(prev => !prev), [])
 
     const value = React.useMemo(() => ({
         windows,
@@ -150,7 +165,21 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         logout,
         showSnowfall,
         toggleSnowfall
-    }), [windows, activeWindowId, isBooting, isLoggedIn, showSnowfall])
+    }), [
+        windows,
+        openWindow,
+        closeWindow,
+        minimizeWindow,
+        maximizeWindow,
+        focusWindow,
+        activeWindowId,
+        isBooting,
+        isLoggedIn,
+        login,
+        logout,
+        showSnowfall,
+        toggleSnowfall
+    ])
 
     return (
         <WindowContext.Provider value={value}>
