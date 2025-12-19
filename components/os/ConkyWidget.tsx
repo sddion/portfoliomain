@@ -154,7 +154,6 @@ export function ConkyWidget() {
                         <h3 className="font-bold border-b border-[var(--primary)]/30 pb-1 mb-2 uppercase flex items-center gap-2 text-[var(--primary)]">
                             <Github size={12} /> GitHub Telemetry
                         </h3>
-                        full Content ...
                         {stats ? (
                             <>
                                 <div className="flex justify-between mb-1">

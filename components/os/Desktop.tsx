@@ -16,7 +16,6 @@ import { ConkyWidget } from "@/components/os/ConkyWidget"
 import { SettingsApp } from "@/components/apps/SettingsApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
-import { ImageEditorApp } from "@/components/apps/ImageEditorApp"
 import dynamic from "next/dynamic"
 
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
@@ -47,12 +46,6 @@ export function Desktop() {
             label: "Blog",
             icon: <FileText className="text-teal-400" size={32} />,
             content: <BlogApp />,
-        },
-        {
-            id: "image-editor",
-            label: "Image Editor",
-            icon: <Palette className="text-pink-400" size={32} />,
-            content: <ImageEditorApp />,
         },
         {
             id: "terminal",
