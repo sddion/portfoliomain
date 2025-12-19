@@ -1,8 +1,21 @@
 "use client"
 
 import React, { useState } from "react"
-import { Book, Calendar, User, Tag, ArrowLeft, Search } from "lucide-react"
+import { Book, Calendar, User, Tag, ArrowLeft, Search, Info, AlertTriangle, CheckCircle2, Lightbulb, Terminal as TerminalIcon, Image as ImageIcon, ChevronRight } from "lucide-react"
 import { blogPosts } from "@/data/blog"
+
+interface ContentBlock {
+    type: 'markdown' | 'step' | 'note' | 'terminal' | 'prerequisites' | 'image'
+    title?: string
+    text?: string
+    number?: number
+    items?: string[]
+    variant?: 'info' | 'warning' | 'tip' | 'danger'
+    src?: string
+    alt?: string
+    code?: string
+    language?: string
+}
 
 interface BlogPost {
     id: string
@@ -14,6 +27,7 @@ interface BlogPost {
     tags: string[]
     featuredImage: string
     content: string
+    contentBlocks?: ContentBlock[]
 }
 
 export function BlogApp() {
@@ -81,24 +95,34 @@ export function BlogApp() {
             </header>
 
             {/* Post Body */}
-            <div
-                className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none
-                    prose-headings:text-[var(--foreground)] prose-headings:font-black tracking-tight
-                    prose-headings:mt-12 prose-headings:mb-6
-                    prose-p:text-[var(--foreground)]/80 prose-p:leading-relaxed prose-p:mb-8 prose-p:text-base
-                    prose-a:text-[var(--primary)] prose-a:no-underline font-bold hover:prose-a:opacity-80
-                    prose-code:text-orange-400 prose-code:bg-[var(--os-surface-hover)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-                    prose-pre:bg-black/50 prose-pre:border prose-pre:border-[var(--os-border)] prose-pre:rounded-xl prose-pre:p-0 prose-pre:my-10 prose-pre:overflow-hidden
-                    prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--primary)] prose-blockquote:bg-[var(--primary)]/5 prose-blockquote:py-2 prose-blockquote:px-8 prose-blockquote:text-[var(--foreground)]/90 prose-blockquote:rounded-r-xl prose-blockquote:my-10 prose-blockquote:italic
-                    prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto prose-img:my-12 prose-img:border prose-img:border-white/10
-                    prose-hr:border-[var(--os-border)] prose-hr:my-12
-                    prose-ul:my-8 prose-li:my-3
-                    prose-table:text-sm prose-table:border prose-table:border-[var(--os-border)] prose-table:my-10
-                    [&_.terminal-header]:bg-[#1a1a1a] [&_.terminal-header]:px-4 [&_.terminal-header]:py-2 [&_.terminal-header]:flex [&_.terminal-header]:items-center [&_.terminal-header]:gap-2 [&_.terminal-header]:border-b [&_.terminal-header]:border-white/10
-                    [&_.terminal-dot]:w-2.5 [&_.terminal-dot]:h-2.5 [&_.terminal-dot]:rounded-full
-                    [&_.terminal-content]:p-6 [&_.terminal-content]:font-mono [&_.terminal-content]:text-green-400 [&_.terminal-content]:text-sm`}
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
-            />
+            {post.contentBlocks ? (
+                <div className="space-y-12">
+                    {post.contentBlocks.map((block, idx) => (
+                        <div key={idx}>
+                            {renderBlockContent(block, isMobile)}
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div
+                    className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none
+                        prose-headings:text-[var(--foreground)] prose-headings:font-black tracking-tight
+                        prose-headings:mt-12 prose-headings:mb-6
+                        prose-p:text-[var(--foreground)]/80 prose-p:leading-relaxed prose-p:mb-8 prose-p:text-base
+                        prose-a:text-[var(--primary)] prose-a:no-underline font-bold hover:prose-a:opacity-80
+                        prose-code:text-orange-400 prose-code:bg-[var(--os-surface-hover)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+                        prose-pre:bg-black/50 prose-pre:border prose-pre:border-[var(--os-border)] prose-pre:rounded-xl prose-pre:p-0 prose-pre:my-10 prose-pre:overflow-hidden
+                        prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--primary)] prose-blockquote:bg-[var(--primary)]/5 prose-blockquote:py-2 prose-blockquote:px-8 prose-blockquote:text-[var(--foreground)]/90 prose-blockquote:rounded-r-xl prose-blockquote:my-10 prose-blockquote:italic
+                        prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto prose-img:my-12 prose-img:border prose-img:border-white/10
+                        prose-hr:border-[var(--os-border)] prose-hr:my-12
+                        prose-ul:my-8 prose-li:my-3
+                        prose-table:text-sm prose-table:border prose-table:border-[var(--os-border)] prose-table:my-10
+                        [&_.terminal-header]:bg-[#1a1a1a] [&_.terminal-header]:px-4 [&_.terminal-header]:py-2 [&_.terminal-header]:flex [&_.terminal-header]:items-center [&_.terminal-header]:gap-2 [&_.terminal-header]:border-b [&_.terminal-header]:border-white/10
+                        [&_.terminal-dot]:w-2.5 [&_.terminal-dot]:h-2.5 [&_.terminal-dot]:rounded-full
+                        [&_.terminal-content]:p-6 [&_.terminal-content]:font-mono [&_.terminal-content]:text-green-400 [&_.terminal-content]:text-sm`}
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
+                />
+            )}
         </article>
     )
 
@@ -314,6 +338,102 @@ export function BlogApp() {
 }
 
 // Simple markdown-to-HTML converter
+// Helper to render content blocks
+function renderBlockContent(block: ContentBlock, isMobile: boolean) {
+    switch (block.type) {
+        case 'markdown':
+            return (
+                <div
+                    className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none prose-p:mb-0`}
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(block.text || '') }}
+                />
+            )
+        case 'step':
+            return (
+                <div className="group relative pl-12 sm:pl-16 py-8 bg-[var(--os-surface)] border border-[var(--os-border)] rounded-2xl shadow-xl hover:border-[var(--primary)]/30 transition-all overflow-hidden">
+                    <div className="absolute top-0 left-0 bottom-0 w-2 bg-[var(--primary)]/20 group-hover:bg-[var(--primary)] transition-colors" />
+                    <div className="absolute top-8 left-4 sm:left-6 w-8 h-8 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-black text-sm shadow-lg">
+                        {block.number}
+                    </div>
+                    {block.title && <h3 className="text-xl sm:text-2xl font-black text-[var(--foreground)] mb-4 flex items-center gap-3">
+                        {block.title}
+                        <ChevronRight className="text-[var(--primary)] opacity-30" size={20} />
+                    </h3>}
+                    <div
+                        className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none prose-p:text-[var(--foreground)]/70`}
+                        dangerouslySetInnerHTML={{ __html: renderMarkdown(block.text || '') }}
+                    />
+                </div>
+            )
+        case 'note':
+            const variants = {
+                info: { icon: <Info size={20} />, color: 'text-blue-400', bg: 'bg-blue-400/5', border: 'border-blue-400/20' },
+                warning: { icon: <AlertTriangle size={20} />, color: 'text-yellow-400', bg: 'bg-yellow-400/5', border: 'border-yellow-400/20' },
+                tip: { icon: <Lightbulb size={20} />, color: 'text-green-400', bg: 'bg-green-400/5', border: 'border-green-400/20' },
+                danger: { icon: <AlertTriangle size={20} />, color: 'text-red-400', bg: 'bg-red-400/5', border: 'border-red-400/20' }
+            }
+            const v = variants[block.variant || 'info']
+            return (
+                <div className={`p-6 sm:p-8 rounded-2xl border ${v.border} ${v.bg} flex gap-4 sm:gap-6`}>
+                    <div className={`${v.color} shrink-0 mt-1`}>{v.icon}</div>
+                    <div className="flex-1">
+                        {block.title && <h4 className={`text-sm font-black uppercase tracking-wider mb-2 ${v.color}`}>{block.title}</h4>}
+                        <div
+                            className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none prose-p:text-[var(--foreground)]/80 prose-p:mb-0`}
+                            dangerouslySetInnerHTML={{ __html: renderMarkdown(block.text || '') }}
+                        />
+                    </div>
+                </div>
+            )
+        case 'terminal':
+            return (
+                <div className="terminal-container border border-white/10 rounded-2xl overflow-hidden bg-black/60 shadow-2xl">
+                    <div className="bg-[#1a1a1a] px-4 py-3 flex items-center justify-between border-b border-white/10">
+                        <div className="flex items-center gap-2">
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+                            <span className="ml-2 text-[10px] text-white/30 font-mono tracking-widest uppercase flex items-center gap-2">
+                                <TerminalIcon size={12} />
+                                SanjuOS Terminal
+                            </span>
+                        </div>
+                        {block.language && <span className="text-[10px] text-white/20 font-mono uppercase">{block.language}</span>}
+                    </div>
+                    <div className="p-6 sm:p-8 font-mono text-green-400 text-sm overflow-x-auto">
+                        <pre><code>{escapeHtml(block.code || '')}</code></pre>
+                    </div>
+                </div>
+            )
+        case 'prerequisites':
+            return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {block.items?.map((item, i) => (
+                        <div key={i} className="p-4 bg-[var(--os-surface-hover)] border border-[var(--os-border)] rounded-xl flex items-center gap-4 group hover:border-[var(--primary)]/30 transition-all shadow-lg">
+                            <div className="w-10 h-10 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                <CheckCircle2 size={20} />
+                            </div>
+                            <span className="text-sm font-bold text-[var(--foreground)]/80 leading-tight">{item}</span>
+                        </div>
+                    ))}
+                </div>
+            )
+        case 'image':
+            return (
+                <div className="space-y-4">
+                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/20">
+                        <img src={block.src} alt={block.alt} className="w-full h-auto block" />
+                    </div>
+                    {block.alt && <p className="text-center text-xs text-[var(--muted-foreground)] font-medium italic">
+                        {block.alt}
+                    </p>}
+                </div>
+            )
+        default:
+            return null
+    }
+}
+
 function renderMarkdown(markdown: string): string {
     let html = markdown
 

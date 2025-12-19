@@ -76,12 +76,16 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     }
 
     const focusWindow = (id: string) => {
+        if (id === activeWindowId) return
+
         setActiveWindowId(id)
-        const newZ = maxZIndex + 1
-        setMaxZIndex(newZ)
-        setWindows((prev) =>
-            prev.map((w) => (w.id === id ? { ...w, zIndex: newZ, isMinimized: false } : w))
-        )
+        setMaxZIndex((prev) => {
+            const newZ = prev + 1
+            setWindows((prevWindows) =>
+                prevWindows.map((w) => (w.id === id ? { ...w, zIndex: newZ, isMinimized: false } : w))
+            )
+            return newZ
+        })
     }
 
     const openWindow = (id: string, title: string, content: React.ReactNode, icon?: React.ReactNode, options?: WindowOptions) => {
@@ -91,25 +95,27 @@ export function WindowProvider({ children }: { children: ReactNode }) {
                 focusWindow(id)
                 return prev.map((w) => (w.id === id ? { ...w, isOpen: true, isMinimized: false } : w))
             }
-            const newCtx = {
+            const newZ = maxZIndex + 1
+            const newCtx: WindowState = {
                 id,
                 title,
                 content,
                 isOpen: true,
                 isMinimized: false,
                 isMaximized: false,
-                zIndex: maxZIndex + 1,
+                zIndex: newZ,
                 icon,
                 width: options?.width,
                 height: options?.height,
             }
-            setMaxZIndex(newCtx.zIndex)
+            setMaxZIndex(newZ)
             return [...prev, newCtx]
         })
     }
 
     const closeWindow = (id: string) => {
         setWindows((prev) => prev.filter((w) => w.id !== id))
+        if (activeWindowId === id) setActiveWindowId(null)
     }
 
     const minimizeWindow = (id: string) => {
@@ -129,25 +135,25 @@ export function WindowProvider({ children }: { children: ReactNode }) {
 
     const toggleSnowfall = () => setShowSnowfall(prev => !prev)
 
+    const value = React.useMemo(() => ({
+        windows,
+        openWindow,
+        closeWindow,
+        minimizeWindow,
+        maximizeWindow,
+        focusWindow,
+        activeWindowId,
+        isBooting,
+        setBooting,
+        isLoggedIn,
+        login,
+        logout,
+        showSnowfall,
+        toggleSnowfall
+    }), [windows, activeWindowId, isBooting, isLoggedIn, showSnowfall])
+
     return (
-        <WindowContext.Provider
-            value={{
-                windows,
-                openWindow,
-                closeWindow,
-                minimizeWindow,
-                maximizeWindow,
-                focusWindow,
-                activeWindowId,
-                isBooting,
-                setBooting,
-                isLoggedIn,
-                login,
-                logout,
-                showSnowfall,
-                toggleSnowfall
-            }}
-        >
+        <WindowContext.Provider value={value}>
             {children}
         </WindowContext.Provider>
     )

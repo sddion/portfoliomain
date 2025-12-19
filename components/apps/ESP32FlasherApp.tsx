@@ -187,7 +187,7 @@ export function ESP32FlasherApp() {
     return (
         <div className="h-full bg-[var(--background)] text-[var(--foreground)] font-mono overflow-auto flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 select-none">
             {/* Main Cyber Container */}
-            <div className="relative w-full max-w-2xl bg-[var(--os-surface)] border-2 border-[var(--primary)]/40 rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,107,0,0.1)] flex flex-col my-4 sm:my-0">
+            <div className="relative w-full max-w-none bg-[var(--os-surface)] border-2 border-[var(--primary)]/40 rounded-lg overflow-hidden shadow-[0_0_30px_rgba(255,107,0,0.1)] flex flex-col my-4 sm:my-0">
 
                 {/* Decorative Cyber Corners */}
                 <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[var(--primary)] rounded-tl-sm z-10" />

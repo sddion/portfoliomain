@@ -8,7 +8,7 @@ import { Battery, BatteryCharging, Wifi, WifiOff, Power, CloudSnow } from "lucid
 import { StartMenu } from "./StartMenu"
 import { WiFiMenu } from "./WiFiMenu"
 
-export function Taskbar() {
+export const Taskbar = React.memo(function Taskbar() {
     const { windows, minimizeWindow, focusWindow, logout, toggleSnowfall, showSnowfall } = useWindowManager()
     const [startOpen, setStartOpen] = useState(false)
     const [wifiOpen, setWifiOpen] = useState(false)
@@ -135,4 +135,4 @@ export function Taskbar() {
             </div>
         </div>
     )
-}
+})

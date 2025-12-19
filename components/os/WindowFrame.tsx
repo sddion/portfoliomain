@@ -18,7 +18,7 @@ interface WindowFrameProps {
     height?: string
 }
 
-export function WindowFrame({
+export const WindowFrame = React.memo(function WindowFrame({
     id,
     title,
     children,
@@ -31,13 +31,36 @@ export function WindowFrame({
 }: WindowFrameProps) {
     const { closeWindow, minimizeWindow, maximizeWindow, focusWindow } = useWindowManager()
 
+    const handleClose = React.useCallback((e: React.MouseEvent) => {
+        e.stopPropagation()
+        closeWindow(id)
+    }, [id, closeWindow])
+
+    const handleMinimize = React.useCallback((e: React.MouseEvent) => {
+        e.stopPropagation()
+        minimizeWindow(id)
+    }, [id, minimizeWindow])
+
+    const handleMaximize = React.useCallback((e: React.MouseEvent) => {
+        e.stopPropagation()
+        maximizeWindow(id)
+    }, [id, maximizeWindow])
+
+    const handleTitleDoubleClick = React.useCallback(() => {
+        maximizeWindow(id)
+    }, [id, maximizeWindow])
+
+    const handleMouseDown = React.useCallback(() => {
+        focusWindow(id)
+    }, [id, focusWindow])
+
     if (isMinimized) return null
 
     return (
         <motion.div
             drag={!isMaximized}
             dragMomentum={false}
-            dragConstraints={{ left: 0, top: 0, right: window.innerWidth - 100, bottom: window.innerHeight - 100 }}
+            dragConstraints={{ left: 0, top: 0, right: typeof window !== 'undefined' ? window.innerWidth - 100 : 0, bottom: typeof window !== 'undefined' ? window.innerHeight - 100 : 0 }}
             initial={{ scale: 0.9, opacity: 0, x: isMaximized ? 0 : "25vw", y: isMaximized ? 0 : "15vh" }}
             animate={{
                 scale: 1,
@@ -48,7 +71,7 @@ export function WindowFrame({
                 y: isMaximized ? 0 : undefined,
             }}
             exit={{ scale: 0.9, opacity: 0 }}
-            onMouseDown={() => focusWindow(id)}
+            onMouseDown={handleMouseDown}
             style={{ zIndex }}
             className={cn(
                 "absolute bg-[var(--os-surface)] border border-[var(--os-border)] shadow-xl overflow-hidden flex flex-col backdrop-blur-md",
@@ -58,7 +81,7 @@ export function WindowFrame({
             {/* Title Bar */}
             <div
                 className="h-9 bg-[var(--os-surface-hover)] border-b border-[var(--os-border)] flex items-center justify-between px-3 select-none cursor-default"
-                onDoubleClick={() => maximizeWindow(id)}
+                onDoubleClick={handleTitleDoubleClick}
             >
                 <div className="flex items-center gap-2">
                     {icon}
@@ -66,19 +89,19 @@ export function WindowFrame({
                 </div>
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={(e) => { e.stopPropagation(); minimizeWindow(id); }}
+                        onClick={handleMinimize}
                         className="p-1 hover:bg-white/10 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                     >
                         <Minus size={14} />
                     </button>
                     <button
-                        onClick={(e) => { e.stopPropagation(); maximizeWindow(id); }}
+                        onClick={handleMaximize}
                         className="p-1 hover:bg-white/10 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                     >
                         {isMaximized ? <Maximize2 size={12} /> : <Square size={12} />}
                     </button>
                     <button
-                        onClick={(e) => { e.stopPropagation(); closeWindow(id); }}
+                        onClick={handleClose}
                         className="p-1 hover:bg-[var(--destructive)]/50 rounded text-[var(--muted-foreground)] hover:text-[var(--destructive-foreground)] transition-colors"
                     >
                         <X size={14} />
@@ -92,4 +115,4 @@ export function WindowFrame({
             </div>
         </motion.div>
     )
-}
+})

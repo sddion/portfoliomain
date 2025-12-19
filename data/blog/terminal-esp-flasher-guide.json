@@ -12,5 +12,65 @@
         "Web Serial"
     ],
     "featuredImage": "/blog/terminal-esp-flasher.png",
-    "content": "Terminal Mode: Flashing ESP32 via CLI\n\nFor those who prefer the speed and efficiency of a command-line interface, SanjuOS supports **ESP32 flashing directly from the Terminal**. This bypasses the graphical interface and allows for incredibly fast workflows.\n\n### Available Commands\n\nThe `esp` suite of commands provides full control over your connected microcontrollers:\n\n| Command | Description |\n|---------|-------------|\n| `esp connect` | Request serial port access and initialize connection. |\n| `esp info` | Display information about the detected chip. |\n| `esp flash <url> [addr]` | Download firmware from a URL and flash to the device. |\n| `esp erase` | Perform a full flash memory erase. |\n| `esp disconnect` | Safely close the serial connection. |\n\n---\n\n### Quick Start Workflow\n\n#### 1. Initialize Connection\nType the following command and select your device from the browser popup that appears:\n```terminal\nesp connect\n```\n\n#### 2. Verify Device\nMake sure your computer sees the chip correctly:\n```terminal\nesp info\n```\n\n#### 3. Flash Firmware via URL\nYou can flash software directly from a web link! SanjuOS handles the connection for you:\n```terminal\nesp flash https://example.com/firmware.bin 0x0\n```\n\n#### 4. Clean Up\nOnce finished, safely disconnect your device:\n```terminal\nesp disconnect\n```\n\n### Why use Terminal Mode?\n\n- **Speed**: Type a command and you're done. No clicking around.\n- **Direct Flashing**: No need to download files to your PC first. Flash straight from the web.\n- **Live Logs**: Watch exactly what the computer is saying to your chip in real-time.\n\n**Happy hacking!**"
+    "content": "Legacy content preserved for compatibility",
+    "contentBlocks": [
+        {
+            "type": "markdown",
+            "text": "For those who prefer the speed and efficiency of a command-line interface, SanjuOS supports **ESP32 flashing directly from the Terminal**. This bypasses the graphical interface and allows for incredibly fast workflows."
+        },
+        {
+            "type": "markdown",
+            "text": "### Available Commands\n\nThe `esp` suite of commands provides full control over your connected microcontrollers:\n\n| Command | Description |\n|---------|-------------|\n| `esp connect` | Request serial port access and initialize connection. |\n| `esp info` | Display information about the detected chip. |\n| `esp flash <url> [addr]` | Download firmware from a URL and flash to the device. |\n| `esp erase` | Perform a full flash memory erase. |\n| `esp disconnect` | Safely close the serial connection. |"
+        },
+        {
+            "type": "step",
+            "number": 1,
+            "title": "Initialize Connection",
+            "text": "Type the following command and select your device from the browser popup that appears:"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "esp connect"
+        },
+        {
+            "type": "step",
+            "number": 2,
+            "title": "Verify Device",
+            "text": "Make sure your computer sees the chip correctly:"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "esp info"
+        },
+        {
+            "type": "step",
+            "number": 3,
+            "title": "Flash Firmware via URL",
+            "text": "You can flash software directly from a web link! SanjuOS handles the connection for you:"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "esp flash https://example.com/firmware.bin 0x0"
+        },
+        {
+            "type": "step",
+            "number": 4,
+            "title": "Clean Up",
+            "text": "Once finished, safely disconnect your device:"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "esp disconnect"
+        },
+        {
+            "type": "note",
+            "variant": "tip",
+            "title": "Why use Terminal Mode?",
+            "text": "- **Speed**: Type a command and you're done. No clicking around.\n- **Direct Flashing**: No need to download files to your PC first. Flash straight from the web.\n- **Live Logs**: Watch exactly what the computer is saying to your chip in real-time."
+        }
+    ]
 }

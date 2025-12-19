@@ -9,7 +9,7 @@ interface DesktopIconProps {
     onDoubleClick: () => void
 }
 
-export function DesktopIcon({ label, icon, onDoubleClick }: DesktopIconProps) {
+export const DesktopIcon = React.memo(function DesktopIcon({ label, icon, onDoubleClick }: DesktopIconProps) {
     return (
         <button
             onDoubleClick={onDoubleClick}
@@ -23,4 +23,4 @@ export function DesktopIcon({ label, icon, onDoubleClick }: DesktopIconProps) {
             </span>
         </button>
     )
-}
+})
