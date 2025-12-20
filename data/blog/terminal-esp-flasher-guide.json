@@ -1,5 +1,5 @@
 {
-    "id": "terminal-esp-flasher-guide",
+    "id": "flasher-interface-guide",
     "title": "CLI Mode: Flashing ESP32 via Terminal",
     "description": "Unleash the power of the SanjuOS Terminal to flash your microcontrollers using simple commands. Pro-level IoT development is here.",
     "author": "SanjuOS Dev",
@@ -11,7 +11,7 @@
         "CLI",
         "Web Serial"
     ],
-    "featuredImage": "/blog/terminal-esp-flasher.png",
+    "featuredImage": "/blog/flasher-interface.png",
     "content": "Legacy content preserved for compatibility",
     "contentBlocks": [
         {

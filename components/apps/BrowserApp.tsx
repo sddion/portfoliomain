@@ -1,9 +1,11 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { Search, Globe, ChevronLeft, ChevronRight, RotateCcw, Home, ExternalLink, Github, Gitlab, Instagram, MessageCircle, Star, Plus, X, ShieldAlert } from "lucide-react"
+import { Search, Globe, ChevronLeft, ChevronRight, RotateCcw, Home, ExternalLink, Github, Gitlab, Instagram, MessageCircle, Star, Plus, X, ShieldAlert, BookOpen } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { BlogLanding } from "./BlogLanding"
+import { BlogPostViewer } from "./BlogPostViewer"
 
 interface Tab {
     id: string
@@ -210,9 +212,43 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
 
     // Attempt to detect if a site can be framed (this is just for UI hint, actual blocking is by browser)
     const isFrameable = (url: string) => {
-        if (url.startsWith("about:")) return true
+        if (url.startsWith("about:") || url.startsWith("sanjuos:")) return true
         const blocks = ["github.com", "gitlab.com", "instagram.com", "facebook.com", "twitter.com", "wa.me", "whatsapp.com"]
         return !blocks.some(domain => url.includes(domain))
+    }
+
+    // Check if URL is internal SanjuOS route
+    const isSanjuOSRoute = (url: string) => url.startsWith("sanjuos://")
+
+    // Parse SanjuOS route
+    const parseSanjuOSRoute = (url: string) => {
+        const path = url.replace("sanjuos://", "")
+        const parts = path.split("/")
+        return { route: parts[0], param: parts[1] }
+    }
+
+    // Render internal SanjuOS content
+    const renderSanjuOSContent = (url: string) => {
+        const { route, param } = parseSanjuOSRoute(url)
+        
+        if (route === "blog" && param) {
+            return <BlogPostViewer postId={param} onNavigate={navigate} />
+        }
+        if (route === "blog") {
+            return <BlogLanding onNavigate={navigate} />
+        }
+        
+        // Unknown route - show error
+        return (
+            <div className="h-full flex items-center justify-center bg-[var(--background)]">
+                <div className="text-center">
+                    <Globe size={48} className="mx-auto text-[var(--muted-foreground)] mb-4" />
+                    <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Page Not Found</h2>
+                    <p className="text-[var(--muted-foreground)] mb-4">The page {url} doesn't exist.</p>
+                    <button onClick={() => navigate("about:home")} className="px-6 py-2 bg-primary text-white rounded-lg font-bold">Go Home</button>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -445,10 +481,10 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
 
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                     {[
+                                        { label: "Blog", url: "sanjuos://blog", icon: <BookOpen size={24} className="text-primary" />, color: "bg-primary/10" },
                                         { label: "GitHub", url: "https://github.com/sddion", icon: <Github size={24} className="text-white" />, color: "bg-zinc-800" },
                                         { label: "GitLab", url: "https://gitlab.com/0xd3ds3c", icon: <Gitlab size={24} className="text-orange-500" />, color: "bg-orange-500/10" },
                                         { label: "WhatsApp", url: "https://wa.me/918822972607", icon: <MessageCircle size={24} className="text-green-500" />, color: "bg-green-500/10" },
-                                        { label: "Instagram", url: "https://instagram.com/wordswires", icon: <Instagram size={24} className="text-pink-500" />, color: "bg-pink-500/10" },
                                     ].map((link) => (
                                         <button
                                             key={link.label}
@@ -464,6 +500,10 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                ) : isSanjuOSRoute(activeTab.url) ? (
+                    <div className="h-full overflow-auto">
+                        {renderSanjuOSContent(activeTab.url)}
                     </div>
                 ) : (
                     <div className="h-full flex flex-col">
