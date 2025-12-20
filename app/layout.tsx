@@ -9,7 +9,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { WindowProvider } from "@/components/os/WindowManager"
 import { SnowfallEffect } from '@/components/ui/snowfall-effect';
 import { NotificationProvider } from "@/hooks/useNotifications"
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: "SanjuOS - Free ESP32 Web Flasher & Image to Byte Array Converter | Developer Tools",
@@ -309,6 +310,8 @@ export default function RootLayout({
         >
           <NotificationProvider>
             <WindowProvider>
+              <Analytics />
+              <SpeedInsights />
               <SnowfallEffect snowflakeCount={150} color="#2ae704c5" />
               {children}
             </WindowProvider>
