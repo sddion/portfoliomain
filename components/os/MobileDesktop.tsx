@@ -347,7 +347,7 @@ export function MobileDesktop() {
 
             {/* Home Screen Layer - No scroll, fixed viewport */}
             <div className={cn(
-                "h-full w-full pt-12 pb-16 px-4 overflow-hidden transition-all duration-500",
+                "h-full w-full pt-12 pb-16 overflow-hidden transition-all duration-500",
                 activeApp ? "opacity-0 scale-95 blur-xl pointer-events-none" : "opacity-100 scale-100 blur-0"
             )}>
                 <div className="h-full flex flex-col">
@@ -371,7 +371,7 @@ export function MobileDesktop() {
                             className="flex flex-1 w-full"
                         >
                             {/* Page 1 */}
-                            <div className="min-w-full px-2 flex flex-col h-full overflow-hidden">
+                            <div className="min-w-full px-4 flex flex-col h-full overflow-hidden">
                                 {/* Conky Widget - Only on Page 1 */}
                                 <div className="pt-2 pb-2">
                                     <MobileConkyWidget />
@@ -401,7 +401,7 @@ export function MobileDesktop() {
 
                             {/* Page 2 - Icons start from top */}
                             {totalPages > 1 && (
-                                <div className="min-w-full px-6 flex flex-col h-full overflow-hidden pt-4">
+                                <div className="min-w-full px-4 flex flex-col h-full overflow-hidden pt-4">
                                     <div className="grid grid-cols-4 gap-y-8 gap-x-4">
                                         {page2Apps.map((app) => (
                                             <button
