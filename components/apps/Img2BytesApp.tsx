@@ -14,7 +14,13 @@ import {
     Layers,
     ChevronDown,
     Settings,
-    Zap
+    Zap,
+    RotateCw,
+    FlipHorizontal,
+    Move,
+    Palette,
+    Code,
+    Sliders
 } from "lucide-react"
 import {
     ProcessingOptions,
@@ -53,6 +59,7 @@ export function Img2BytesApp() {
     const [isProcessing, setIsProcessing] = useState(false)
     const [animationPlaying, setAnimationPlaying] = useState(false)
     const [animationFrame, setAnimationFrame] = useState(0)
+    const [expandedSection, setExpandedSection] = useState<string | null>('canvas')
 
     // Refs
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -188,6 +195,12 @@ export function Img2BytesApp() {
         const lines: string[] = []
         lines.push(`// C++ Byte Array - ${processingOptions.canvasWidth}x${processingOptions.canvasHeight} ${processingOptions.colorMode === 'mono' ? 'Monochrome' : processingOptions.colorMode}`)
 
+        if (outputOptions.includeSize) {
+            lines.push(`#define ${outputOptions.variableName.toUpperCase()}_WIDTH ${processingOptions.canvasWidth}`)
+            lines.push(`#define ${outputOptions.variableName.toUpperCase()}_HEIGHT ${processingOptions.canvasHeight}`)
+            lines.push('')
+        }
+
         images.forEach((item, index) => {
             if (!item.result) return
             const frameName = images.length === 1
@@ -212,6 +225,7 @@ export function Img2BytesApp() {
     }, [images, processingOptions, outputOptions])
 
     const generatedCode = generateCombinedCode()
+    const totalBytes = images.reduce((sum, img) => sum + (img.result?.totalBytes || 0), 0)
 
     // Copy to clipboard
     const handleCopy = useCallback(async () => {
@@ -245,15 +259,6 @@ export function Img2BytesApp() {
         setOutputOptions(prev => ({ ...prev, [key]: value }))
     }, [])
 
-    // Detect mobile
-    const [isMobile, setIsMobile] = useState(false)
-    useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768)
-        check()
-        window.addEventListener('resize', check)
-        return () => window.removeEventListener('resize', check)
-    }, [])
-
     // Syntax highlighting for code
     const highlightCode = (code: string) => {
         return code
@@ -264,94 +269,283 @@ export function Img2BytesApp() {
             .replace(/(#define)/g, '<span class="text-purple-400">$1</span>')
     }
 
+    // Collapsible section component
+    const Section = ({ id, title, icon: Icon, children }: { id: string, title: string, icon: React.ElementType, children: React.ReactNode }) => (
+        <div className="border border-slate-700/50 rounded-xl overflow-hidden">
+            <button
+                onClick={() => setExpandedSection(expandedSection === id ? null : id)}
+                className="w-full px-3 py-2.5 flex items-center justify-between bg-slate-800/40 hover:bg-slate-800/60 transition-colors"
+            >
+                <div className="flex items-center gap-2">
+                    <Icon size={14} className="text-cyan-400" />
+                    <span className="text-xs font-medium">{title}</span>
+                </div>
+                <ChevronDown size={14} className={`text-slate-400 transition-transform ${expandedSection === id ? 'rotate-180' : ''}`} />
+            </button>
+            {expandedSection === id && (
+                <div className="p-3 bg-slate-900/30 space-y-3">
+                    {children}
+                </div>
+            )}
+        </div>
+    )
+
+    // Radio option component
+    const RadioOption = ({ checked, onChange, label, color = 'cyan' }: { checked: boolean, onChange: () => void, label: string, color?: string }) => (
+        <label className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-colors ${checked ? 'bg-slate-700/50' : 'hover:bg-slate-800/50'}`}>
+            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${checked ? `border-${color}-400` : 'border-slate-500'}`}>
+                {checked && <div className={`w-2 h-2 rounded-full bg-${color}-400`} />}
+            </div>
+            <span className="text-xs">{label}</span>
+        </label>
+    )
+
+    // Toggle component
+    const Toggle = ({ checked, onChange, label }: { checked: boolean, onChange: (v: boolean) => void, label: string }) => (
+        <label className="flex items-center gap-2 cursor-pointer">
+            <div className={`w-8 h-4 rounded-full transition-colors ${checked ? 'bg-cyan-500' : 'bg-slate-600'}`}>
+                <div className={`w-3 h-3 rounded-full bg-white m-0.5 transition-transform ${checked ? 'translate-x-4' : ''}`} />
+            </div>
+            <span className="text-xs text-slate-300">{label}</span>
+        </label>
+    )
+
     return (
         <div className="h-full bg-[#0d0d1a] text-white overflow-hidden flex flex-col">
             {/* Main Layout */}
-            <div className="flex-1 flex flex-col md:flex-row gap-3 p-3 overflow-hidden">
-                {/* Left Panel - Image Settings */}
-                <div className="w-full md:w-80 shrink-0 flex flex-col gap-3 overflow-auto">
-                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-4 shadow-xl shadow-cyan-500/5">
-                        <h2 className="text-sm font-bold mb-4 flex items-center gap-2">
+            <div className="flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden">
+                {/* Left Panel - Settings */}
+                <div className="w-full lg:w-80 shrink-0 flex flex-col gap-2 overflow-auto custom-scrollbar">
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-3 shadow-xl shadow-cyan-500/5 space-y-2">
+                        <h2 className="text-sm font-bold mb-3 flex items-center gap-2 px-1">
                             <Settings size={14} className="text-cyan-400" />
                             Image Settings
                         </h2>
 
                         {/* Canvas Size */}
-                        <div className="mb-4">
-                            <label className="text-xs text-slate-400 block mb-2">Canvas Size</label>
-                            <div className="flex gap-2">
-                                <select
-                                    onChange={(e) => {
-                                        const preset = CanvasPresets[parseInt(e.target.value)]
-                                        if (preset && preset.width > 0) {
-                                            updateProcessing('canvasWidth', preset.width)
-                                            updateProcessing('canvasHeight', preset.height)
-                                        }
-                                    }}
-                                    className="flex-1 bg-slate-800/80 border border-slate-600/50 text-sm px-3 py-2 rounded-lg outline-none focus:border-cyan-500/50 appearance-none cursor-pointer"
-                                >
-                                    {CanvasPresets.slice(0, -1).map((preset, i) => (
-                                        <option key={i} value={i} className="bg-slate-800">{preset.width}x{preset.height}</option>
-                                    ))}
-                                </select>
-                                <button className="p-2 bg-slate-800/80 border border-slate-600/50 rounded-lg hover:border-cyan-500/50 transition-colors">
-                                    <Grid3X3 size={16} className="text-slate-400" />
-                                </button>
+                        <Section id="canvas" title="Canvas Size" icon={Grid3X3}>
+                            <select
+                                onChange={(e) => {
+                                    const preset = CanvasPresets[parseInt(e.target.value)]
+                                    if (preset && preset.width > 0) {
+                                        updateProcessing('canvasWidth', preset.width)
+                                        updateProcessing('canvasHeight', preset.height)
+                                    }
+                                }}
+                                className="w-full bg-slate-800/80 border border-slate-600/50 text-xs px-3 py-2 rounded-lg outline-none focus:border-cyan-500/50"
+                            >
+                                {CanvasPresets.map((preset, i) => (
+                                    <option key={i} value={i} className="bg-slate-800">{preset.label}</option>
+                                ))}
+                            </select>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="text-[10px] text-slate-500 uppercase">Width</label>
+                                    <input
+                                        type="number"
+                                        value={processingOptions.canvasWidth}
+                                        onChange={(e) => updateProcessing('canvasWidth', parseInt(e.target.value) || 1)}
+                                        className="w-full mt-1 bg-slate-800/80 border border-slate-600/50 text-xs p-2 rounded-lg outline-none focus:border-cyan-500/50"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] text-slate-500 uppercase">Height</label>
+                                    <input
+                                        type="number"
+                                        value={processingOptions.canvasHeight}
+                                        onChange={(e) => updateProcessing('canvasHeight', parseInt(e.target.value) || 1)}
+                                        className="w-full mt-1 bg-slate-800/80 border border-slate-600/50 text-xs p-2 rounded-lg outline-none focus:border-cyan-500/50"
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        </Section>
 
                         {/* Color Mode */}
-                        <div className="mb-4">
-                            <label className="text-xs text-slate-400 block mb-2">Color Mode</label>
+                        <Section id="color" title="Color Mode" icon={Palette}>
                             <div className="space-y-1">
                                 {[
                                     { value: 'mono', label: 'Monochrome (1-bit)' },
                                     { value: 'grayscale', label: 'Grayscale (8-bit)' },
-                                    { value: 'rgb565', label: 'RGB565 (16-bit)' }
+                                    { value: 'rgb565', label: 'RGB565 (16-bit)' },
+                                    { value: 'rgb888', label: 'RGB888 (24-bit)' }
                                 ].map(mode => (
                                     <label
                                         key={mode.value}
-                                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${processingOptions.colorMode === mode.value ? 'bg-slate-700/50' : 'hover:bg-slate-800/50'}`}
+                                        onClick={() => updateProcessing('colorMode', mode.value as ProcessingOptions['colorMode'])}
+                                        className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-colors ${processingOptions.colorMode === mode.value ? 'bg-slate-700/50' : 'hover:bg-slate-800/50'}`}
                                     >
                                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${processingOptions.colorMode === mode.value ? 'border-cyan-400' : 'border-slate-500'}`}>
                                             {processingOptions.colorMode === mode.value && <div className="w-2 h-2 rounded-full bg-cyan-400" />}
                                         </div>
-                                        <span className="text-sm">{mode.label}</span>
+                                        <span className="text-xs">{mode.label}</span>
                                     </label>
                                 ))}
                             </div>
-                        </div>
 
-                        {/* Dithering */}
-                        {processingOptions.colorMode === 'mono' && (
-                            <div className="mb-4">
-                                <label className="text-xs text-slate-400 block mb-2">Dithering</label>
-                                <div className="space-y-1">
-                                    {[
-                                        { value: 'none', label: 'None' },
-                                        { value: 'floydSteinberg', label: 'Floyd-Steinberg' },
-                                        { value: 'bayer', label: 'Bayer' }
-                                    ].map(dither => (
-                                        <label
-                                            key={dither.value}
-                                            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${processingOptions.dithering === dither.value ? 'bg-slate-700/50' : 'hover:bg-slate-800/50'}`}
-                                        >
-                                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${processingOptions.dithering === dither.value ? 'border-purple-400' : 'border-slate-500'}`}>
-                                                {processingOptions.dithering === dither.value && <div className="w-2 h-2 rounded-full bg-purple-400" />}
-                                            </div>
-                                            <span className="text-sm">{dither.label}</span>
+                            {processingOptions.colorMode === 'mono' && (
+                                <>
+                                    <div>
+                                        <label className="text-[10px] text-slate-500 uppercase flex justify-between mb-1">
+                                            <span>Threshold</span>
+                                            <span className="text-cyan-400">{processingOptions.threshold}</span>
                                         </label>
+                                        <input
+                                            type="range"
+                                            value={processingOptions.threshold}
+                                            onChange={(e) => updateProcessing('threshold', parseInt(e.target.value))}
+                                            min={0}
+                                            max={255}
+                                            className="w-full accent-cyan-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] text-slate-500 uppercase block mb-2">Dithering</label>
+                                        <div className="space-y-1">
+                                            {[
+                                                { value: 'none', label: 'None' },
+                                                { value: 'floydSteinberg', label: 'Floyd-Steinberg' },
+                                                { value: 'atkinson', label: 'Atkinson' },
+                                                { value: 'bayer', label: 'Bayer (Ordered)' }
+                                            ].map(dither => (
+                                                <label
+                                                    key={dither.value}
+                                                    onClick={() => updateProcessing('dithering', dither.value as ProcessingOptions['dithering'])}
+                                                    className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-colors ${processingOptions.dithering === dither.value ? 'bg-slate-700/50' : 'hover:bg-slate-800/50'}`}
+                                                >
+                                                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${processingOptions.dithering === dither.value ? 'border-purple-400' : 'border-slate-500'}`}>
+                                                        {processingOptions.dithering === dither.value && <div className="w-2 h-2 rounded-full bg-purple-400" />}
+                                                    </div>
+                                                    <span className="text-xs">{dither.label}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] text-slate-500 uppercase block mb-2">Byte Orientation</label>
+                                        <div className="flex gap-2">
+                                            {(['horizontal', 'vertical'] as const).map(mode => (
+                                                <button
+                                                    key={mode}
+                                                    onClick={() => updateProcessing('drawMode', mode)}
+                                                    className={`flex-1 py-2 text-xs rounded-lg capitalize transition-all ${processingOptions.drawMode === mode ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50' : 'bg-slate-700/50 text-slate-400 border border-transparent hover:border-slate-600'}`}
+                                                >
+                                                    {mode}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </Section>
+
+                        {/* Image Processing */}
+                        <Section id="processing" title="Image Processing" icon={Sliders}>
+                            <div>
+                                <label className="text-[10px] text-slate-500 uppercase block mb-2">Background</label>
+                                <div className="flex gap-2">
+                                    {(['white', 'black', 'transparent'] as const).map(bg => (
+                                        <button
+                                            key={bg}
+                                            onClick={() => updateProcessing('backgroundColor', bg)}
+                                            className={`flex-1 py-2 text-xs rounded-lg capitalize transition-all ${processingOptions.backgroundColor === bg ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50' : 'bg-slate-700/50 text-slate-400 border border-transparent hover:border-slate-600'}`}
+                                        >
+                                            {bg}
+                                        </button>
                                     ))}
                                 </div>
                             </div>
-                        )}
+
+                            <div>
+                                <label className="text-[10px] text-slate-500 uppercase flex items-center gap-1.5 mb-2">
+                                    <Move size={10} />
+                                    Scaling
+                                </label>
+                                <select
+                                    value={processingOptions.scaling}
+                                    onChange={(e) => updateProcessing('scaling', e.target.value as ProcessingOptions['scaling'])}
+                                    className="w-full bg-slate-800/80 border border-slate-600/50 text-xs p-2 rounded-lg outline-none focus:border-cyan-500/50"
+                                >
+                                    <option value="original">Original Size</option>
+                                    <option value="fit">Scale to Fit</option>
+                                    <option value="stretch">Stretch to Fill</option>
+                                    <option value="stretchH">Stretch Horizontally</option>
+                                    <option value="stretchV">Stretch Vertically</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] text-slate-500 uppercase flex items-center gap-1.5 mb-2">
+                                    <RotateCw size={10} />
+                                    Rotation
+                                </label>
+                                <div className="flex gap-1">
+                                    {([0, 90, 180, 270] as const).map(deg => (
+                                        <button
+                                            key={deg}
+                                            onClick={() => updateProcessing('rotation', deg)}
+                                            className={`flex-1 py-2 text-xs rounded-lg transition-all ${processingOptions.rotation === deg ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50' : 'bg-slate-700/50 text-slate-400 border border-transparent hover:border-slate-600'}`}
+                                        >
+                                            {deg}°
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="pt-1">
+                                <label className="text-[10px] text-slate-500 uppercase flex items-center gap-1.5 mb-2">
+                                    <FlipHorizontal size={10} />
+                                    Transform
+                                </label>
+                                <div className="flex flex-wrap gap-x-4 gap-y-2">
+                                    <Toggle checked={processingOptions.flipH} onChange={(v) => updateProcessing('flipH', v)} label="Flip H" />
+                                    <Toggle checked={processingOptions.centerH} onChange={(v) => updateProcessing('centerH', v)} label="Center H" />
+                                    <Toggle checked={processingOptions.centerV} onChange={(v) => updateProcessing('centerV', v)} label="Center V" />
+                                    <Toggle checked={processingOptions.invert} onChange={(v) => updateProcessing('invert', v)} label="Invert" />
+                                </div>
+                            </div>
+                        </Section>
+
+                        {/* Output Options */}
+                        <Section id="output" title="Output Options" icon={Code}>
+                            <div>
+                                <label className="text-[10px] text-slate-500 uppercase block mb-1">Variable Name</label>
+                                <input
+                                    type="text"
+                                    value={outputOptions.variableName}
+                                    onChange={(e) => updateOutput('variableName', e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
+                                    className="w-full bg-slate-800/80 border border-slate-600/50 text-xs p-2 rounded-lg outline-none focus:border-cyan-500/50"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] text-slate-500 uppercase block mb-2">Format</label>
+                                <div className="flex gap-2">
+                                    {(['hex', 'decimal', 'binary'] as const).map(fmt => (
+                                        <button
+                                            key={fmt}
+                                            onClick={() => updateOutput('format', fmt)}
+                                            className={`flex-1 py-2 text-xs rounded-lg capitalize transition-all ${outputOptions.format === fmt ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50' : 'bg-slate-700/50 text-slate-400 border border-transparent hover:border-slate-600'}`}
+                                        >
+                                            {fmt}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 pt-1">
+                                <Toggle checked={outputOptions.progmem} onChange={(v) => updateOutput('progmem', v)} label="PROGMEM" />
+                                <Toggle checked={outputOptions.includeSize} onChange={(v) => updateOutput('includeSize', v)} label="Size Defines" />
+                            </div>
+                        </Section>
 
                         {/* Upload Button */}
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full py-3 bg-gradient-to-r from-slate-700/80 to-slate-800/80 border border-slate-600/50 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all"
+                            className="w-full py-3 bg-gradient-to-r from-cyan-600/80 to-blue-600/80 border border-cyan-500/30 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
                         >
-                            <Upload size={16} className="text-cyan-400" />
+                            <Upload size={16} />
                             Upload Image
                         </button>
                         <input
@@ -365,8 +559,8 @@ export function Img2BytesApp() {
 
                         {/* Thumbnail */}
                         {currentImage && (
-                            <div className="mt-4 flex items-center gap-3">
-                                <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-600/50 bg-slate-800">
+                            <div className="flex items-center gap-3 p-2 bg-slate-800/40 rounded-xl">
+                                <div className="w-12 h-12 rounded-lg overflow-hidden border border-slate-600/50 bg-slate-800 shrink-0">
                                     <img src={currentImage.image.src} alt={currentImage.name} className="w-full h-full object-contain" />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -381,7 +575,7 @@ export function Img2BytesApp() {
 
                         {/* Animation Controls */}
                         {images.length > 1 && (
-                            <div className="mt-4 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                            <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="text-xs text-slate-300 flex items-center gap-2">
                                         <Layers size={12} className="text-purple-400" />
@@ -405,10 +599,17 @@ export function Img2BytesApp() {
                 <div className="flex-1 flex flex-col gap-3 min-w-0 overflow-hidden">
                     {/* Converted Preview */}
                     <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-4 shadow-xl shadow-cyan-500/5 flex-1 min-h-0 flex flex-col">
-                        <h2 className="text-sm font-bold mb-3 flex items-center gap-2">
-                            <Zap size={14} className="text-cyan-400" />
-                            Converted Preview
-                        </h2>
+                        <div className="flex items-center justify-between mb-3">
+                            <h2 className="text-sm font-bold flex items-center gap-2">
+                                <Zap size={14} className="text-cyan-400" />
+                                Converted Preview
+                            </h2>
+                            {currentImage && (
+                                <span className="text-[10px] text-slate-500">
+                                    {processingOptions.canvasWidth}×{processingOptions.canvasHeight} • {totalBytes.toLocaleString()} bytes
+                                </span>
+                            )}
+                        </div>
                         <div
                             className="flex-1 bg-[repeating-conic-gradient(#1e293b_0%_25%,#0f172a_0%_50%)] bg-[length:16px_16px] rounded-xl flex items-center justify-center overflow-hidden relative border border-cyan-500/10"
                             onDragOver={handleDragOver}
@@ -444,38 +645,41 @@ export function Img2BytesApp() {
                     </div>
 
                     {/* Code Output */}
-                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-4 shadow-xl shadow-purple-500/5 h-52 md:h-60 flex flex-col">
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-4 shadow-xl shadow-purple-500/5 h-48 lg:h-56 flex flex-col">
                         <div className="flex items-center justify-between mb-3">
                             <h2 className="text-sm font-bold flex items-center gap-2">
                                 <ImageIcon size={14} className="text-purple-400" />
                                 Code Output
                             </h2>
-                            {currentImage && (
-                                <span className="text-[10px] text-slate-500">
-                                    {currentImage.result?.totalBytes.toLocaleString()} bytes
-                                </span>
-                            )}
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleDownload}
+                                    disabled={!generatedCode}
+                                    className="px-3 py-1.5 bg-slate-700/50 rounded-lg text-xs font-medium flex items-center gap-1.5 hover:bg-slate-700 transition-colors disabled:opacity-40"
+                                >
+                                    <Download size={12} />
+                                    .h
+                                </button>
+                                <button
+                                    onClick={handleCopy}
+                                    disabled={!generatedCode}
+                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${copied
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/30 disabled:opacity-40'
+                                        }`}
+                                >
+                                    {copied ? <CheckCircle size={12} /> : <Copy size={12} />}
+                                    {copied ? 'Copied!' : 'Copy'}
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex-1 min-h-0 bg-[#0a0a12] rounded-xl overflow-auto border border-slate-700/50">
+                        <div className="flex-1 min-h-0 bg-[#0a0a12] rounded-xl overflow-auto border border-slate-700/50 custom-scrollbar">
                             <pre
-                                className="p-4 text-[11px] font-mono leading-relaxed"
+                                className="p-3 text-[10px] font-mono leading-relaxed"
                                 dangerouslySetInnerHTML={{
                                     __html: generatedCode ? highlightCode(generatedCode) : '<span class="text-slate-600">// Upload an image to generate code</span>'
                                 }}
                             />
-                        </div>
-                        <div className="mt-3 flex justify-end">
-                            <button
-                                onClick={handleCopy}
-                                disabled={!generatedCode}
-                                className={`px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${copied
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/30 disabled:opacity-40 disabled:cursor-not-allowed'
-                                    }`}
-                            >
-                                {copied ? <CheckCircle size={14} /> : <Copy size={14} />}
-                                {copied ? 'Copied!' : 'Copy to Clipboard'}
-                            </button>
                         </div>
                     </div>
                 </div>
