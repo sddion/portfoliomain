@@ -23,8 +23,8 @@ const experiences: ExperienceItem[] = [
         type: "builder",
         description: [
             "Returned full-focus to coding and system building",
-            "Actively developing Portfolio OS & Bagley (AI/IoT)",
-            "Executing > Credentials mindset",
+            "Actively developing sddionOS , Bagley (AI/IoT), and high-performance engineering tools (ESP32 Flasher, Img2Bytes)",
+            "Execution > Credentials mindset: Building the infrastructure that enables rapid development.",
         ]
     },
     {
@@ -60,8 +60,8 @@ const experiences: ExperienceItem[] = [
         description: [
             "HTML/CSS via FreeCodeCamp",
             "JS via Codecademy, Python via Practical Use",
-            "Built Games, Calculators, Tracking Systems",
-            "Strong fundamentals through practice, not theory",
+            "Built Games, Calculators, and complex Embedded Systems",
+            "10,000+ hours of self-taught engineering, focusing on Web Serial API, Firmware Architecture, and State Management.",
         ]
     },
     {

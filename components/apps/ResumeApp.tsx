@@ -23,9 +23,9 @@ export function ResumeApp() {
         },
         {
             company: "Independent / Builder Phase",
-            role: "Full-Stack Developer & Security Researcher",
+            role: "Full-Stack Developer & Systems Builder",
             period: "2022 - Present",
-            desc: "Dedicated thousands of hours to self-taught programming and system building. Developed sddionOS (Portfolio), GeoShot (Geolocation Camera), and various IoT/Embedded tools."
+            desc: "Architected sddionOS (Portfolio), GeoShot (Geolocation Camera), and high-maturity IoT tools. Focused on bridging web and hardware using Web Serial API, real-time telemetry, and dithering algorithms for constrained devices."
         },
         {
             company: "Apparel & Merchandise Business",
@@ -42,11 +42,11 @@ export function ResumeApp() {
     ]
 
     const skills = [
-        { name: "React / Next.js / TypeScript", level: 95 },
-        { name: "JavaScript / Node.js", level: 90 },
-        { name: "Embedded Systems (C++ / ESP32)", level: 85 },
-        { name: "Operations & Logistics", level: 92 },
-        { name: "UI/UX & Design Systems", level: 88 }
+        { name: "React / Next.js / TypeScript / State Management", level: 95 },
+        { name: "JavaScript / Node.js / System Architecture", level: 92 },
+        { name: "Embedded Systems (C++ / ESP32 / Web Serial)", level: 90 },
+        { name: "Operations / Logistics / Field Execution", level: 92 },
+        { name: "UI/UX & Engineering Tooling", level: 88 }
     ]
 
     return (
@@ -144,9 +144,9 @@ export function ResumeApp() {
                                 <GraduationCap size={14} /> Evolution
                             </h2>
                             <div className="p-5 bg-zinc-50 border border-zinc-100 rounded-xl space-y-2">
-                                <h4 className="font-black text-zinc-900 text-sm">Self-Taught Path</h4>
+                                <h4 className="font-black text-zinc-900 text-sm">Systems Builder Path</h4>
                                 <p className="text-xs text-zinc-500 font-bold leading-relaxed uppercase tracking-tight">
-                                    Intensive independent study in Computer Science, Network Security, and Embedded systems. 10,000+ hours in code.
+                                    Intensive independent study in Computer Science and Embedded systems. 10,000+ hours in code. Specialized in firmware architecture and hardware-web bridging.
                                 </p>
                             </div>
                         </section>
