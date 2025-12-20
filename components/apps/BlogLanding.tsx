@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { Book, Calendar, User, Tag, ArrowLeft, Search, ChevronRight, Sparkles, FileText } from "lucide-react"
+import { Book, Calendar, User, Tag, ArrowLeft, Search, ChevronRight, BookOpen, Star, FileText } from "lucide-react"
 import { blogPosts } from "@/data/blog"
 
 interface BlogPost {
@@ -21,6 +21,8 @@ interface BlogLandingProps {
 }
 
 export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
+    // currentPath can be used to determine active state
+    const isActivePost = (postId: string) => currentPath === `sanjuos://blog/${postId}`
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
@@ -44,10 +46,18 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-primary/20 via-primary/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
                 <div className="relative max-w-6xl mx-auto px-6 pt-16 pb-12">
+                    {/* Back Button */}
+                    <button
+                        onClick={() => onNavigate('home')}
+                        className="absolute left-6 top-8 p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+                        title="Home"
+                    >
+                        <ArrowLeft size={18} className="text-white/60" />
+                    </button>
                     {/* Logo & Title */}
                     <div className="text-center mb-12">
                         <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white/60 mb-6">
-                            <Sparkles size={14} className="text-primary" />
+                            <BookOpen size={14} className="text-primary" />
                             SanjuOS Knowledge Base
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-4">
@@ -76,16 +86,18 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
                     <div className="flex flex-wrap justify-center gap-2 mb-12">
                         <button
                             onClick={() => setSelectedCategory(null)}
-                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${!selectedCategory ? 'bg-primary text-white' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
+                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${!selectedCategory ? 'bg-primary text-white' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
                         >
+                            <Book size={12} />
                             All Posts
                         </button>
                         {categories.map(cat => (
                             <button
                                 key={cat}
                                 onClick={() => setSelectedCategory(cat)}
-                                className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedCategory === cat ? 'bg-primary text-white' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
+                                className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${selectedCategory === cat ? 'bg-primary text-white' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
                             >
+                                <Tag size={12} />
                                 {cat}
                             </button>
                         ))}
@@ -97,7 +109,7 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
             {featuredPost && !searchQuery && !selectedCategory && (
                 <div className="max-w-6xl mx-auto px-6 mb-16">
                     <div className="flex items-center gap-3 mb-6">
-                        <Sparkles size={16} className="text-primary" />
+                        <Star size={16} className="text-primary" />
                         <span className="text-xs font-black uppercase tracking-widest text-white/40">Featured</span>
                     </div>
                     <button
@@ -132,7 +144,8 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
                         </div>
                     </button>
                 </div>
-            )}
+            )
+            }
 
             {/* Posts Grid */}
             <div className="max-w-6xl mx-auto px-6 pb-20">
@@ -148,7 +161,7 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
                         <button
                             key={post.id}
                             onClick={() => onNavigate(`sanjuos://blog/${post.id}`)}
-                            className="group bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden hover:border-primary/20 hover:bg-white/[0.05] transition-all text-left"
+                            className={`group bg-white/[0.03] border rounded-2xl overflow-hidden hover:border-primary/20 hover:bg-white/[0.05] transition-all text-left ${isActivePost(post.id) ? 'border-primary/40 ring-1 ring-primary/20' : 'border-white/5'}`}
                         >
                             <div className="aspect-video bg-black/20 relative overflow-hidden">
                                 <div
@@ -190,6 +203,6 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
                     © 2025 SanjuOS • Built with Next.js
                 </p>
             </div>
-        </div>
+        </div >
     )
 }

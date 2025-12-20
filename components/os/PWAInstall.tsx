@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { Download, X, Share, Plus, Smartphone, Wifi, Zap, ChevronRight } from 'lucide-react'
+import { Download, X, Share, Plus, Smartphone, Wifi, Rocket, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 
@@ -92,7 +92,7 @@ export function PWAInstall() {
 
     const features = [
         { icon: Wifi, text: 'Works offline' },
-        { icon: Zap, text: 'Blazing fast' },
+        { icon: Rocket, text: 'Blazing fast' },
         { icon: Smartphone, text: 'Native feel' },
     ]
 

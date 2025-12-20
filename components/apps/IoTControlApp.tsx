@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { Cpu, Terminal, Zap, Power, Trash2, Send, Activity, Settings, Wifi } from "lucide-react"
+import { Cpu, Terminal, Power, Trash2, Send, Activity, Settings, Wifi } from "lucide-react"
 
 export function IoTControlApp() {
     const [connected, setConnected] = useState(false)
@@ -104,6 +104,12 @@ export function IoTControlApp() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    <button
+                        className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-lg transition-colors"
+                        title="Settings"
+                    >
+                        <Settings size={16} />
+                    </button>
                     <select
                         value={baudRate}
                         onChange={(e) => setBaudRate(parseInt(e.target.value))}

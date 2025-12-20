@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 
 export function BootSequence({ onComplete }: { onComplete: () => void }) {
     const [lines, setLines] = useState<string[]>([])

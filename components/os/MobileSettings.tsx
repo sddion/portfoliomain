@@ -11,7 +11,6 @@ import {
     Battery,
     Info,
     Smartphone,
-    Moon,
     Bell,
     Plus,
     Check,
@@ -32,9 +31,11 @@ interface MobileSettingsProps {
 
 export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
     const [activeSection, setActiveSection] = useState<'main' | 'bluetooth' | 'display' | 'about'>('main')
-    const { device, connecting, error, requestDevice, supported: bluetoothSupported } = useBluetooth()
+    const { device, error, requestDevice } = useBluetooth()
     const [pairedDevices, setPairedDevices] = useState<BluetoothDeviceInfo[]>([])
     const { permission, requestPermission } = useNotifications()
+    const [bluetoothEnabled, setBluetoothEnabled] = useState(true)
+    const { theme, setTheme } = useTheme()
 
     // Mock previously paired devices if native getDevices is not available or empty
     useEffect(() => {
@@ -46,7 +47,24 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
         }
     }, [device])
 
+    const themeOptions = [
+        { id: "dark", label: "Cyberpunk", color: "bg-[#00ff41]", icon: <Monitor size={20} /> },
+        { id: "ubuntu", label: "Ubuntu", color: "bg-[#e95420]", icon: <Cpu size={20} /> },
+        { id: "ocean", label: "Ocean", color: "bg-[#38bdf8]", icon: <Droplet size={20} /> },
+        { id: "dracula", label: "Dracula", color: "bg-[#ff79c6]", icon: <Ghost size={20} /> },
+    ]
+
+    // Get current theme label
+    const currentThemeLabel = themeOptions.find(t => t.id === theme)?.label || theme || "System"
+
     const sections = [
+        {
+            id: 'wifi',
+            icon: <Wifi size={20} className="text-green-500" />,
+            label: "Wi-Fi",
+            value: "Connected",
+            color: "bg-green-500/10"
+        },
         {
             id: 'bluetooth',
             icon: <Bluetooth size={20} className="text-blue-500" />,
@@ -55,10 +73,24 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
             color: "bg-blue-500/10"
         },
         {
+            id: 'sound',
+            icon: <Volume2 size={20} className="text-pink-500" />,
+            label: "Sound",
+            value: "100%",
+            color: "bg-pink-500/10"
+        },
+        {
+            id: 'battery',
+            icon: <Battery size={20} className="text-yellow-500" />,
+            label: "Battery",
+            value: "Charging",
+            color: "bg-yellow-500/10"
+        },
+        {
             id: 'display',
             icon: <Sun size={20} className="text-orange-500" />,
             label: "Display",
-            value: "Dark Mode",
+            value: currentThemeLabel,
             color: "bg-orange-500/10"
         },
         {
@@ -75,17 +107,6 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
             value: "SanjuOS 1.0",
             color: "bg-zinc-500/10"
         }
-    ]
-
-    const [bluetoothEnabled, setBluetoothEnabled] = useState(true)
-    const { theme, setTheme } = useTheme()
-    const [selectedWallpaper, setSelectedWallpaper] = useState('Default')
-
-    const themeOptions = [
-        { id: "dark", label: "Cyberpunk", color: "bg-[#00ff41]", icon: <Monitor size={20} /> },
-        { id: "ubuntu", label: "Ubuntu", color: "bg-[#e95420]", icon: <Cpu size={20} /> },
-        { id: "ocean", label: "Ocean", color: "bg-[#38bdf8]", icon: <Droplet size={20} /> },
-        { id: "dracula", label: "Dracula", color: "bg-[#ff79c6]", icon: <Ghost size={20} /> },
     ]
 
     const renderBluetooth = () => (
