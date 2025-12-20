@@ -313,9 +313,9 @@ export function Img2BytesApp() {
     return (
         <div className="h-full bg-[#0d0d1a] text-white overflow-hidden flex flex-col">
             {/* Main Layout */}
-            <div className="flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden">
+            <div className="flex-1 flex flex-col md:flex-row gap-3 p-3 overflow-hidden min-h-0">
                 {/* Left Panel - Settings */}
-                <div className="w-full lg:w-80 shrink-0 flex flex-col gap-2 overflow-auto custom-scrollbar">
+                <div className="w-full md:w-72 lg:w-80 shrink-0 flex flex-col gap-2 max-h-[40vh] md:max-h-none overflow-auto custom-scrollbar">
                     <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-3 shadow-xl shadow-cyan-500/5 space-y-2">
                         <h2 className="text-sm font-bold mb-3 flex items-center gap-2 px-1">
                             <Settings size={14} className="text-cyan-400" />
@@ -596,9 +596,9 @@ export function Img2BytesApp() {
                 </div>
 
                 {/* Right Panel - Preview & Code */}
-                <div className="flex-1 flex flex-col gap-3 min-w-0 overflow-hidden">
+                <div className="flex-1 flex flex-col gap-3 min-w-0 min-h-0 overflow-hidden">
                     {/* Converted Preview */}
-                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-4 shadow-xl shadow-cyan-500/5 flex-1 min-h-0 flex flex-col">
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-3 md:p-4 shadow-xl shadow-cyan-500/5 flex-1 min-h-[150px] md:min-h-0 flex flex-col">
                         <div className="flex items-center justify-between mb-3">
                             <h2 className="text-sm font-bold flex items-center gap-2">
                                 <Zap size={14} className="text-cyan-400" />
@@ -645,7 +645,7 @@ export function Img2BytesApp() {
                     </div>
 
                     {/* Code Output */}
-                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-4 shadow-xl shadow-purple-500/5 h-48 lg:h-56 flex flex-col">
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-3 md:p-4 shadow-xl shadow-purple-500/5 h-36 md:h-48 lg:h-56 flex flex-col shrink-0">
                         <div className="flex items-center justify-between mb-3">
                             <h2 className="text-sm font-bold flex items-center gap-2">
                                 <ImageIcon size={14} className="text-purple-400" />
