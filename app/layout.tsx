@@ -64,10 +64,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "sddionOS - Free ESP32 Web Flasher & Image to Byte Converter",
+    title: "sddionOS - Portfolio",
     description:
       "Free browser-based tools: Flash ESP32/ESP8266 firmware via Web Serial, convert images to C/C++ byte arrays for Arduino displays. Supports animations, dithering, and multiple color modes.",
-    siteName: "sddionOS Developer Tools",
+    siteName: "Developer Portfolio & Utility Tools",
     url: "https://sddion.vercel.app/",
     images: [
       {
@@ -80,13 +80,13 @@ export const metadata: Metadata = {
         url: "https://postimg.cc/DWyBdtJ7",
         width: 1200,
         height: 630,
-        alt: "sddionOS - ESP32 Web Flasher and Developer Tools Preview (Fallback)",
+        alt: "sddionOS - ESP32 Web Flasher and Developer Tools Preview ",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "sddionOS | Free ESP32 Flasher & Image to Byte Array Converter",
+    title: "sddionOS | ESP32 Flasher & Image to Byte Array Converter",
     description: "Free online tools: Flash ESP32/ESP8266 from browser, convert images to Arduino byte arrays. No installation required.",
     images: ["https://i.postimg.cc/SKc3q4mY/preview.png"],
     creator: "@0xd3ds3c",
