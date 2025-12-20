@@ -73,12 +73,20 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
   }, [supported]);
 
+  // Use ref for deduplication to avoid dependency on notifications
+  const notificationsRef = React.useRef<Notification[]>([]);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    notificationsRef.current = notifications;
+  }, [notifications]);
+
   const showNotification = useCallback(
     (title: string, options?: NotificationOptions & { data?: any }) => {
       try {
         // Deduplication: check if same notification exists in last 5 seconds
         const fiveSecondsAgo = new Date(Date.now() - 5000);
-        const isDuplicate = notifications.some(n =>
+        const isDuplicate = notificationsRef.current.some(n =>
           n.title === title &&
           n.body === (options?.body || "") &&
           n.timestamp > fiveSecondsAgo
@@ -109,7 +117,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         return null;
       }
     },
-    [supported, permission, notifications]
+    [supported, permission]
   );
 
   const clearNotifications = useCallback(() => {

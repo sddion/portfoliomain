@@ -45,16 +45,23 @@ export function NotificationShade({ isOpen, onClose }: NotificationShadeProps) {
             .catch(console.error)
     }, [])
 
+    // Track which commit SHAs we've already shown to prevent re-adding after clear
+    const shownCommitsRef = React.useRef<Set<string>>(new Set())
+
     // Show notification when new commits are detected
     useEffect(() => {
         if (commits.length > 0 && permission === "granted") {
             const latestCommit = commits[0]
-            showNotification("New GitHub Commit", {
-                body: `${latestCommit.author}: ${latestCommit.message}`,
-                icon: "/DedSec_logo.webp",
-                tag: `commit-${latestCommit.sha}`,
-                data: { url: latestCommit.url }
-            })
+            // Only show if we haven't shown this commit before
+            if (!shownCommitsRef.current.has(latestCommit.sha)) {
+                shownCommitsRef.current.add(latestCommit.sha)
+                showNotification("New GitHub Commit", {
+                    body: `${latestCommit.author}: ${latestCommit.message}`,
+                    icon: "/DedSec_logo.webp",
+                    tag: `commit-${latestCommit.sha}`,
+                    data: { url: latestCommit.url }
+                })
+            }
         }
     }, [commits, permission, showNotification])
 

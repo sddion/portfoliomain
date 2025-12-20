@@ -1,0 +1,125 @@
+{
+    "id": "img2bytes-terminal-guide",
+    "title": "Img2Bytes via Terminal",
+    "description": "Convert images to byte arrays directly from the SanjuOS terminal using command-line options.",
+    "author": "SanjuOS Dev",
+    "date": "2025-12-20",
+    "category": "Tutorial",
+    "tags": [
+        "Terminal",
+        "CLI",
+        "Arduino",
+        "Automation"
+    ],
+    "featuredImage": "/blog/img2bytes-terminal.png",
+    "content": "Legacy content",
+    "contentBlocks": [
+        {
+            "type": "markdown",
+            "text": "Prefer the command line? The **img2bytes** terminal command lets you convert images without leaving the terminal. Perfect for scripting and quick conversions."
+        },
+        {
+            "type": "markdown",
+            "text": "### Quick Start"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "img2bytes help"
+        },
+        {
+            "type": "markdown",
+            "text": "This displays all available commands and options."
+        },
+        {
+            "type": "step",
+            "number": 1,
+            "title": "Basic Conversion",
+            "text": "Convert an image from a URL with default settings (128×64, mono, hex format):"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "img2bytes convert https://example.com/logo.png"
+        },
+        {
+            "type": "step",
+            "number": 2,
+            "title": "Custom Dimensions",
+            "text": "Specify canvas width and height to match your display:"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "img2bytes convert https://example.com/icon.png --width 64 --height 64"
+        },
+        {
+            "type": "step",
+            "number": 3,
+            "title": "Color Modes",
+            "text": "Choose the color format for your display:\n\n- `mono` — 1-bit B/W\n- `grayscale` — 8-bit gray\n- `rgb565` — 16-bit color\n- `rgb888` — 24-bit color"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "img2bytes convert https://example.com/photo.jpg --color rgb565 --width 240 --height 240"
+        },
+        {
+            "type": "step",
+            "number": 4,
+            "title": "Dithering Options",
+            "text": "For mono mode, add dithering for better gradients:"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "img2bytes convert https://example.com/gradient.png --dither floydSteinberg"
+        },
+        {
+            "type": "note",
+            "variant": "tip",
+            "title": "Dithering Algorithms",
+            "text": "**floydSteinberg** — Smooth gradients, most popular\\n**atkinson** — Sharper, good for icons\\n**bayer** — Ordered pattern, retro look"
+        },
+        {
+            "type": "step",
+            "number": 5,
+            "title": "Output Formats",
+            "text": "Change byte representation with `--format`:"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "# Hexadecimal (default)\nimg2bytes convert image.png --format hex\n# Output: 0xFF, 0x81, 0x81...\n\n# Decimal\nimg2bytes convert image.png --format decimal\n# Output: 255, 129, 129...\n\n# Binary\nimg2bytes convert image.png --format binary\n# Output: 0b11111111, 0b10000001..."
+        },
+        {
+            "type": "step",
+            "number": 6,
+            "title": "Invert Colors",
+            "text": "Swap black and white with the `--invert` flag:"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "img2bytes convert logo.png --invert"
+        },
+        {
+            "type": "markdown",
+            "text": "### View Presets"
+        },
+        {
+            "type": "terminal",
+            "language": "bash",
+            "code": "img2bytes presets"
+        },
+        {
+            "type": "markdown",
+            "text": "Lists common display resolutions and their compatible modules."
+        },
+        {
+            "type": "note",
+            "variant": "info",
+            "text": "The terminal uses the same image processing engine as the GUI app. For visual preview and multi-image animations, use the **Img2Bytes** GUI app instead."
+        }
+    ]
+}

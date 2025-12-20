@@ -35,6 +35,9 @@ export function BlogApp() {
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
     const [isMobile, setIsMobile] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const POSTS_PER_PAGE = 6
 
     // Detect Mobile
     React.useEffect(() => {
@@ -56,6 +59,18 @@ export function BlogApp() {
         const matchesCategory = !selectedCategory || post.category === selectedCategory
         return matchesSearch && matchesCategory
     })
+
+    // Pagination
+    const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
+    const paginatedPosts = filteredPosts.slice(
+        (currentPage - 1) * POSTS_PER_PAGE,
+        currentPage * POSTS_PER_PAGE
+    )
+
+    // Reset page when filters change
+    React.useEffect(() => {
+        setCurrentPage(1)
+    }, [searchQuery, selectedCategory])
 
     const renderPostContent = (post: BlogPost) => (
         <article className={`max-w-4xl mx-auto px-4 py-8 ${isMobile ? 'pb-24' : ''}`}>
@@ -188,7 +203,7 @@ export function BlogApp() {
                     {/* Main Post Grid */}
                     <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[var(--accent)]/10 via-transparent to-transparent">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredPosts.map(post => (
+                            {paginatedPosts.map(post => (
                                 <article
                                     key={post.id}
                                     onClick={() => setSelectedPost(post)}
@@ -217,6 +232,44 @@ export function BlogApp() {
                                 </article>
                             ))}
                         </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-2 mt-8 pt-6 border-t border-[var(--os-border)]">
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-4 py-2 rounded-lg bg-[var(--os-surface)] border border-[var(--os-border)] text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--os-surface-hover)] transition-colors"
+                                >
+                                    ← Prev
+                                </button>
+                                <div className="flex gap-1">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                        <button
+                                            key={page}
+                                            onClick={() => setCurrentPage(page)}
+                                            className={`w-10 h-10 rounded-lg font-bold text-sm transition-all ${currentPage === page ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--os-surface)] border border-[var(--os-border)] hover:bg-[var(--os-surface-hover)]'}`}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="px-4 py-2 rounded-lg bg-[var(--os-surface)] border border-[var(--os-border)] text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--os-surface-hover)] transition-colors"
+                                >
+                                    Next →
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Showing count */}
+                        {filteredPosts.length > 0 && (
+                            <p className="text-center text-xs text-[var(--muted-foreground)] mt-4">
+                                Showing {(currentPage - 1) * POSTS_PER_PAGE + 1}-{Math.min(currentPage * POSTS_PER_PAGE, filteredPosts.length)} of {filteredPosts.length} posts
+                            </p>
+                        )}
                     </div>
                 </div>
             )}
@@ -295,7 +348,7 @@ export function BlogApp() {
 
                     {/* Card List View */}
                     <div className="flex-1 overflow-y-auto px-6 pb-24 space-y-6 pt-2 custom-scrollbar">
-                        {filteredPosts.map(post => (
+                        {paginatedPosts.map(post => (
                             <article
                                 key={post.id}
                                 onClick={() => setSelectedPost(post)}
@@ -328,6 +381,29 @@ export function BlogApp() {
                                 </div>
                             </article>
                         ))}
+
+                        {/* Mobile Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-3 py-4">
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className="p-3 rounded-xl bg-[var(--os-surface)] border border-white/10 disabled:opacity-30"
+                                >
+                                    <ChevronRight size={18} className="rotate-180" />
+                                </button>
+                                <span className="text-sm font-bold text-[var(--muted-foreground)]">
+                                    {currentPage} / {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="p-3 rounded-xl bg-[var(--os-surface)] border border-white/10 disabled:opacity-30"
+                                >
+                                    <ChevronRight size={18} />
+                                </button>
+                            </div>
+                        )}
 
                         {filteredPosts.length === 0 && (
                             <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
@@ -389,14 +465,13 @@ function renderBlockContent(block: ContentBlock, isMobile: boolean) {
             )
         case 'step':
             return (
-                <div className="group relative pl-12 sm:pl-16 py-8 bg-[var(--os-surface)] border border-[var(--os-border)] rounded-2xl shadow-xl hover:border-[var(--primary)]/30 transition-all overflow-hidden">
+                <div className="group relative pl-12 sm:pl-16 py-6 sm:py-8 pr-4 sm:pr-6 bg-[var(--os-surface)] border border-[var(--os-border)] rounded-2xl shadow-xl hover:border-[var(--primary)]/30 transition-all overflow-hidden">
                     <div className="absolute top-0 left-0 bottom-0 w-2 bg-[var(--primary)]/20 group-hover:bg-[var(--primary)] transition-colors" />
-                    <div className="absolute top-8 left-4 sm:left-6 w-8 h-8 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-black text-sm shadow-lg">
+                    <div className="absolute top-6 sm:top-8 left-4 sm:left-6 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-black text-xs sm:text-sm shadow-lg">
                         {block.number}
                     </div>
-                    {block.title && <h3 className="text-xl sm:text-2xl font-black text-[var(--foreground)] mb-4 flex items-center gap-3">
+                    {block.title && <h3 className="text-lg sm:text-2xl font-black text-[var(--foreground)] mb-3 sm:mb-4 pr-2 leading-tight">
                         {block.title}
-                        <ChevronRight className="text-[var(--primary)] opacity-30" size={20} />
                     </h3>}
                     <div
                         className={`prose prose-invert ${isMobile ? 'prose-sm' : 'prose-lg'} max-w-none prose-p:text-[var(--foreground)]/70`}
@@ -427,20 +502,20 @@ function renderBlockContent(block: ContentBlock, isMobile: boolean) {
         case 'terminal':
             return (
                 <div className="terminal-container border border-white/10 rounded-2xl overflow-hidden bg-black/60 shadow-2xl">
-                    <div className="bg-[#1a1a1a] px-4 py-3 flex items-center justify-between border-b border-white/10">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
-                            <span className="ml-2 text-[10px] text-white/30 font-mono tracking-widest uppercase flex items-center gap-2">
-                                <TerminalIcon size={12} />
-                                SanjuOS Terminal
+                    <div className="bg-[#1a1a1a] px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between border-b border-white/10">
+                        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ff5f56]"></div>
+                            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ffbd2e]"></div>
+                            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#27c93f]"></div>
+                            <span className="ml-1 sm:ml-2 text-[8px] sm:text-[10px] text-white/30 font-mono tracking-wider sm:tracking-widest uppercase flex items-center gap-1 sm:gap-2 whitespace-nowrap">
+                                <TerminalIcon size={10} className="sm:w-3 sm:h-3" />
+                                Terminal
                             </span>
                         </div>
-                        {block.language && <span className="text-[10px] text-white/20 font-mono uppercase">{block.language}</span>}
+                        {block.language && <span className="text-[8px] sm:text-[10px] text-white/20 font-mono uppercase ml-2">{block.language}</span>}
                     </div>
-                    <div className="p-6 sm:p-8 font-mono text-green-400 text-sm overflow-x-auto">
-                        <pre><code>{escapeHtml(block.code || '')}</code></pre>
+                    <div className="p-4 sm:p-6 font-mono text-green-400 text-[11px] sm:text-sm overflow-x-auto">
+                        <pre className="whitespace-pre-wrap break-all sm:whitespace-pre sm:break-normal"><code>{escapeHtml(block.code || '')}</code></pre>
                     </div>
                 </div>
             )

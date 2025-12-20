@@ -16,7 +16,140 @@ export function TerminalApp() {
 
     const commands: Record<string, (args: string[]) => void> = {
         help: () => {
-            addToHistory("Available commands: help, curl, clear, whoami, date, esp")
+            addToHistory("Available commands: help, img2bytes, esp, curl, clear, whoami, date")
+        },
+        img2bytes: async (args) => {
+            const subCommand = args[0]
+            if (!subCommand || subCommand === "help") {
+                addToHistory("Img2Bytes - Image to Byte Array Converter")
+                addToHistory("")
+                addToHistory("Usage:")
+                addToHistory("  img2bytes convert <url> [options]  - Convert image to bytes")
+                addToHistory("  img2bytes presets                   - List canvas presets")
+                addToHistory("  img2bytes help                      - Show this help")
+                addToHistory("")
+                addToHistory("Options:")
+                addToHistory("  --width <n>    Canvas width (default: 128)")
+                addToHistory("  --height <n>   Canvas height (default: 64)")
+                addToHistory("  --color <mode> mono|grayscale|rgb565|rgb888 (default: mono)")
+                addToHistory("  --dither <d>   none|floydSteinberg|atkinson|bayer")
+                addToHistory("  --format <f>   hex|decimal|binary (default: hex)")
+                addToHistory("  --name <var>   Variable name (default: image)")
+                addToHistory("  --invert       Invert colors")
+                addToHistory("  --save         Download output as .h file")
+                addToHistory("")
+                addToHistory("Example:")
+                addToHistory("  img2bytes convert https://example.com/logo.png --width 128 --height 64 --save")
+                return
+            }
+
+            if (subCommand === "presets") {
+                addToHistory("Canvas Presets:")
+                addToHistory("  128×64   SSD1306 OLED")
+                addToHistory("  128×32   SSD1306 Mini")
+                addToHistory("  96×64    SSD1331 Color OLED")
+                addToHistory("  160×128  ST7735 TFT")
+                addToHistory("  240×240  ST7789 Square")
+                addToHistory("  320×240  ILI9341 TFT")
+                addToHistory("  480×320  ILI9488 Large TFT")
+                return
+            }
+
+            if (subCommand === "convert") {
+                const url = args[1]
+                if (!url) {
+                    addToHistory("ERROR: No URL provided")
+                    addToHistory("Usage: img2bytes convert <url> [options]")
+                    return
+                }
+
+                // Parse options
+                const parseOption = (flag: string, defaultVal: string): string => {
+                    const idx = args.indexOf(flag)
+                    return idx !== -1 && args[idx + 1] ? args[idx + 1] : defaultVal
+                }
+
+                const width = parseInt(parseOption("--width", "128"))
+                const height = parseInt(parseOption("--height", "64"))
+                const colorMode = parseOption("--color", "mono") as "mono" | "grayscale" | "rgb565" | "rgb888"
+                const dithering = parseOption("--dither", "none") as "none" | "floydSteinberg" | "atkinson" | "bayer"
+                const format = parseOption("--format", "hex") as "hex" | "decimal" | "binary"
+                const invert = args.includes("--invert")
+
+                try {
+                    addToHistory(`Fetching image from URL...`)
+
+                    // Fetch image through proxy to avoid CORS
+                    const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`
+                    const res = await fetch(proxyUrl)
+                    if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`)
+
+                    const blob = await res.blob()
+                    const img = new Image()
+
+                    await new Promise<void>((resolve, reject) => {
+                        img.onload = () => resolve()
+                        img.onerror = () => reject(new Error("Failed to load image"))
+                        img.src = URL.createObjectURL(blob)
+                    })
+
+                    addToHistory(`Image loaded: ${img.width}×${img.height}`)
+                    addToHistory(`Processing: ${width}×${height}, ${colorMode}, dither=${dithering}`)
+
+                    // Import and use ImageProcessor
+                    const { ProcessImage, GenerateCode, DownloadFile } = await import("@/lib/ImageProcessor")
+
+                    const variableName = parseOption("--name", "image")
+                    const shouldSave = args.includes("--save")
+
+                    const result = ProcessImage(img, {
+                        canvasWidth: width,
+                        canvasHeight: height,
+                        backgroundColor: "black",
+                        scaling: "fit",
+                        centerH: true,
+                        centerV: true,
+                        threshold: 128,
+                        invert,
+                        dithering,
+                        rotation: 0,
+                        flipH: false,
+                        colorMode,
+                        drawMode: "vertical"
+                    })
+
+                    const code = GenerateCode(result, {
+                        format,
+                        variableName,
+                        progmem: true,
+                        bytesPerLine: 16,
+                        includeSize: true
+                    })
+
+                    addToHistory("")
+                    addToHistory("=== OUTPUT ===")
+                    // Split code into lines for display
+                    code.split("\n").forEach(line => addToHistory(line))
+                    addToHistory("")
+                    addToHistory(`Total bytes: ${result.totalBytes}`)
+
+                    // Download if --save flag is present
+                    if (shouldSave) {
+                        DownloadFile(code, `${variableName}.h`)
+                        addToHistory(`Saved to ${variableName}.h`)
+                    } else {
+                        addToHistory("Tip: Add --save to download as .h file")
+                    }
+
+                    URL.revokeObjectURL(img.src)
+                } catch (err: any) {
+                    addToHistory(`ERROR: ${err.message}`)
+                }
+                return
+            }
+
+            addToHistory(`Unknown subcommand: ${subCommand}`)
+            addToHistory("Run 'img2bytes help' for usage")
         },
         esp: async (args) => {
             const subCommand = args[0]
@@ -24,7 +157,7 @@ export function TerminalApp() {
                 addToHistory("ESP Tool commands:")
                 addToHistory("  esp connect     - Connect to ESP32 device")
                 addToHistory("  esp disconnect  - Disconnect device")
-                addToHistory("  esp info         - Get chip information")
+                addToHistory("  esp info        - Get chip information")
                 addToHistory("  esp flash <url> [addr] - Flash firmware from URL")
                 addToHistory("  esp erase       - Erase flash")
                 return
