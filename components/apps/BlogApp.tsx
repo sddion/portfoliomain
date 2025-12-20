@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import { Book, Calendar, User, Tag, ArrowLeft, Search, Info, AlertTriangle, CheckCircle2, Lightbulb, Terminal as TerminalIcon, Image as ImageIcon, ChevronRight } from "lucide-react"
 import { blogPosts } from "@/data/blog"
+import { AdUnit } from "@/components/os/AdUnit"
 
 interface ContentBlock {
     type: 'markdown' | 'step' | 'note' | 'terminal' | 'prerequisites' | 'image'
@@ -197,6 +198,11 @@ export function BlogApp() {
                                     className="w-full bg-black/20 border border-[var(--os-border)] rounded-lg pl-9 pr-4 py-2 text-xs text-[var(--foreground)] placeholder-[var(--muted-foreground)]/50 focus:outline-none focus:border-[var(--primary)] transition-colors"
                                 />
                             </div>
+                        </div>
+
+                        {/* Sidebar Ad Unit */}
+                        <div className="px-6 mt-auto pb-6">
+                            <AdUnit slot="blog-sidebar" format="rectangle" className="w-full aspect-square" />
                         </div>
                     </div>
 
@@ -416,6 +422,11 @@ export function BlogApp() {
                                 </div>
                             </div>
                         )}
+
+                        {/* Mobile Ad Unit */}
+                        <div className="mt-8">
+                            <AdUnit slot="blog-mobile" format="auto" className="w-full min-h-[100px]" />
+                        </div>
                     </div>
                 </div>
             )}

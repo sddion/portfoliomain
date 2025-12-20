@@ -36,6 +36,7 @@ import {
     DownloadFile,
     CopyToClipboard
 } from "@/lib/ImageProcessor"
+import { AdUnit } from "@/components/os/AdUnit"
 
 interface ImageItem {
     id: string
@@ -585,6 +586,11 @@ export function Img2BytesApp() {
                     </button>
                 </div>
             )}
+
+            {/* In-App Ad Unit */}
+            <div className="pt-4 border-t border-slate-700/50">
+                <AdUnit slot="img2bytes-sidebar" format="auto" className="w-full" />
+            </div>
         </div>
     )
 

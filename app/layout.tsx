@@ -4,10 +4,11 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 
 import "./globals.css"
-import Script from "next/script"
+
 import { ThemeProvider } from "@/components/theme-provider"
 import { WindowProvider } from "@/components/os/WindowManager"
 import { SnowfallEffect } from '@/components/ui/snowfall-effect';
+import { AdSenseManager } from "@/components/os/AdSenseManager"
 import { NotificationProvider } from "@/hooks/useNotifications"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
@@ -296,12 +297,7 @@ export default function RootLayout({
             `,
           }}
         />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5565716152868775"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+
       </head>
       <body
         className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased bg-neutral-950 text-neutral-50`}
@@ -316,6 +312,7 @@ export default function RootLayout({
         >
           <NotificationProvider>
             <WindowProvider>
+              <AdSenseManager />
               <Analytics />
               <SpeedInsights />
               <SnowfallEffect snowflakeCount={150} color="#2ae704c5" />
