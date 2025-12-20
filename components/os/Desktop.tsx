@@ -18,6 +18,7 @@ import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
 import { TaskMonitor } from "@/components/apps/TaskMonitor"
 import { IoTControlApp } from "@/components/apps/IoTControlApp"
+import { Img2BytesApp } from "@/components/apps/Img2BytesApp"
 import { BrowserApp } from "@/components/apps/BrowserApp"
 import dynamic from "next/dynamic"
 
@@ -98,7 +99,12 @@ export function Desktop() {
             icon: <Settings className="text-zinc-400" size={32} />,
             content: <SettingsApp />,
         },
-
+        {
+            id: "img2bytes",
+            label: "Image to Bytes",
+            icon: <FileText className="text-red-400" size={32} />,
+            content: <Img2BytesApp />,
+        },
         {
             id: "browser",
             label: "Browser",

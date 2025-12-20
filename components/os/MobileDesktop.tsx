@@ -11,11 +11,11 @@ import { TerminalApp } from "@/components/apps/TerminalApp"
 import { AboutApp } from "@/components/apps/AboutApp"
 import { ProjectsApp } from "@/components/apps/ProjectsApp"
 import { ExperienceApp } from "@/components/apps/ExperienceApp"
-import { SettingsApp } from "@/components/apps/SettingsApp"
 import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
 import { BlogApp } from "@/components/apps/BlogApp"
 import { TaskMonitor } from "@/components/apps/TaskMonitor"
 import { IoTControlApp } from "@/components/apps/IoTControlApp"
+import { Img2BytesApp } from "@/components/apps/Img2BytesApp"
 import dynamic from "next/dynamic"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
@@ -30,6 +30,7 @@ const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod =
 
 export function MobileDesktop() {
     const { windows, openWindow, closeWindow, activeWindowId, isLoggedIn } = useWindowManager()
+    const { notifications } = useNotifications()
     const [time, setTime] = useState(new Date())
     const [notificationOpen, setNotificationOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
@@ -130,6 +131,13 @@ export function MobileDesktop() {
             content: <BlogApp />,
         },
         {
+            id: "img2bytes",
+            label: "Img2Bytes",
+            icon: <ImageIcon className="text-cyan-400" size={24} />,
+            bg: "bg-cyan-600",
+            content: <Img2BytesApp />,
+        },
+        {
             id: "esp32-flasher",
             label: "ESP Flasher",
             icon: <CircuitBoard className="text-orange-500" size={24} />,
@@ -190,6 +198,14 @@ export function MobileDesktop() {
             >
                 <span className="font-bold tracking-tight">{format(time, "HH:mm")}</span>
                 <div className="flex items-center gap-3">
+                    {notifications.length > 0 && (
+                        <div className="relative">
+                            <MessageCircle size={14} className="opacity-90" />
+                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-[var(--primary)] text-[6px] font-black text-black rounded-full flex items-center justify-center">
+                                {notifications.length > 9 ? '9+' : notifications.length}
+                            </span>
+                        </div>
+                    )}
                     <Wifi size={16} className="opacity-90" />
                     <div className="flex items-center gap-0.5">
                         <span className="text-[9px] font-black mr-0.5">5G</span>
