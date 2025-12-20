@@ -1,6 +1,6 @@
 // increment version on each deploy 
-const CACHE_VERSION = 'v2';
-const CACHE_NAME = `sanjuos-cache-${CACHE_VERSION}`;
+const CACHE_VERSION = 'v3';
+const CACHE_NAME = `sddionOS-cache-${CACHE_VERSION}`;
 
 // Only cache critical static assets
 const ASSETS_TO_CACHE = [

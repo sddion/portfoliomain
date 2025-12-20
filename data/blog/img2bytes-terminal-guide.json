@@ -1,8 +1,8 @@
 {
     "id": "img2bytes-terminal-guide",
     "title": "Img2Bytes via Terminal",
-    "description": "Convert images to byte arrays directly from the SanjuOS terminal using command-line options.",
-    "author": "SanjuOS Dev",
+    "description": "Convert images to byte arrays directly from the sddionOS terminal using command-line options.",
+    "author": "sddionOS Dev",
     "date": "2025-12-20",
     "category": "Tutorial",
     "tags": [

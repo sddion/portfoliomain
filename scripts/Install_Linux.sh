@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# SanjuOS One-Click Desktop Installer for Linux
-# This script creates a desktop entry to launch SanjuOS in standalone app mode.
+# sddionOS One-Click Desktop Installer for Linux
+# This script creates a desktop entry to launch sddionOS in standalone app mode.
 
-APP_NAME="SanjuOS"
+APP_NAME="sddionOS"
 APP_URL="https://sddion.vercel.app/"
-ICON_PATH="$HOME/.local/share/icons/sanjuos.png"
-DESKTOP_FILE="$HOME/.local/share/applications/sanjuos.desktop"
+ICON_PATH="$HOME/.local/share/icons/sddionOS.png"
+DESKTOP_FILE="$HOME/.local/share/applications/sddionOS.desktop"
 
 echo "Installing $APP_NAME..."
 
@@ -37,7 +37,7 @@ Exec=$LAUNCHER --app=$APP_URL
 Icon=$ICON_PATH
 Terminal=false
 Categories=Development;Electronics;
-StartupWMClass=sanjuos
+StartupWMClass=sddionOS
 EOF
 
 chmod +x "$DESKTOP_FILE"

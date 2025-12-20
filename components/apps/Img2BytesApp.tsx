@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef, useCallback, useEffect } from "react"
+import React, { useState, useRef, useCallback, useEffect, startTransition } from "react"
 import {
     Upload,
     Copy,
@@ -191,17 +191,21 @@ export function Img2BytesApp() {
 
     // Remove image
     const removeImage = useCallback((index: number) => {
-        setImages(prev => prev.filter((_, i) => i !== index))
-        if (selectedIndex >= index && selectedIndex > 0) {
-            setSelectedIndex(prev => prev - 1)
-        }
+        startTransition(() => {
+            setImages(prev => prev.filter((_, i) => i !== index))
+            if (selectedIndex >= index && selectedIndex > 0) {
+                setSelectedIndex(prev => prev - 1)
+            }
+        })
     }, [selectedIndex])
 
     // Clear all
     const clearAll = useCallback(() => {
-        setImages([])
-        setSelectedIndex(0)
-        setAnimationPlaying(false)
+        startTransition(() => {
+            setImages([])
+            setSelectedIndex(0)
+            setAnimationPlaying(false)
+        })
     }, [])
 
     // Generate combined output
@@ -697,10 +701,10 @@ export function Img2BytesApp() {
                         ].map(tab => (
                             <button
                                 key={tab.id}
-                                onClick={() => setMobileTab(tab.id)}
+                                onClick={() => startTransition(() => setMobileTab(tab.id))}
                                 className={`flex-1 py-3 flex flex-col items-center gap-1 transition-colors ${mobileTab === tab.id
-                                        ? 'text-cyan-400'
-                                        : 'text-slate-500'
+                                    ? 'text-cyan-400'
+                                    : 'text-slate-500'
                                     }`}
                             >
                                 <tab.icon size={20} />

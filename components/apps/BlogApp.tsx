@@ -560,7 +560,7 @@ function renderMarkdown(markdown: string): string {
                         <div class="terminal-dot bg-[#ff5f56]"></div>
                         <div class="terminal-dot bg-[#ffbd2e]"></div>
                         <div class="terminal-dot bg-[#27c93f]"></div>
-                        <div class="ml-2 text-[10px] text-white/30 font-mono tracking-widest uppercase">SanjuOS Terminal</div>
+                        <div class="ml-2 text-[10px] text-white/30 font-mono tracking-widest uppercase">sddionOS Terminal</div>
                     </div>
                     <div class="terminal-content">
                         <pre><code>${escapeHtml(code.trim())}</code></pre>

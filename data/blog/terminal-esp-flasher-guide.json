@@ -1,8 +1,8 @@
 {
     "id": "flasher-interface-guide",
     "title": "CLI Mode: Flashing ESP32 via Terminal",
-    "description": "Unleash the power of the SanjuOS Terminal to flash your microcontrollers using simple commands. Pro-level IoT development is here.",
-    "author": "SanjuOS Dev",
+    "description": "Unleash the power of the sddionOS Terminal to flash your microcontrollers using simple commands. Pro-level IoT development is here.",
+    "author": "sddionOS Dev",
     "date": "2025-12-18",
     "category": "Tutorial",
     "tags": [
@@ -16,7 +16,7 @@
     "contentBlocks": [
         {
             "type": "markdown",
-            "text": "For those who prefer the speed and efficiency of a command-line interface, SanjuOS supports **ESP32 flashing directly from the Terminal**. This bypasses the graphical interface and allows for incredibly fast workflows."
+            "text": "For those who prefer the speed and efficiency of a command-line interface, sddionOS supports **ESP32 flashing directly from the Terminal**. This bypasses the graphical interface and allows for incredibly fast workflows."
         },
         {
             "type": "markdown",
@@ -48,7 +48,7 @@
             "type": "step",
             "number": 3,
             "title": "Flash Firmware via URL",
-            "text": "You can flash software directly from a web link! SanjuOS handles the connection for you:"
+            "text": "You can flash software directly from a web link! sddionOS handles the connection for you:"
         },
         {
             "type": "terminal",

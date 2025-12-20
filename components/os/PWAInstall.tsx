@@ -144,7 +144,7 @@ export function PWAInstall() {
                                     >
                                         <Image
                                             src="/icons/icon-192.png"
-                                            alt="SanjuOS"
+                                            alt="sddionOS"
                                             width={80}
                                             height={80}
                                             className="w-full h-full object-cover"
@@ -157,7 +157,7 @@ export function PWAInstall() {
                                         transition={{ delay: 0.15 }}
                                         className="text-xl font-bold text-white mb-1"
                                     >
-                                        Install SanjuOS
+                                        Install sddionOS
                                     </motion.h2>
                                     <motion.p
                                         initial={{ opacity: 0, y: 10 }}

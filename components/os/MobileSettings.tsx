@@ -104,7 +104,7 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
             id: 'about',
             icon: <Info size={20} className="text-zinc-500" />,
             label: "About Device",
-            value: "SanjuOS 1.0",
+            value: "sddionOS 1.0",
             color: "bg-zinc-500/10"
         }
     ]
@@ -238,10 +238,10 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                                 {/* User Profile Card */}
                                 <div className="p-5 bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-[2rem] border border-white/5 flex items-center gap-4 shadow-xl">
                                     <div className="w-14 h-14 rounded-2xl bg-[var(--os-surface)] flex items-center justify-center shadow-lg border border-white/10 overflow-hidden p-2">
-                                        <img src="/icon-192.png" alt="SanjuOS" className="w-full h-full object-contain" />
+                                        <img src="/icon-192.png" alt="sddionOS" className="w-full h-full object-contain" />
                                     </div>
                                     <div>
-                                        <p className="font-black text-lg">SanjuOS Admin</p>
+                                        <p className="font-black text-lg">sddionOS Admin</p>
                                         <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Master Repository Access</p>
                                     </div>
                                 </div>

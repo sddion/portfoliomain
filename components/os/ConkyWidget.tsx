@@ -138,7 +138,7 @@ export function ConkyWidget() {
                         </div>
                         <div className="flex justify-between mb-1">
                             <span>OS:</span>
-                            <span className="text-foreground">SanjuOS v2.0</span>
+                            <span className="text-foreground">sddionOS v2.0</span>
                         </div>
                         <div className="flex justify-between mb-2">
                             <span>RAM:</span>
@@ -275,7 +275,7 @@ export function ConkyWidget() {
                         <div className="p-3 rounded bg-[var(--primary)]/5 border border-[var(--primary)]/10">
                             <h4 className="font-bold text-[var(--primary)] mb-2 flex items-center gap-2"><Terminal size={12} /> System</h4>
                             <div className="space-y-1 text-[var(--muted-foreground)]">
-                                <div className="flex justify-between"><span>OS:</span> <span className="text-[var(--foreground)]">SanjuOS v2.0</span></div>
+                                <div className="flex justify-between"><span>OS:</span> <span className="text-[var(--foreground)]">sddionOS v2.0</span></div>
                                 <div className="flex justify-between"><span>Kernel:</span> <span className="text-[var(--foreground)]">6.8.0-kali</span></div>
                                 <div className="flex justify-between"><span>Uptime:</span> <span className="text-[var(--foreground)]">{format(time, "HH:mm:ss")}</span></div>
                                 <div className="flex justify-between"><span>CPU:</span> <span className="text-[var(--foreground)]">3%</span></div>

@@ -1,6 +1,6 @@
 {
-    "name": "SanjuOS",
-    "short_name": "SanjuOS",
+    "name": "sddionOS",
+    "short_name": "sddionOS",
     "description": "Advanced ESP32 Web Flasher & Security Portfolio",
     "start_url": "/",
     "display": "standalone",

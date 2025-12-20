@@ -2,7 +2,7 @@
     "id": "esp32-troubleshooting-guide",
     "title": "ESP32 Flasher Troubleshooting Guide",
     "description": "Encountering connection issues or timing errors? This guide covers the most common flashing problems and their solutions.",
-    "author": "SanjuOS Dev",
+    "author": "sddionOS Dev",
     "date": "2025-12-18",
     "category": "Troubleshooting",
     "tags": [

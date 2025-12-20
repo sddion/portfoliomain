@@ -40,7 +40,7 @@ export function MobileConkyWidget({ bluetoothDevice, githubStats }: MobileConkyW
             {/* Header - Very compact */}
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
                 <span className="text-[var(--primary)] font-bold flex items-center gap-1.5 uppercase tracking-tighter">
-                    <Activity size={12} /> SanjuOS Status
+                    <Activity size={12} /> sddionOS Status
                 </span>
                 <span className="text-white/40">{format(time, "HH:mm:ss")}</span>
             </div>

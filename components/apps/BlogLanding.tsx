@@ -22,7 +22,7 @@ interface BlogLandingProps {
 
 export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
     // currentPath can be used to determine active state
-    const isActivePost = (postId: string) => currentPath === `sanjuos://blog/${postId}`
+    const isActivePost = (postId: string) => currentPath === `sddionOS://blog/${postId}`
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
@@ -58,7 +58,7 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
                     <div className="text-center mb-12">
                         <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white/60 mb-6">
                             <BookOpen size={14} className="text-primary" />
-                            SanjuOS Knowledge Base
+                            sddionOS Knowledge Base
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-4">
                             Tech <span className="text-primary">Archive</span>
@@ -113,7 +113,7 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
                         <span className="text-xs font-black uppercase tracking-widest text-white/40">Featured</span>
                     </div>
                     <button
-                        onClick={() => onNavigate(`sanjuos://blog/${featuredPost.id}`)}
+                        onClick={() => onNavigate(`sddionOS://blog/${featuredPost.id}`)}
                         className="group w-full bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-3xl overflow-hidden hover:border-primary/30 transition-all text-left"
                     >
                         <div className="grid md:grid-cols-2 gap-0">
@@ -160,7 +160,7 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
                     {filteredPosts.map((post, idx) => (
                         <button
                             key={post.id}
-                            onClick={() => onNavigate(`sanjuos://blog/${post.id}`)}
+                            onClick={() => onNavigate(`sddionOS://blog/${post.id}`)}
                             className={`group bg-white/[0.03] border rounded-2xl overflow-hidden hover:border-primary/20 hover:bg-white/[0.05] transition-all text-left ${isActivePost(post.id) ? 'border-primary/40 ring-1 ring-primary/20' : 'border-white/5'}`}
                         >
                             <div className="aspect-video bg-black/20 relative overflow-hidden">
@@ -200,7 +200,7 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
             {/* Footer */}
             <div className="border-t border-white/5 py-8">
                 <p className="text-center text-xs text-white/20">
-                    © 2025 SanjuOS • Built with Next.js
+                    © 2025 sddionOS • Built with Next.js
                 </p>
             </div>
         </div >

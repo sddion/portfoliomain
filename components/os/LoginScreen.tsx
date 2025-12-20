@@ -47,7 +47,7 @@ export function LoginScreen() {
         if (window.PublicKeyCredential) {
             window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(available => {
                 setIsBiometricAvailable(available)
-                const registeredId = localStorage.getItem("sanjuos_biometric_id")
+                const registeredId = localStorage.getItem("sddionOS_biometric_id")
                 if (registeredId) setIsBiometricRegistered(true)
             })
         }
@@ -60,7 +60,7 @@ export function LoginScreen() {
 
     const handleLogin = async (e?: React.FormEvent) => {
         e?.preventDefault()
-        if (password === "sanjuos" || password === "guest") {
+        if (password === "sddionOS" || password === "guest") {
             if (isBiometricAvailable && !isBiometricRegistered) {
                 setShowRegisterPrompt(true)
             } else {
@@ -80,7 +80,7 @@ export function LoginScreen() {
 
             const options: PublicKeyCredentialCreationOptions = {
                 challenge,
-                rp: { name: "SanjuOS", id: window.location.hostname },
+                rp: { name: "sddionOS", id: window.location.hostname },
                 user: {
                     id: new Uint8Array([1, 2, 3, 4]),
                     name: "sanju@os",
@@ -96,7 +96,7 @@ export function LoginScreen() {
 
             const credential = await navigator.credentials.create({ publicKey: options }) as PublicKeyCredential;
             if (credential) {
-                localStorage.setItem("sanjuos_biometric_id", bufferToBase64(credential.rawId));
+                localStorage.setItem("sddionOS_biometric_id", bufferToBase64(credential.rawId));
                 setIsBiometricRegistered(true);
                 setShowRegisterPrompt(false);
                 login();
@@ -113,7 +113,7 @@ export function LoginScreen() {
     }
 
     const handleBiometricAuth = async () => {
-        const registeredId = localStorage.getItem("sanjuos_biometric_id");
+        const registeredId = localStorage.getItem("sddionOS_biometric_id");
         if (!registeredId) return;
 
         try {
@@ -249,7 +249,7 @@ export function LoginScreen() {
 
                             <div className="text-center space-y-2">
                                 <h2 className="text-xl font-bold tracking-[0.2em] text-[var(--foreground)] uppercase">ANONYMOUS</h2>
-                                <p className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest">SanjuOS Secure Login</p>
+                                <p className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest">sddionOS Secure Login</p>
                             </div>
 
                             {/* Entry Form */}
@@ -365,7 +365,7 @@ export function LoginScreen() {
 
                 <div className="text-center space-y-2">
                     <h1 className="text-2xl font-bold tracking-widest text-[var(--foreground)]">ANONYMOUS</h1>
-                    <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest">SanjuOS Secure Login</p>
+                    <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest">sddionOS Secure Login</p>
                 </div>
 
                 {/* Login Form */}

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, startTransition } from "react"
 import { Search, Globe, ChevronLeft, ChevronRight, RotateCcw, Home, ExternalLink, Github, Gitlab, Instagram, MessageCircle, Star, Plus, X, ShieldAlert, BookOpen } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -43,19 +43,19 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
 
     // Load persistent data
     useEffect(() => {
-        const savedBookmarks = localStorage.getItem("sanjuos_bookmarks")
-        const savedHistory = localStorage.getItem("sanjuos_history")
+        const savedBookmarks = localStorage.getItem("sddionOS_bookmarks")
+        const savedHistory = localStorage.getItem("sddionOS_history")
         if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks))
         if (savedHistory) setGlobalHistory(JSON.parse(savedHistory))
     }, [])
 
     // Sync persistent data
     useEffect(() => {
-        localStorage.setItem("sanjuos_bookmarks", JSON.stringify(bookmarks))
+        localStorage.setItem("sddionOS_bookmarks", JSON.stringify(bookmarks))
     }, [bookmarks])
 
     useEffect(() => {
-        localStorage.setItem("sanjuos_history", JSON.stringify(globalHistory))
+        localStorage.setItem("sddionOS_history", JSON.stringify(globalHistory))
     }, [globalHistory])
 
     const [isMobile, setIsMobile] = useState(false)
@@ -126,52 +126,56 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
 
     const closeTab = (id: string, e: React.MouseEvent) => {
         e.stopPropagation()
-        if (tabs.length === 1) {
-            setTabs([{ id: "1", url: "about:home", title: "New Tab", isHome: true, history: ["about:home"], historyIndex: 0 }])
-            setActiveTabId("1")
-            return
-        }
-        const newTabs = tabs.filter(t => t.id !== id)
-        setTabs(newTabs)
-        if (activeTabId === id) {
-            setActiveTabId(newTabs[newTabs.length - 1].id)
-        }
+        startTransition(() => {
+            if (tabs.length === 1) {
+                setTabs([{ id: "1", url: "about:home", title: "New Tab", isHome: true, history: ["about:home"], historyIndex: 0 }])
+                setActiveTabId("1")
+                return
+            }
+            const newTabs = tabs.filter(t => t.id !== id)
+            setTabs(newTabs)
+            if (activeTabId === id) {
+                setActiveTabId(newTabs[newTabs.length - 1].id)
+            }
+        })
     }
 
     const navigate = (url: string, updateHistory: boolean = true) => {
         let targetUrl = url
-        if (!url.startsWith("http") && !url.startsWith("about:")) {
+        if (!url.startsWith("http") && !url.startsWith("about:") && !url.startsWith("sddionOS:")) {
             targetUrl = `https://www.google.com/search?q=${encodeURIComponent(url)}`
         }
 
-        setTabs(prev => prev.map(t => {
-            if (t.id === activeTabId) {
-                const newHistory = updateHistory
-                    ? [...t.history.slice(0, t.historyIndex + 1), targetUrl]
-                    : t.history
-                const newIndex = updateHistory ? newHistory.length - 1 : t.historyIndex
+        startTransition(() => {
+            setTabs(prev => prev.map(t => {
+                if (t.id === activeTabId) {
+                    const newHistory = updateHistory
+                        ? [...t.history.slice(0, t.historyIndex + 1), targetUrl]
+                        : t.history
+                    const newIndex = updateHistory ? newHistory.length - 1 : t.historyIndex
 
-                return {
-                    ...t,
-                    url: targetUrl,
-                    title: targetUrl,
-                    isHome: targetUrl === "about:home",
-                    history: newHistory,
-                    historyIndex: newIndex
+                    return {
+                        ...t,
+                        url: targetUrl,
+                        title: targetUrl,
+                        isHome: targetUrl === "about:home",
+                        history: newHistory,
+                        historyIndex: newIndex
+                    }
                 }
+                return t
+            }))
+
+            // Add to global history
+            if (targetUrl !== "about:home" && !targetUrl.startsWith("sddionOS:")) {
+                setGlobalHistory(prev => [
+                    { url: targetUrl, title: targetUrl, timestamp: Date.now() },
+                    ...prev.slice(0, 99) // Keep last 100
+                ])
             }
-            return t
-        }))
 
-        // Add to global history
-        if (targetUrl !== "about:home") {
-            setGlobalHistory(prev => [
-                { url: targetUrl, title: targetUrl, timestamp: Date.now() },
-                ...prev.slice(0, 99) // Keep last 100
-            ])
-        }
-
-        setUrlInput(targetUrl === "about:home" ? "" : targetUrl)
+            setUrlInput(targetUrl === "about:home" ? "" : targetUrl)
+        })
     }
 
     const goBack = () => {
@@ -212,32 +216,32 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
 
     // Attempt to detect if a site can be framed (this is just for UI hint, actual blocking is by browser)
     const isFrameable = (url: string) => {
-        if (url.startsWith("about:") || url.startsWith("sanjuos:")) return true
+        if (url.startsWith("about:") || url.startsWith("sddionOS:")) return true
         const blocks = ["github.com", "gitlab.com", "instagram.com", "facebook.com", "twitter.com", "wa.me", "whatsapp.com"]
         return !blocks.some(domain => url.includes(domain))
     }
 
-    // Check if URL is internal SanjuOS route
-    const isSanjuOSRoute = (url: string) => url.startsWith("sanjuos://")
+    // Check if URL is internal sddionOS route
+    const issddionOSRoute = (url: string) => url.startsWith("sddionOS://")
 
-    // Parse SanjuOS route
-    const parseSanjuOSRoute = (url: string) => {
-        const path = url.replace("sanjuos://", "")
+    // Parse sddionOS route
+    const parsesddionOSRoute = (url: string) => {
+        const path = url.replace("sddionOS://", "")
         const parts = path.split("/")
         return { route: parts[0], param: parts[1] }
     }
 
-    // Render internal SanjuOS content
-    const renderSanjuOSContent = (url: string) => {
-        const { route, param } = parseSanjuOSRoute(url)
-        
+    // Render internal sddionOS content
+    const rendersddionOSContent = (url: string) => {
+        const { route, param } = parsesddionOSRoute(url)
+
         if (route === "blog" && param) {
             return <BlogPostViewer postId={param} onNavigate={navigate} />
         }
         if (route === "blog") {
             return <BlogLanding onNavigate={navigate} />
         }
-        
+
         // Unknown route - show error
         return (
             <div className="h-full flex items-center justify-center bg-[var(--background)]">
@@ -481,7 +485,7 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
 
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                     {[
-                                        { label: "Blog", url: "sanjuos://blog", icon: <BookOpen size={24} className="text-primary" />, color: "bg-primary/10" },
+                                        { label: "Blog", url: "sddionOS://blog", icon: <BookOpen size={24} className="text-primary" />, color: "bg-primary/10" },
                                         { label: "GitHub", url: "https://github.com/sddion", icon: <Github size={24} className="text-white" />, color: "bg-zinc-800" },
                                         { label: "GitLab", url: "https://gitlab.com/0xd3ds3c", icon: <Gitlab size={24} className="text-orange-500" />, color: "bg-orange-500/10" },
                                         { label: "WhatsApp", url: "https://wa.me/918822972607", icon: <MessageCircle size={24} className="text-green-500" />, color: "bg-green-500/10" },
@@ -501,9 +505,9 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
                             </div>
                         </div>
                     </div>
-                ) : isSanjuOSRoute(activeTab.url) ? (
+                ) : issddionOSRoute(activeTab.url) ? (
                     <div className="h-full overflow-auto">
-                        {renderSanjuOSContent(activeTab.url)}
+                        {rendersddionOSContent(activeTab.url)}
                     </div>
                 ) : (
                     <div className="h-full flex flex-col">

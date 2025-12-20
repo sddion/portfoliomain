@@ -2,7 +2,7 @@
     "id": "img2bytes-gui-guide",
     "title": "Using Img2Bytes: Visual Guide",
     "description": "Learn how to convert images to byte arrays for Arduino and embedded displays using the Img2Bytes GUI app.",
-    "author": "SanjuOS Dev",
+    "author": "sddionOS Dev",
     "date": "2025-12-20",
     "category": "Tutorial",
     "tags": [
@@ -26,7 +26,7 @@
         {
             "type": "prerequisites",
             "items": [
-                "SanjuOS Desktop (or mobile)",
+                "sddionOS Desktop (or mobile)",
                 "Image file (PNG, JPG, etc.)",
                 "Arduino IDE or PlatformIO",
                 "OLED/TFT display module"
@@ -36,7 +36,7 @@
             "type": "step",
             "number": 1,
             "title": "Open the App",
-            "text": "Find **Img2Bytes** in your SanjuOS app drawer and tap to open. You'll see an upload zone and settings panel."
+            "text": "Find **Img2Bytes** in your sddionOS app drawer and tap to open. You'll see an upload zone and settings panel."
         },
         {
             "type": "step",

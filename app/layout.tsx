@@ -13,7 +13,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
-  title: "SanjuOS - Free ESP32 Web Flasher & Image to Byte Array Converter | Developer Tools",
+  title: "sddionOS - Free ESP32 Web Flasher & Image to Byte Array Converter | Developer Tools",
   description:
     "Free online tools for embedded developers: ESP32/ESP8266 web flasher using Web Serial API, image to C/C++ byte array converter for Arduino displays (supports animations, dithering, RGB565). Full-stack developer and security engineer portfolio.",
   keywords: [
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     "sprite to byte array",
     "animation frames to C array",
     // Portfolio
-    "SanjuOS",
+    "sddionOS",
     "0xd3ds3c portfolio",
     "Sanju developer",
     "full-stack developer India",
@@ -47,8 +47,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Sanju (sddion)", url: "https://github.com/sddion" }],
   creator: "Sanju (sddion / 0xd3ds3c)",
-  publisher: "SanjuOS",
-  applicationName: "SanjuOS",
+  publisher: "sddionOS",
+  applicationName: "sddionOS",
   category: "Developer Tools",
   robots: {
     index: true,
@@ -64,29 +64,29 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "SanjuOS - Free ESP32 Web Flasher & Image to Byte Converter",
+    title: "sddionOS - Free ESP32 Web Flasher & Image to Byte Converter",
     description:
       "Free browser-based tools: Flash ESP32/ESP8266 firmware via Web Serial, convert images to C/C++ byte arrays for Arduino displays. Supports animations, dithering, and multiple color modes.",
-    siteName: "SanjuOS Developer Tools",
+    siteName: "sddionOS Developer Tools",
     url: "https://sddion.vercel.app/",
     images: [
       {
         url: "https://i.postimg.cc/SKc3q4mY/preview.png",
         width: 1200,
         height: 630,
-        alt: "SanjuOS - ESP32 Web Flasher and Developer Tools Preview",
+        alt: "sddionOS - ESP32 Web Flasher and Developer Tools Preview",
       },
       {
         url: "https://postimg.cc/DWyBdtJ7",
         width: 1200,
         height: 630,
-        alt: "SanjuOS - ESP32 Web Flasher and Developer Tools Preview (Fallback)",
+        alt: "sddionOS - ESP32 Web Flasher and Developer Tools Preview (Fallback)",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SanjuOS | Free ESP32 Flasher & Image to Byte Array Converter",
+    title: "sddionOS | Free ESP32 Flasher & Image to Byte Array Converter",
     description: "Free online tools: Flash ESP32/ESP8266 from browser, convert images to Arduino byte arrays. No installation required.",
     images: ["https://i.postimg.cc/SKc3q4mY/preview.png"],
     creator: "@0xd3ds3c",
@@ -111,7 +111,7 @@ const structuredData = {
     {
       "@type": "Organization",
       "@id": "https://sddion.vercel.app/#organization",
-      "name": "SanjuOS",
+      "name": "sddionOS",
       "url": "https://sddion.vercel.app/",
       "logo": {
         "@type": "ImageObject",
@@ -149,7 +149,7 @@ const structuredData = {
       "@type": "WebSite",
       "@id": "https://sddion.vercel.app/#website",
       "url": "https://sddion.vercel.app/",
-      "name": "SanjuOS Developer Tools",
+      "name": "sddionOS Developer Tools",
       "description": "Free online tools for embedded developers and IoT enthusiasts",
       "publisher": {
         "@id": "https://sddion.vercel.app/#organization"
@@ -220,7 +220,7 @@ const structuredData = {
           "name": "How do I flash ESP32 from a web browser?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Use SanjuOS ESP32 Web Flasher at sddion.vercel.app. It works directly in Chrome or Edge browsers using Web Serial API. Connect your ESP32 via USB, open the flasher, select your firmware file, and click flash. No installation or drivers required."
+            "text": "Use sddionOS ESP32 Web Flasher at sddion.vercel.app. It works directly in Chrome or Edge browsers using Web Serial API. Connect your ESP32 via USB, open the flasher, select your firmware file, and click flash. No installation or drivers required."
           }
         },
         {

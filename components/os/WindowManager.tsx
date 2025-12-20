@@ -49,7 +49,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     const [maxZIndex, setMaxZIndex] = useState(10)
 
     useEffect(() => {
-        const storedLogin = localStorage.getItem("sanjuos_login")
+        const storedLogin = localStorage.getItem("sddionOS_login")
         if (storedLogin) {
             const loginTime = parseInt(storedLogin)
             if (Date.now() - loginTime < LoginExpiry) {
@@ -57,7 +57,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
                 // If previously logged in, we skip the boot sequence for seamless refresh
                 // unless the user specifically wants it. For now, just set logged in.
             } else {
-                localStorage.removeItem("sanjuos_login")
+                localStorage.removeItem("sddionOS_login")
             }
         }
     }, [])
@@ -65,14 +65,14 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     const login = useCallback(() => {
         setIsLoggedIn(true)
         setBooting(true) // Trigger boot on login
-        localStorage.setItem("sanjuos_login", Date.now().toString())
+        localStorage.setItem("sddionOS_login", Date.now().toString())
     }, [])
 
     const logout = useCallback(() => {
         setIsLoggedIn(false)
         setWindows([]) // Clear windows on logout
         setBooting(false)
-        localStorage.removeItem("sanjuos_login")
+        localStorage.removeItem("sddionOS_login")
     }, [])
 
     const focusWindow = useCallback((id: string) => {

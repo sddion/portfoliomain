@@ -56,7 +56,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                                 alt="User Avatar"
                                 className="w-8 h-8 rounded-full shadow-lg object-cover"
                             />
-                            <span className="font-bold text-[var(--foreground)]">SanjuOS</span>
+                            <span className="font-bold text-[var(--foreground)]">sddionOS</span>
                         </div>
 
                         {/* App List */}

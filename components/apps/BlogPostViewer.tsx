@@ -46,7 +46,7 @@ export function BlogPostViewer({ postId, onNavigate }: BlogPostViewerProps) {
                     <h2 className="text-xl font-bold text-white mb-2">Post Not Found</h2>
                     <p className="text-white/40 mb-6">The article you're looking for doesn't exist.</p>
                     <button
-                        onClick={() => onNavigate("sanjuos://blog")}
+                        onClick={() => onNavigate("sddionOS://blog")}
                         className="px-6 py-3 bg-primary text-white rounded-xl font-bold"
                     >
                         Back to Blog
@@ -153,7 +153,7 @@ export function BlogPostViewer({ postId, onNavigate }: BlogPostViewerProps) {
             <div className="sticky top-0 z-50 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/5">
                 <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
                     <button
-                        onClick={() => onNavigate("sanjuos://blog")}
+                        onClick={() => onNavigate("sddionOS://blog")}
                         className="flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
                     >
                         <ArrowLeft size={16} />

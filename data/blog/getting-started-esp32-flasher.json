@@ -2,7 +2,7 @@
     "id": "getting-started-esp32-flasher",
     "title": "How to Use the ESP32 Web Flasher",
     "description": "Learn how to flash firmware to your ESP32 or ESP8266 directly from your browser using the built-in flasher tool.",
-    "author": "SanjuOS Dev",
+    "author": "sddionOS Dev",
     "date": "2025-12-18",
     "category": "Tutorial",
     "tags": [
@@ -35,7 +35,7 @@
             "type": "step",
             "number": 1,
             "title": "Plug it in",
-            "text": "Connect your chip to your computer using the USB cable. On your SanjuOS desktop, look for the **ESP Flasher** app and click to open it."
+            "text": "Connect your chip to your computer using the USB cable. On your sddionOS desktop, look for the **ESP Flasher** app and click to open it."
         },
         {
             "type": "step",

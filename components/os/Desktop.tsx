@@ -46,12 +46,6 @@ export function Desktop() {
             content: <ESP32FlasherApp />,
         },
         {
-            id: "blog",
-            label: "Blog",
-            icon: <FileText className="text-teal-400" size={32} />,
-            content: <BlogApp />,
-        },
-        {
             id: "terminal",
             label: "Terminal",
             icon: <Terminal size={32} className="text-[var(--primary)]" />,

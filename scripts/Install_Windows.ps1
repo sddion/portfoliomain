@@ -1,10 +1,10 @@
-# SanjuOS One-Click Installer for Windows
-# This script creates a desktop shortcut to launch SanjuOS in app mode.
+# sddionOS One-Click Installer for Windows
+# This script creates a desktop shortcut to launch sddionOS in app mode.
 
-$appName = "SanjuOS"
+$appName = "sddionOS"
 $appUrl = "https://sddion.vercel.app/"
 $iconUrl = "https://sddion.vercel.app/icon-512.png"
-$iconPath = "$env:USERPROFILE\Pictures\sanjuos.ico"
+$iconPath = "$env:USERPROFILE\Pictures\sddionOS.ico"
 
 Write-Host "Installing $appName..."
 
