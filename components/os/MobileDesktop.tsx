@@ -1,40 +1,45 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { useNotifications } from "@/hooks/useNotifications"
-import { Battery, Wifi, Volume2, Search, ArrowLeft } from "lucide-react"
+import { AppIcon } from "@/components/os/IconManager"
+
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Image as ImageIcon, Settings, MessageCircle, CircuitBoard, X, Minus, Activity, Cpu, Radio, Globe, Maximize2 } from "lucide-react"
-import { TerminalApp } from "@/components/apps/TerminalApp"
-import { AboutApp } from "@/components/apps/AboutApp"
-import { ProjectsApp } from "@/components/apps/ProjectsApp"
-import { ExperienceApp } from "@/components/apps/ExperienceApp"
-import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
-import { BlogApp } from "@/components/apps/BlogApp"
-import { TaskMonitor } from "@/components/apps/TaskMonitor"
-import { IoTControlApp } from "@/components/apps/IoTControlApp"
-import { Img2BytesApp } from "@/components/apps/Img2BytesApp"
-import dynamic from "next/dynamic"
+import { Battery, Wifi, MessageCircle, Activity, X, Minus } from "lucide-react"
+import { AppWithComponent } from "@/data/apps"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
-import { BrowserApp } from "@/components/apps/BrowserApp"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 import { LoginScreen } from "@/components/os/LoginScreen"
 import { PWAInstall } from "@/components/os/PWAInstall"
 import { cn } from "@/lib/utils"
 
-const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
-
 export function MobileDesktop() {
-    const { windows, openWindow, closeWindow, activeWindowId, isLoggedIn } = useWindowManager()
-    const { notifications } = useNotifications()
+    const { windows, openWindow, closeWindow, activeWindowId, isLoggedIn, settings, updateSettings, installedApps, isAppsLoaded } = useWindowManager()
+    const { notifications, showNotification } = useNotifications()
     const [time, setTime] = useState(new Date())
     const [notificationOpen, setNotificationOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
     const [isRecentsOpen, setIsRecentsOpen] = useState(false)
+
+    // Recruiter Detection
+    React.useEffect(() => {
+        if (typeof window !== "undefined" && isLoggedIn) {
+            const params = new URLSearchParams(window.location.search)
+            if (params.get("ref") === "recruiter" && !settings.isRecruiter) {
+                updateSettings({ isRecruiter: true })
+
+                // Show personalized greeting
+                showNotification("Recruiter Access Detected", {
+                    body: "Welcome! I've personalized the OS for your visit. Feel free to explore my projects and resume.",
+                    icon: "favicon.png"
+                })
+            }
+        }
+    }, [isLoggedIn, settings.isRecruiter, updateSettings, showNotification])
 
     // Handle home state in history
     React.useEffect(() => {
@@ -66,88 +71,50 @@ export function MobileDesktop() {
         return () => window.removeEventListener('popstate', handlePopState)
     }, [activeWindowId, closeWindow, isRecentsOpen])
 
-    const apps = [
-        {
-            id: "terminal",
-            label: "Terminal",
-            icon: <Terminal className="text-white" size={24} />,
-            bg: "bg-zinc-800",
-            content: <TerminalApp />,
-        },
-        {
-            id: "sys-monitor",
-            label: "Task Monitor",
-            icon: <Activity className="text-white" size={24} />,
-            bg: "bg-emerald-600",
-            content: <TaskMonitor />,
-        },
-        {
-            id: "iot-control",
-            label: "IoT",
-            icon: <Cpu className="text-white" size={24} />,
-            bg: "bg-blue-600",
-            content: <IoTControlApp />,
-        },
-        {
-            id: "about",
-            label: "About Me",
-            icon: <User className="text-blue-400" size={24} />,
-            bg: "bg-zinc-800",
-            content: <AboutApp />,
-        },
-        {
-            id: "projects",
-            label: "Projects",
-            icon: <Folder className="text-yellow-400" size={24} />,
-            bg: "bg-zinc-800",
-            content: <ProjectsApp />,
-        },
-        {
-            id: "experience",
-            label: "Experience",
-            icon: <Briefcase className="text-purple-400" size={24} />,
-            bg: "bg-zinc-800",
-            content: <ExperienceApp />,
-        },
-        {
-            id: "resume",
-            label: "Resume",
-            icon: <FileText className="text-red-400" size={24} />,
-            bg: "bg-zinc-800",
-            content: <ResumeApp />,
-        },
-        {
-            id: "browser",
-            label: "Browser",
-            icon: <Globe className="text-white" size={24} />,
-            bg: "bg-blue-600",
-            content: <BrowserApp />,
-        },
-        {
-            id: "blog",
-            label: "Blog",
-            icon: <FileText className="text-teal-400" size={24} />,
-            bg: "bg-teal-600",
-            content: <BlogApp />,
-        },
-        {
-            id: "img2bytes",
-            label: "Img2Bytes",
-            icon: <ImageIcon className="text-cyan-400" size={24} />,
-            bg: "bg-cyan-600",
-            content: <Img2BytesApp />,
-        },
-        {
-            id: "esp32-flasher",
-            label: "ESP Flasher",
-            icon: <CircuitBoard className="text-orange-500" size={24} />,
-            bg: "bg-orange-600",
-            content: <ESP32FlasherApp />,
-        },
 
-    ]
+    const getAppColor = (appId: string, category: string) => {
+        const colorMap: Record<string, string> = {
+            "terminal": "bg-zinc-800",
+            "sys-monitor": "bg-emerald-600",
+            "iot-control": "bg-blue-600",
+            "about": "bg-zinc-800",
+            "projects": "bg-zinc-800",
+            "experience": "bg-zinc-800",
+            "resume": "bg-zinc-800",
+            "browser": "bg-blue-600",
+            "blog": "bg-teal-600",
+            "img2bytes": "bg-cyan-600",
+            "esp32-flasher": "bg-orange-600",
+            "studio": "bg-zinc-800",
+            "app-store": "bg-blue-500",
+        }
 
-    const activeApp = apps.find(app => windows.find(w => w.id === app.id)?.isOpen)
+        if (colorMap[appId]) return colorMap[appId]
+
+        // Fallback by category
+        switch (category) {
+            case "Development": return "bg-zinc-900"
+            case "Social": return "bg-indigo-600"
+            case "System": return "bg-zinc-800"
+            case "Utility": return "bg-slate-700"
+            case "Media": return "bg-pink-600"
+            default: return "bg-zinc-800"
+        }
+    }
+
+    // Map installedApps to the format expected by MobileDesktop
+    const apps = useMemo(() => {
+        return installedApps.map(app => ({
+            id: app.id,
+            label: app.title,
+            icon: <AppIcon iconName={app.iconName} size={18} />,
+            bg: getAppColor(app.id, app.category),
+            content: app.component,
+            action: null // Add action if needed, currently unused in original except logic
+        }))
+    }, [installedApps])
+
+    const activeApp = useMemo(() => apps.find(app => windows.find(w => w.id === app.id)?.isOpen), [apps, windows])
 
     const handleAppClick = (app: any) => {
         if (app.action) {
@@ -171,9 +138,9 @@ export function MobileDesktop() {
         setIsRecentsOpen(prev => !prev)
     }
 
-    const appsPerPage = 8
-    const page1Apps = apps.slice(0, appsPerPage)
-    const page2Apps = apps.slice(appsPerPage)
+    const appsPerPage = 12 // Increased for mobile grid
+    const page1Apps = useMemo(() => apps.slice(0, appsPerPage), [apps])
+    const page2Apps = useMemo(() => apps.slice(appsPerPage), [apps])
     const totalPages = page2Apps.length > 0 ? 2 : 1
 
     if (!isLoggedIn) {
@@ -184,7 +151,7 @@ export function MobileDesktop() {
         <div
             className="h-[100dvh] w-screen bg-cover bg-center text-[var(--foreground)] overflow-hidden relative font-sans transition-[background-image] duration-500 ease-in-out"
             style={{
-                backgroundImage: "var(--mobile-bg)",
+                backgroundImage: settings.wallpaper ? `url(${settings.wallpaper})` : "var(--mobile-bg)",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }}
@@ -340,12 +307,12 @@ export function MobileDesktop() {
                         </div>
 
                         {/* Immersive Bottom Spacing for Home Indicator */}
-                        <div className="h-14 shrink-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        <div className="h-10 shrink-0 bg-transparent" />
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Home Screen Layer - No scroll, fixed viewport */}
+            {/* Home Screen Layer */}
             <div className={cn(
                 "h-full w-full pt-12 pb-16 overflow-hidden transition-all duration-500",
                 activeApp ? "opacity-0 scale-95 blur-xl pointer-events-none" : "opacity-100 scale-100 blur-0"
@@ -353,57 +320,45 @@ export function MobileDesktop() {
                 <div className="h-full flex flex-col">
                     <div className="flex-1 flex flex-col relative overflow-hidden">
 
-                        <motion.div
-                            drag="x"
-                            dragConstraints={{ left: totalPages > 1 ? -window.innerWidth : 0, right: 0 }}
-                            dragElastic={0.1}
-                            onDragEnd={(_, info) => {
-                                if (totalPages > 1) {
-                                    if (info.offset.x < -50 && currentPage === 0) {
-                                        setCurrentPage(1)
-                                    } else if (info.offset.x > 50 && currentPage === 1) {
-                                        setCurrentPage(0)
-                                    }
-                                }
-                            }}
-                            animate={{ x: currentPage === 0 ? 0 : -window.innerWidth }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="flex flex-1 w-full"
-                        >
-                            {/* Page 1 */}
-                            <div className="min-w-full px-4 flex flex-col h-full overflow-hidden">
-                                {/* Conky Widget - Only on Page 1 */}
-                                <div className="pt-2 pb-2">
-                                    <MobileConkyWidget />
-                                </div>
-                                {/* Flexible spacer to push app icons to bottom */}
-                                <div className="flex-1" />
-                                {/* App icons at bottom */}
-                                <div className="grid grid-cols-4 gap-y-8 gap-x-4 pt-2">
-                                    {page1Apps.map((app) => (
-                                        <button
-                                            key={app.id}
-                                            onClick={() => handleAppClick(app)}
-                                            className="flex flex-col items-center gap-2 group active:scale-95 transition-transform"
-                                        >
-                                            <div className={cn(
-                                                "w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] flex items-center justify-center shadow-xl relative overflow-hidden",
-                                                app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg
-                                            )}>
-                                                <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors" />
-                                                {React.cloneElement(app.icon as React.ReactElement<any>, { size: 28 })}
-                                            </div>
-                                            <span className="text-[10px] text-white/80 font-bold tracking-tight truncate w-full text-center">{app.label}</span>
-                                        </button>
+                        {!isAppsLoaded ? (
+                            <div className="flex flex-1 w-full p-4 flex-col justify-end pb-8">
+                                <div className="grid grid-cols-4 gap-y-8 gap-x-4">
+                                    {Array.from({ length: 8 }).map((_, i) => (
+                                        <div key={i} className="flex flex-col items-center gap-2 animate-pulse">
+                                            <div className="w-14 h-14 rounded-[1.25rem] bg-white/10" />
+                                            <div className="w-10 h-2 bg-white/10 rounded" />
+                                        </div>
                                     ))}
                                 </div>
                             </div>
-
-                            {/* Page 2 - Icons start from top */}
-                            {totalPages > 1 && (
-                                <div className="min-w-full px-4 flex flex-col h-full overflow-hidden pt-4">
-                                    <div className="grid grid-cols-4 gap-y-8 gap-x-4">
-                                        {page2Apps.map((app) => (
+                        ) : (
+                            <motion.div
+                                drag="x"
+                                dragConstraints={{ left: totalPages > 1 ? -window.innerWidth : 0, right: 0 }}
+                                dragElastic={0.1}
+                                onDragEnd={(_, info) => {
+                                    if (totalPages > 1) {
+                                        if (info.offset.x < -50 && currentPage === 0) {
+                                            setCurrentPage(1)
+                                        } else if (info.offset.x > 50 && currentPage === 1) {
+                                            setCurrentPage(0)
+                                        }
+                                    }
+                                }}
+                                animate={{ x: currentPage === 0 ? 0 : -window.innerWidth }}
+                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                className="flex flex-1 w-full"
+                            >
+                                {/* Page 1 */}
+                                <div className="min-w-full px-4 flex flex-col h-full overflow-hidden">
+                                    {/* Conky Widget */}
+                                    <div className="pt-2 pb-2">
+                                        <MobileConkyWidget />
+                                    </div>
+                                    <div className="flex-1" />
+                                    {/* App icons at bottom */}
+                                    <div className="grid grid-cols-4 gap-y-8 gap-x-4 pt-2 pb-4">
+                                        {page1Apps.map((app) => (
                                             <button
                                                 key={app.id}
                                                 onClick={() => handleAppClick(app)}
@@ -421,10 +376,32 @@ export function MobileDesktop() {
                                         ))}
                                     </div>
                                 </div>
-                            )}
-                        </motion.div>
 
-
+                                {/* Page 2 */}
+                                {totalPages > 1 && (
+                                    <div className="min-w-full px-4 flex flex-col h-full overflow-hidden pt-4">
+                                        <div className="grid grid-cols-4 gap-y-8 gap-x-4">
+                                            {page2Apps.map((app) => (
+                                                <button
+                                                    key={app.id}
+                                                    onClick={() => handleAppClick(app)}
+                                                    className="flex flex-col items-center gap-2 group active:scale-95 transition-transform"
+                                                >
+                                                    <div className={cn(
+                                                        "w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] flex items-center justify-center shadow-xl relative overflow-hidden",
+                                                        app.bg === 'bg-zinc-800' ? 'bg-[var(--os-surface)]' : app.bg
+                                                    )}>
+                                                        <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors" />
+                                                        {React.cloneElement(app.icon as React.ReactElement<any>, { size: 28 })}
+                                                    </div>
+                                                    <span className="text-[10px] text-white/80 font-bold tracking-tight truncate w-full text-center">{app.label}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -448,7 +425,6 @@ export function MobileDesktop() {
                 <div className="absolute bottom-1 text-[8px] text-white/20 font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-opacity">Swipe up to Home</div>
             </div>
 
-            {/* Global Scanlines for Android Retro Feel */}
             <div className="crt-effect pointer-events-none opacity-[0.03] z-[999]" />
             <PWAInstall />
         </div>

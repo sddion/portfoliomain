@@ -2,6 +2,13 @@ import type React from "react"
 import type { Metadata } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
+import { Inter, Roboto, Lato, Open_Sans } from "next/font/google"
+import { FontManager } from "@/components/os/FontManager"
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const roboto = Roboto({ weight: ["400", "500", "700"], subsets: ["latin"], variable: "--font-roboto" })
+const lato = Lato({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-lato" })
+const openSans = Open_Sans({ subsets: ["latin"], variable: "--font-open-sans" })
 
 import "./globals.css"
 
@@ -12,6 +19,15 @@ import { AdSenseManager } from "@/components/os/AdSenseManager"
 import { NotificationProvider } from "@/hooks/useNotifications"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
+import { Viewport } from "next"
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
 
 export const metadata: Metadata = {
   title: "sddionOS - Free ESP32 Web Flasher & Image to Byte Array Converter | Developer Tools",
@@ -45,6 +61,13 @@ export const metadata: Metadata = {
     "security engineer portfolio",
     "IoT developer",
     "embedded systems developer",
+    "embedded systems developer",
+    // AI & Agents
+    "AI-friendly portfolio",
+    "structured data for LLMs",
+    "web operating system",
+    "React OS",
+    "TypeScript OS"
   ],
   authors: [{ name: "Sanju (sddion)", url: "https://github.com/sddion" }],
   creator: "Sanju (sddion / 0xd3ds3c)",
@@ -257,6 +280,30 @@ const structuredData = {
           }
         }
       ]
+    },
+    // sddionOS Software Application
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://sddion.vercel.app/#os",
+      "name": "sddionOS",
+      "applicationCategory": "OperatingSystem",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "A web-based operating system portfolio featuring a desktop environment, window manager, and integrated developer tools like ESP32 Flasher and Image Converter.",
+      "featureList": [
+        "Desktop Environment",
+        "Window Management",
+        "File System Simulation",
+        "Integrated Developer Tools",
+        "PWA Support"
+      ],
+      "author": {
+        "@id": "https://sddion.vercel.app/#person"
+      }
     }
   ]
 }
@@ -273,7 +320,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a0a" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
         {/* JSON-LD Structured Data for AI and Search Engines */}
@@ -300,7 +347,7 @@ export default function RootLayout({
 
       </head>
       <body
-        className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased bg-neutral-950 text-neutral-50`}
+        className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${inter.variable} ${roboto.variable} ${lato.variable} ${openSans.variable} antialiased bg-neutral-950 text-neutral-50`}
         suppressHydrationWarning
       >
         <ThemeProvider
@@ -312,10 +359,15 @@ export default function RootLayout({
         >
           <NotificationProvider>
             <WindowProvider>
-              <AdSenseManager />
-              <Analytics />
-              <SpeedInsights />
+              {process.env.NODE_ENV === "production" && <AdSenseManager />}
+              {process.env.NODE_ENV === "production" && (
+                <>
+                  <Analytics />
+                  <SpeedInsights />
+                </>
+              )}
               <SnowfallEffect snowflakeCount={150} color="#2ae704c5" />
+              <FontManager />
               {children}
             </WindowProvider>
           </NotificationProvider>

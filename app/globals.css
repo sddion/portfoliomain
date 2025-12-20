@@ -43,8 +43,15 @@
   --mobile-bg: url('/cyber-bg.jpg');
 
   /* Fonts */
-  --font-mono: 'Geist Mono', monospace;
-  --font-sans: 'Geist Sans', sans-serif;
+  --font-geist-mono: 'Geist Mono', monospace;
+  --font-geist-sans: 'Geist Sans', sans-serif;
+
+  /* Dynamic Font Variables */
+  --ui-font-sans: var(--font-geist-sans);
+  --ui-font-mono: var(--font-geist-mono);
+
+  --font-mono: var(--ui-font-mono);
+  --font-sans: var(--ui-font-sans);
 }
 
 [data-theme='ubuntu'] {

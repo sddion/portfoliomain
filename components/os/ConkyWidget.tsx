@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Github, Code, Terminal, Quote, Activity } from "lucide-react"
+import { Github, Code, Terminal, Quote, Activity, Bluetooth } from "lucide-react"
 import { format } from "date-fns"
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useWindowManager } from "@/components/os/WindowManager"
+import { useBluetooth } from "@/hooks/useBluetooth"
 
 interface GithubStats {
     public_repos: number
@@ -23,6 +24,7 @@ export function ConkyWidget() {
     const [logs, setLogs] = useState<string[]>([])
     const [languages, setLanguages] = useState<{ name: string; percent: number; color: string; textColor: string }[]>([])
     const [memMetrics, setMemMetrics] = useState({ used: 0, total: 0 })
+    const { device, requestDevice, supported, connecting } = useBluetooth()
 
     useEffect(() => {
         const updateMem = () => {
@@ -143,6 +145,10 @@ export function ConkyWidget() {
                         <div className="flex justify-between mb-2">
                             <span>RAM:</span>
                             <span className="text-foreground">{memMetrics.used}MB / {memMetrics.total}MB</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                            <span>BT:</span>
+                            <span className={device ? "text-blue-400" : "text-foreground/50"}>{device ? "PROVISIONED" : "SCANNING..."}</span>
                         </div>
 
                         {/* Progress Bar for Total RAM */}
@@ -314,10 +320,26 @@ export function ConkyWidget() {
                         </div>
 
                         <div className="p-3 rounded bg-[var(--primary)]/5 border border-[var(--primary)]/10">
-                            <h4 className="font-bold text-[var(--primary)] mb-2 flex items-center gap-2"><Quote size={12} /> MOTD</h4>
-                            <p className="italic text-[var(--muted-foreground)] leading-tight">
-                                "A jack of all trades is a master of none, but oftentimes better than a master of one."
-                            </p>
+                            <h4 className="font-bold text-[var(--primary)] mb-2 flex items-center gap-2"><Bluetooth size={12} /> Connectivity</h4>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[var(--muted-foreground)]">Status:</span>
+                                <span className={device ? "text-green-400" : "text-yellow-400"}>
+                                    {connecting ? "PAIRING..." : device ? "CONNECTED" : "DISCONNECTED"}
+                                </span>
+                            </div>
+                            {device && (
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[var(--muted-foreground)]">Device:</span>
+                                    <span className="text-foreground truncate max-w-[100px]">{device.name}</span>
+                                </div>
+                            )}
+                            <button
+                                onClick={() => requestDevice()}
+                                disabled={connecting}
+                                className="w-full mt-1 bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 text-[var(--primary)] text-center py-1 rounded transition-colors uppercase text-[10px] font-bold tracking-wider"
+                            >
+                                {connecting ? "Connecting..." : device ? "Manage Device" : "Scan Devices"}
+                            </button>
                         </div>
                     </div>
                 </div>

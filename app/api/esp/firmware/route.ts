@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getOrCache } from "@/lib/Redis"
 
 export async function GET(req: NextRequest) {
     const url = req.nextUrl.searchParams.get("url")
@@ -7,10 +8,17 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const response = await fetch(url)
-        if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`)
-        
-        const buffer = await response.arrayBuffer()
+        // Cache binary as base64 string
+        const base64Data = await getOrCache(`firmware:${url}`, async () => {
+            const response = await fetch(url)
+            if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`)
+            
+            const arrayBuffer = await response.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
+            return buffer.toString('base64')
+        }, 86400) // 24 hours
+
+        const buffer = Buffer.from(base64Data, 'base64')
         
         return new NextResponse(buffer, {
             status: 200,

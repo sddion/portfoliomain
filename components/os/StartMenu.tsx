@@ -1,40 +1,20 @@
 "use client"
 
 import React from "react"
-import { Power, Terminal, User, Folder, Briefcase, FileText, Github, CircuitBoard, Snowflake, Globe } from "lucide-react"
+import { Power, Snowflake, Globe, Github } from "lucide-react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { motion, AnimatePresence } from "framer-motion"
-import { TerminalApp } from "@/components/apps/TerminalApp"
-import { AboutApp } from "@/components/apps/AboutApp"
-import { ProjectsApp } from "@/components/apps/ProjectsApp"
-import { ExperienceApp } from "@/components/apps/ExperienceApp"
-import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
-import { BlogApp } from "@/components/apps/BlogApp"
 import { BrowserApp } from "@/components/apps/BrowserApp"
-import dynamic from "next/dynamic"
-
-const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 
 interface StartMenuProps {
     isOpen: boolean
     onClose: () => void
 }
 
-export function StartMenu({ isOpen, onClose }: StartMenuProps) {
-    const { openWindow, logout, toggleSnowfall, showSnowfall } = useWindowManager()
+import { AppIcon } from "@/components/os/IconManager"
 
-    const menuItems = [
-        { label: "Terminal", icon: <Terminal size={18} className="text-green-500" />, id: "terminal", content: <TerminalApp /> },
-        { label: "Projects", icon: <Folder size={18} className="text-yellow-500" />, id: "projects", content: <ProjectsApp /> },
-        { label: "About Me", icon: <User size={18} className="text-blue-500" />, id: "about", content: <AboutApp /> },
-        { label: "Experience", icon: <Briefcase size={18} className="text-purple-500" />, id: "experience", content: <ExperienceApp /> },
-        { label: "Resume", icon: <FileText size={18} className="text-red-500" />, id: "resume", content: <ResumeApp /> },
-        { label: "ESP Flasher", icon: <CircuitBoard size={18} className="text-orange-500" />, id: "esp32-flasher", content: <ESP32FlasherApp /> },
-        { label: "Blog", icon: <FileText size={18} className="text-teal-500" />, id: "blog", content: <BlogApp /> },
-        { label: "Browser", icon: <Globe size={18} className="text-blue-400" />, id: "browser", content: <BrowserApp /> },
-        { label: "Snowfall", icon: <Snowflake size={18} className={showSnowfall ? "text-blue-300" : "text-zinc-500"} />, action: toggleSnowfall },
-        { label: "GitHub", icon: <Github size={18} className="text-white" />, action: () => { openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />); } },
-    ]
+export function StartMenu({ isOpen, onClose }: StartMenuProps) {
+    const { openWindow, logout, toggleSnowfall, showSnowfall, installedApps } = useWindowManager()
 
     return (
         <AnimatePresence>
@@ -60,21 +40,43 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                         </div>
 
                         {/* App List */}
-                        <div className="p-2 space-y-1">
-                            {menuItems.map((item, idx) => (
+                        <div className="p-2 space-y-1 max-h-[60vh] overflow-y-auto scrollbar-thin">
+                            {installedApps.map((app) => (
                                 <button
-                                    key={idx}
+                                    key={app.id}
                                     onClick={() => {
-                                        if (item.action) item.action()
-                                        else if (item.id) openWindow(item.id, item.label, (item as any).content, item.icon)
+                                        openWindow(app.id, app.title, app.component, <AppIcon iconName={app.iconName} size={18} />, { width: app.width, height: app.height })
                                         onClose()
                                     }}
                                     className="w-full flex items-center gap-3 p-2 hover:bg-[var(--os-surface-hover)] rounded transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm"
                                 >
-                                    {item.icon}
-                                    <span>{item.label}</span>
+                                    <AppIcon iconName={app.iconName} size={18} className="text-[var(--primary)]" />
+                                    <span className="truncate">{app.title}</span>
                                 </button>
                             ))}
+
+                            {/* System Actions Separator */}
+                            <div className="h-px bg-[var(--os-border)] my-2" />
+
+                            {/* Static System Actions */}
+                            <button
+                                onClick={() => {
+                                    openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <AppIcon iconName="globe" size={18} />)
+                                    onClose()
+                                }}
+                                className="w-full flex items-center gap-3 p-2 hover:bg-[var(--os-surface-hover)] rounded transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm"
+                            >
+                                <AppIcon iconName="globe" size={18} className="text-white" />
+                                <span>GitHub</span>
+                            </button>
+
+                            <button
+                                onClick={toggleSnowfall}
+                                className="w-full flex items-center gap-3 p-2 hover:bg-[var(--os-surface-hover)] rounded transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm"
+                            >
+                                <Snowflake size={18} className={showSnowfall ? "text-blue-300" : "text-zinc-500"} />
+                                <span>Snowfall</span>
+                            </button>
                         </div>
 
                         {/* Footer / Power */}

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import { getOrCache } from "@/lib/Redis"
 
-// check happens inside handler now
-
+// FX Handler
 export async function GET(request: Request) {
   try {
     if (!process.env.API_KEY) {
@@ -12,23 +12,26 @@ export async function GET(request: Request) {
     const to = searchParams.get("symbol") || "USD"
     const amount = searchParams.get("amount") || "1"
 
-    const url = `https://anyapi.io/api/v1/exchange/convert?apiKey=${process.env.API_KEY}&base=${encodeURIComponent(
-      base
-    )}&to=${encodeURIComponent(to)}&amount=${encodeURIComponent(amount)}`
+    const cacheKey = `fx:${base}:${to}:${amount}`
+    const data = await getOrCache(cacheKey, async () => {
+      const url = `https://anyapi.io/api/v1/exchange/convert?apiKey=${process.env.API_KEY}&base=${encodeURIComponent(
+        base
+      )}&to=${encodeURIComponent(to)}&amount=${encodeURIComponent(amount)}`
 
-    const res = await fetch(url, {
-      headers: {
-        "Accept": "application/json",
-      },
-      cache: "no-store"
-    })
+      const res = await fetch(url, {
+        headers: {
+          "Accept": "application/json",
+        },
+        cache: "no-store"
+      })
 
-    if (!res.ok) {
-      console.error("FX API error:", res.status, res.statusText)
-      throw new Error("rate_fetch_failed")
-    }
+      if (!res.ok) {
+        console.error("FX API error:", res.status, res.statusText)
+        throw new Error("rate_fetch_failed")
+      }
 
-    const data = await res.json()
+      return res.json()
+    }, 43200) // 12 hours
     
     return NextResponse.json({
       base,

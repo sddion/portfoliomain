@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getOrCache } from "@/lib/Redis"
 
 export async function GET(req: NextRequest) {
     const url = req.nextUrl.searchParams.get("url")
@@ -7,15 +8,20 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const response = await fetch(url)
-        const text = await response.text()
+        const text = await getOrCache(`proxy:${url}`, async () => {
+            const response = await fetch(url)
+            if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`)
+            return response.text()
+        }, 3600) // 1 hour
+
         return new NextResponse(text, {
-            status: response.status,
+            status: 200,
             headers: {
-                "Content-Type": response.headers.get("Content-Type") || "text/plain",
+                "Content-Type": "text/plain",
+                "Access-Control-Allow-Origin": "*",
             }
         })
-    } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch URL" }, { status: 500 })
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message || "Failed to fetch URL" }, { status: 500 })
     }
 }

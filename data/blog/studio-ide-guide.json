@@ -1,0 +1,71 @@
+{
+    "id": "studio-ide-guide",
+    "title": "Mastering Studio Pro: The Ultimate ESP32 IDE",
+    "description": "A deep dive into the features, AST logic engine, and library management of our professional-grade IoT coding environment.",
+    "author": "sddion",
+    "date": "2025-12-20",
+    "category": "Documentation",
+    "tags": [
+        "Studio",
+        "IDE",
+        "ESP32",
+        "IoT",
+        "Coding"
+    ],
+    "featuredImage": "/studio-mockup.png",
+    "content": "",
+    "contentBlocks": [
+        {
+            "type": "markdown",
+            "text": "Welcome to **Studio Pro**, the most advanced IDE integration in the Portfolio OS ecosystem. Designed for engineers who demand precision, Studio Pro bridges the gap between web-based interfaces and low-level hardware development."
+        },
+        {
+            "type": "prerequisites",
+            "items": [
+                "Web Serial compatible browser (Chrome, Edge)",
+                "ESP32 or ESP8266 hardware",
+                "Studio Pro App installed in Workspace"
+            ]
+        },
+        {
+            "type": "step",
+            "number": 1,
+            "title": "Professional Code Editing",
+            "text": "Studio Pro utilizes the **Monaco Editor** (the engine behind VS Code) to provide a familiar, desktop-grade coding experience. With features like `JetBrains Mono` typography and synthwave-inspired syntax highlighting, you can focus on what matters: the logic."
+        },
+        {
+            "type": "note",
+            "variant": "info",
+            "title": "AST Logic Engine",
+            "text": "The IDE features a real-logic parser that traversals the Abstract Syntax Tree (AST) to identify missing mandatory functions like `setup()` and `loop()`, as well as syntax errors like missing semicolons, before you even attempt to flash."
+        },
+        {
+            "type": "step",
+            "number": 2,
+            "title": "Smart Library Management",
+            "text": "Integrated with the `arduinolibraries.info` registry, our Module Manager allows you to search and 'install' real libraries. You can select specific versions to ensure dependency compatibility across your projects."
+        },
+        {
+            "type": "image",
+            "src": "/studio-mockup.png",
+            "alt": "Studio Pro Desktop Interface showing the real-time syntax error detection."
+        },
+        {
+            "type": "step",
+            "number": 3,
+            "title": "Hardware Integration",
+            "text": "Seamlessly bridge your code to physical chips. The **Flash** button triggers the high-performance esptool-js engine, while the **Monitor** button opens a real-time serial telemetry interface."
+        },
+        {
+            "type": "terminal",
+            "language": "Studio Log",
+            "code": "[20:12:14] SUCCESS: Tree-Sitter C++ Engine Native Ready.\n[20:12:15] INITIATING: ESP32 Flasher Integration...\n[20:12:16] SUCCESS: Compilation binary created.\n[20:12:17] FLASH: Writing 0x10000 bytes at 0x1000..."
+        },
+        {
+            "type": "note",
+            "variant": "tip",
+            "title": "Pro Tip",
+            "text": "Use the bottom navigation bar on mobile devices to quickly switch between the Module Manager and the Serial Monitor without losing your editor focus."
+        }
+    ]
+}

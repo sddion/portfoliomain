@@ -2,33 +2,37 @@
 
 import React from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
+import { AnimatePresence } from "framer-motion"
 import { BootSequence } from "@/components/os/BootSequence"
 import { Taskbar } from "@/components/os/Taskbar"
 import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
-import { Terminal, Folder, User, FileText, Github, Briefcase, Gitlab, Instagram, Settings, MessageCircle, Palette, CircuitBoard, Activity, Cpu, Radio, Globe } from "lucide-react"
-
-import { TerminalApp } from "@/components/apps/TerminalApp"
-import { AboutApp } from "@/components/apps/AboutApp"
-import { ProjectsApp } from "@/components/apps/ProjectsApp"
-import { ExperienceApp } from "@/components/apps/ExperienceApp"
 import { ConkyWidget } from "@/components/os/ConkyWidget"
-import { SettingsApp } from "@/components/apps/SettingsApp"
-import { ESP32FlasherApp } from "@/components/apps/ESP32FlasherApp"
-import { BlogApp } from "@/components/apps/BlogApp"
-import { TaskMonitor } from "@/components/apps/TaskMonitor"
-import { IoTControlApp } from "@/components/apps/IoTControlApp"
-import { Img2BytesApp } from "@/components/apps/Img2BytesApp"
-import { BrowserApp } from "@/components/apps/BrowserApp"
-import dynamic from "next/dynamic"
-
-const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
-
 import { LoginScreen } from "@/components/os/LoginScreen"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
+import { useNotifications } from "@/hooks/useNotifications"
+
+import { AppIcon } from "@/components/os/IconManager"
 
 export function Desktop() {
-    const { isBooting, setBooting, windows, openWindow, isLoggedIn } = useWindowManager()
+    const { isBooting, setBooting, windows, openWindow, isLoggedIn, settings, updateSettings, installedApps, isAppsLoaded } = useWindowManager()
+    const { showNotification } = useNotifications()
+
+    // Recruiter Detection
+    React.useEffect(() => {
+        if (typeof window !== "undefined" && isLoggedIn) {
+            const params = new URLSearchParams(window.location.search)
+            if (params.get("ref") === "recruiter" && !settings.isRecruiter) {
+                updateSettings({ isRecruiter: true })
+
+                // Show personalized greeting
+                showNotification("Recruiter Access Detected", {
+                    body: "Welcome! I've personalized the OS for your visit. Feel free to explore my projects and resume.",
+                    icon: "favicon.png"
+                })
+            }
+        }
+    }, [isLoggedIn, settings.isRecruiter, updateSettings, showNotification])
 
     if (!isLoggedIn) {
         return <LoginScreen />
@@ -38,80 +42,10 @@ export function Desktop() {
         return <BootSequence onComplete={() => setBooting(false)} />
     }
 
-    const icons = [
-        {
-            id: "esp32-flasher",
-            label: "ESP Flasher",
-            icon: <CircuitBoard className="text-orange-500" size={32} />,
-            content: <ESP32FlasherApp />,
-        },
-        {
-            id: "terminal",
-            label: "Terminal",
-            icon: <Terminal size={32} className="text-[var(--primary)]" />,
-            content: <TerminalApp />,
-        },
-        {
-            id: "sys-monitor",
-            label: "Task Monitor",
-            icon: <Activity className="text-emerald-500" size={32} />,
-            content: <TaskMonitor />,
-        },
-        {
-            id: "iot-control",
-            label: "IoT Control",
-            icon: <Cpu className="text-blue-500" size={32} />,
-            content: <IoTControlApp />,
-        },
-        {
-            id: "about",
-            label: "About Me",
-            icon: <User className="text-blue-400" size={32} />,
-            content: <AboutApp />,
-        },
-        {
-            id: "experience",
-            label: "Experience",
-            icon: <Briefcase className="text-purple-400" size={32} />,
-            content: <ExperienceApp />,
-        },
-        {
-            id: "projects",
-            label: "Projects",
-            icon: <Folder className="text-yellow-400" size={32} />,
-            content: <ProjectsApp />,
-        },
-        {
-            id: "resume",
-            label: "Resume",
-            icon: <FileText className="text-red-400" size={32} />,
-            content: <ResumeApp />,
-        },
-        {
-            id: "settings",
-            label: "Settings",
-            icon: <Settings className="text-zinc-400" size={32} />,
-            content: <SettingsApp />,
-        },
-        {
-            id: "img2bytes",
-            label: "Image to Bytes",
-            icon: <FileText className="text-red-400" size={32} />,
-            content: <Img2BytesApp />,
-        },
-        {
-            id: "browser",
-            label: "Browser",
-            icon: <Globe className="text-blue-400" size={32} />,
-            content: <BrowserApp />,
-        },
-    ]
-
-
     return (
         <div
             className="h-screen w-screen overflow-hidden bg-cover bg-center text-white relative transition-[background-image] duration-500 ease-in-out"
-            style={{ backgroundImage: "var(--desktop-bg)" }}
+            style={{ backgroundImage: settings.wallpaper ? `url(${settings.wallpaper})` : "var(--desktop-bg)" }}
         >
             <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
 
@@ -126,33 +60,37 @@ export function Desktop() {
 
             {/* Desktop Icons Grid */}
             <div className="relative z-0 p-4 grid grid-flow-col grid-rows-[repeat(auto-fill,100px)] gap-4 w-fit h-[calc(100vh-40px)]">
-                {icons.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i).map((icon) => (
-                    <DesktopIcon
-                        key={icon.id}
-                        label={icon.label}
-                        icon={icon.icon}
-                        onDoubleClick={() => {
-                            if ((icon as any).action) {
-                                (icon as any).action()
-                            } else {
-                                if (icon.id === "esp32-flasher") {
-                                    openWindow(icon.id, icon.label, icon.content, icon.icon, { width: "95vw", height: "90vh" })
-                                } else {
-                                    openWindow(icon.id, icon.label, icon.content, icon.icon)
-                                }
-                            }
-                        }}
-                    />
-                ))}
+                {!isAppsLoaded ? (
+                    // Skeleton Loader
+                    Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="flex flex-col items-center gap-2 p-2 w-[80px] animate-pulse">
+                            <div className="w-12 h-12 rounded bg-white/10" />
+                            <div className="w-16 h-3 rounded bg-white/10" />
+                        </div>
+                    ))
+                ) : (
+                    installedApps.map((app) => (
+                        <DesktopIcon
+                            key={app.id}
+                            label={app.title}
+                            icon={<AppIcon iconName={app.iconName} size={42} className="text-white drop-shadow-md" />}
+                            onDoubleClick={() => {
+                                openWindow(app.id, app.title, app.component, <AppIcon iconName={app.iconName} size={18} />, { width: app.width, height: app.height })
+                            }}
+                        />
+                    ))
+                )}
             </div>
 
             {/* Windows */}
             <div className="absolute inset-0 z-10 pointer-events-none">
-                {windows.map((win) => (
-                    <div key={win.id} className="pointer-events-auto">
-                        <WindowFrame {...win}>{win.content}</WindowFrame>
-                    </div>
-                ))}
+                <AnimatePresence mode="popLayout">
+                    {windows.map((win) => (
+                        <div key={win.id} className="pointer-events-auto">
+                            <WindowFrame {...win}>{win.content}</WindowFrame>
+                        </div>
+                    ))}
+                </AnimatePresence>
             </div>
 
             <Taskbar />

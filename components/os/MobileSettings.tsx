@@ -23,6 +23,7 @@ import { useBluetooth, BluetoothDeviceInfo } from "@/hooks/useBluetooth"
 import { useNotifications } from "@/hooks/useNotifications"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
+import { useWindowManager } from "@/components/os/WindowManager"
 
 interface MobileSettingsProps {
     isOpen: boolean
@@ -36,6 +37,7 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
     const { permission, requestPermission } = useNotifications()
     const [bluetoothEnabled, setBluetoothEnabled] = useState(true)
     const { theme, setTheme } = useTheme()
+    const { settings, updateSettings } = useWindowManager()
 
     // Mock previously paired devices if native getDevices is not available or empty
     useEffect(() => {
@@ -202,9 +204,60 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                 </div>
             </div>
 
+            <div className="space-y-4">
+                <h3 className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest px-2">Typography</h3>
+                <div className="grid grid-cols-1 gap-2">
+                    {[
+                        { id: 'geist', label: 'Geist Sans', font: 'var(--font-geist-sans)' },
+                        { id: 'inter', label: 'Inter', font: 'var(--font-inter)' },
+                        { id: 'roboto', label: 'Roboto', font: 'var(--font-roboto)' },
+                        { id: 'lato', label: 'Lato', font: 'var(--font-lato)' },
+                        { id: 'open-sans', label: 'Open Sans', font: 'var(--font-open-sans)' },
+                    ].map((f) => (
+                        <button
+                            key={f.id}
+                            onClick={() => updateSettings({ font: f.id })}
+                            className={cn(
+                                "flex items-center justify-between p-3 rounded-xl border transition-all active:scale-95",
+                                (settings.font || 'geist') === f.id
+                                    ? "bg-primary/10 border-primary text-primary"
+                                    : "bg-[var(--os-surface)] border-[var(--os-border)] text-zinc-400"
+                            )}
+                            style={{ fontFamily: f.font }}
+                        >
+                            <span className="text-sm">{f.label}</span>
+                            {(settings.font || 'geist') === f.id && <Check size={16} />}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                <h3 className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest px-2">Iconography</h3>
+                <div className="grid grid-cols-2 gap-3">
+                    {[
+                        { id: 'lucide', label: 'Lucide' },
+                        { id: 'material', label: 'Material' },
+                    ].map((i) => (
+                        <button
+                            key={i.id}
+                            onClick={() => updateSettings({ iconSet: i.id as any })}
+                            className={cn(
+                                "p-3 rounded-xl border text-center text-sm font-bold transition-all active:scale-95",
+                                (settings.iconSet || 'lucide') === i.id
+                                    ? "bg-primary/10 border-primary text-primary"
+                                    : "bg-[var(--os-surface)] border-[var(--os-border)] text-zinc-400"
+                            )}
+                        >
+                            {i.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center gap-3">
                 <Info size={16} className="text-primary" />
-                <p className="text-[10px] text-primary/80 leading-relaxed font-medium">Selected Theme: <span className="font-bold uppercase">{themeOptions.find(t => t.id === theme)?.label || theme}</span></p>
+                <p className="text-[10px] text-primary/80 leading-relaxed font-medium">Changes apply instantly across the system.</p>
             </div>
         </div>
     )

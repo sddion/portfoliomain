@@ -1,6 +1,8 @@
 "use client"
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react"
+import { useUserStore } from "@/hooks/use-user-store"
+import { INITIAL_APPS, AppWithComponent } from "@/data/apps"
 
 export interface WindowState {
     id: string
@@ -35,69 +37,87 @@ interface WindowContextType {
     logout: () => void
     showSnowfall: boolean
     toggleSnowfall: () => void
+    user: any
+    settings: any
+    updateSettings: (newSettings: any) => Promise<void>
+
+    // App Management
+    installedApps: AppWithComponent[]
+    allApps: AppWithComponent[]
+    installApp: (appId: string) => void
+    uninstallApp: (appId: string) => void
+    isAppInstalled: (appId: string) => boolean
+    isAppsLoaded: boolean
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined)
 
-const LoginExpiry = 24 * 60 * 60 * 1000 // 24 hours in ms
-
 export function WindowProvider({ children }: { children: ReactNode }) {
+    const { user, settings, updateSettings, loading: authLoading } = useUserStore()
     const [windows, setWindows] = useState<WindowState[]>([])
     const [activeWindowId, setActiveWindowId] = useState<string | null>(null)
-    const [isBooting, setBooting] = useState(false) // Boot handled by login now
+    const [isBooting, setBooting] = useState(false)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [maxZIndex, setMaxZIndex] = useState(10)
+    const [showSnowfall, setShowSnowfall] = useState(true)
+
+    // App State
+    const [installedIds, setInstalledIds] = useState<string[]>([])
+    const [isAppsLoaded, setIsAppsLoaded] = useState(false)
 
     useEffect(() => {
-        const storedLogin = localStorage.getItem("sddionOS_login")
-        if (storedLogin) {
-            const loginTime = parseInt(storedLogin)
-            if (Date.now() - loginTime < LoginExpiry) {
+        if (!authLoading && user) {
+            // Check if user was previously "logged in" to the OS UI
+            const storedLogin = localStorage.getItem("sddionOS_login")
+            if (storedLogin) {
                 setIsLoggedIn(true)
-                // If previously logged in, we skip the boot sequence for seamless refresh
-                // unless the user specifically wants it. For now, just set logged in.
-            } else {
-                localStorage.removeItem("sddionOS_login")
             }
         }
+    }, [authLoading, user])
+
+    // Load installed apps
+    useEffect(() => {
+        // Simulate a small delay for the skeleton effect if desired, or just load
+        const loadApps = () => {
+            const storedApps = localStorage.getItem("sddionOS_installed_apps")
+            if (storedApps) {
+                try {
+                    setInstalledIds(JSON.parse(storedApps))
+                } catch (e) {
+                    setInstalledIds(INITIAL_APPS.filter(a => a.isDefault).map(a => a.id))
+                }
+            } else {
+                setInstalledIds(INITIAL_APPS.filter(a => a.isDefault).map(a => a.id))
+            }
+            setIsAppsLoaded(true)
+        }
+
+        // Small delay to make sure skeleton is visible (optional, remove setTimeout for instant load)
+        setTimeout(loadApps, 500)
     }, [])
 
     const login = useCallback(() => {
         setIsLoggedIn(true)
-        setBooting(true) // Trigger boot on login
+        setBooting(true)
         localStorage.setItem("sddionOS_login", Date.now().toString())
     }, [])
 
     const logout = useCallback(() => {
         setIsLoggedIn(false)
-        setWindows([]) // Clear windows on logout
+        setWindows([])
         setBooting(false)
         localStorage.removeItem("sddionOS_login")
     }, [])
 
     const focusWindow = useCallback((id: string) => {
-        // Use a single setWindows call to handle both active ID and z-ordering
-        // to avoid nested state updates and unnecessary re-renders.
         setWindows((prevWindows) => {
-            const existing = prevWindows.find(w => w.id === id);
-
-            // If window doesn't exist or is already focused and opened, do nothing.
-            // We use a functional update for setActiveWindowId below.
-
-            let updatedWindows = prevWindows;
-
-            // Increment zIndex locally based on maxZIndex
-            // Note: We'll update maxZIndex separately if needed, but for focus we can just use the current top + 1.
             const currentMaxZ = Math.max(...prevWindows.map(w => w.zIndex), 10);
             const newZ = currentMaxZ + 1;
 
-            updatedWindows = prevWindows.map((w) =>
+            const updatedWindows = prevWindows.map((w) =>
                 w.id === id ? { ...w, zIndex: newZ, isMinimized: false } : w
             );
 
-            // Only update active ID if it changed
             setActiveWindowId(id);
-            setMaxZIndex(newZ);
 
             return updatedWindows;
         });
@@ -107,15 +127,13 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         setWindows((prev) => {
             const existing = prev.find((w) => w.id === id);
             if (existing) {
-                // If it exists, we update the content and options, then focus it.
                 setActiveWindowId(id);
-                setMaxZIndex((prevZ) => prevZ + 1);
 
                 return prev.map((w) =>
                     w.id === id
                         ? {
                             ...w,
-                            content: content, // Update content to catch prop changes (like initialUrl)
+                            content: content,
                             width: options?.width || w.width,
                             height: options?.height || w.height,
                             isMinimized: false,
@@ -141,7 +159,6 @@ export function WindowProvider({ children }: { children: ReactNode }) {
                 height: options?.height,
             };
 
-            setMaxZIndex(newZ);
             setActiveWindowId(id);
             return [...prev, newCtx];
         });
@@ -162,13 +179,57 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         setWindows((prev) =>
             prev.map((w) => (w.id === id ? { ...w, isMaximized: !w.isMaximized } : w))
         )
-        // focusWindow is now stable (no dependencies), so we can call it safely
         focusWindow(id)
     }, [focusWindow])
 
-    const [showSnowfall, setShowSnowfall] = useState(true)
-
     const toggleSnowfall = useCallback(() => setShowSnowfall(prev => !prev), [])
+
+    // App Management Implementation
+    const installApp = useCallback((appId: string) => {
+        setInstalledIds(prev => {
+            if (prev.includes(appId)) return prev
+            const newIds = [...prev, appId]
+            localStorage.setItem("sddionOS_installed_apps", JSON.stringify(newIds))
+            return newIds
+        })
+    }, [])
+
+    const uninstallApp = useCallback((appId: string) => {
+        // Check if app is protected
+        const appConfig = INITIAL_APPS.find(a => a.id === appId)
+        if (appConfig?.preventUninstall) {
+            return // Implicitly blocked
+        }
+
+        setInstalledIds(prev => {
+            const newIds = prev.filter(id => id !== appId)
+            localStorage.setItem("sddionOS_installed_apps", JSON.stringify(newIds))
+            return newIds
+        })
+        // Also close the window if it's open
+        closeWindow(appId)
+    }, [closeWindow])
+
+    const isAppInstalled = useCallback((appId: string) => {
+        return installedIds.includes(appId)
+    }, [installedIds])
+
+    const isRecruiter = settings?.isRecruiter === true
+
+    const filteredApps = React.useMemo(() => {
+        return INITIAL_APPS.filter(app => {
+            if (!app.roles) return true
+            if (isRecruiter) {
+                return true // Recruiter sees everything (including recruiter-only apps)
+            } else {
+                // Guest: Hide apps marked for recruiter
+                if (app.roles.includes('recruiter')) return false
+                return true
+            }
+        })
+    }, [isRecruiter])
+
+    const installedApps = filteredApps.filter(app => installedIds.includes(app.id))
 
     const value = React.useMemo(() => ({
         windows,
@@ -184,7 +245,16 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         showSnowfall,
-        toggleSnowfall
+        toggleSnowfall,
+        user,
+        settings,
+        updateSettings,
+        installedApps,
+        allApps: filteredApps,
+        installApp,
+        uninstallApp,
+        isAppInstalled,
+        isAppsLoaded
     }), [
         windows,
         openWindow,
@@ -198,7 +268,16 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         showSnowfall,
-        toggleSnowfall
+        toggleSnowfall,
+        user,
+        settings,
+        updateSettings,
+        installedApps,
+        filteredApps,
+        installApp,
+        uninstallApp,
+        isAppInstalled,
+        isAppsLoaded
     ])
 
     return (

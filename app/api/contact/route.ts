@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { redis } from "@/lib/Redis"
 
 // Server-side validation schema
 interface ContactFormData {
@@ -18,6 +19,22 @@ function sanitizeInput(input: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate Limiting
+    const ip = request.headers.get("x-forwarded-for") || "anonymous"
+    const rateLimitKey = `ratelimit:contact:${ip}`
+    const submissions = await redis.incr(rateLimitKey)
+    
+    if (submissions === 1) {
+      await redis.expire(rateLimitKey, 3600) // Reset after 1 hour
+    }
+    
+    if (submissions > 5) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again in an hour." },
+        { status: 429 }
+      )
+    }
+
     const body: ContactFormData = await request.json()
 
     // Server-side validation
@@ -40,11 +57,6 @@ export async function POST(request: NextRequest) {
     if (message.length < 10) {
       return NextResponse.json({ error: "Message must be at least 10 characters" }, { status: 400 })
     }
-
-    // Here you would typically:
-    // 1. Send email via service like SendGrid, Resend, or Nodemailer
-    // 2. Store in database
-    // 3. Send to notification service
 
     // For now, we'll just log and return success
     console.warn("Contact form submission:", { name, email, message })

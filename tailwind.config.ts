@@ -19,6 +19,10 @@ export default {
       animation: {
         shimmer: 'shimmer 2s infinite',
         progress: 'progress 2s ease-in-out forwards'
+      },
+      fontFamily: {
+        sans: ["var(--ui-font-sans)", "sans-serif"],
+        mono: ["var(--ui-font-mono)", "monospace"],
       }
     }
   }

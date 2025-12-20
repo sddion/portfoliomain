@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Wifi, Bluetooth, Battery, Moon, Sun, Plane, Settings, Bell, X, AlertCircle, Snowflake } from "lucide-react"
+import { Wifi, Bluetooth, Moon, Settings, Bell, Snowflake } from "lucide-react"
 import { format } from "date-fns"
 import { useNotifications } from "@/hooks/useNotifications"
 import { useGitHubActivity } from "@/hooks/useGitHubActivity"

@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Wifi, Bluetooth, Github, Activity, Signal, Smartphone } from "lucide-react"
+import { Bluetooth, Github, Activity, Smartphone } from "lucide-react"
 import { format } from "date-fns"
 import { BluetoothDeviceInfo } from "@/hooks/useBluetooth"
 import { useWindowManager } from "@/components/os/WindowManager"

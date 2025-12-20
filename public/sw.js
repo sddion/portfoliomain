@@ -1,5 +1,5 @@
 // increment version on each deploy 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v20251220-232344';
 const CACHE_NAME = `sddionOS-cache-${CACHE_VERSION}`;
 
 // Only cache critical static assets
@@ -43,7 +43,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch - Network first, then cache (for fresh content)
+// Fetch - Cache First for static assets, Network First for others
 self.addEventListener('fetch', (event) => {
     const request = event.request;
 
@@ -58,33 +58,56 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    event.respondWith(
-        // Try network first
-        fetch(request)
-            .then((networkResponse) => {
-                // If successful, cache and return
-                if (networkResponse && networkResponse.status === 200) {
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(request, responseClone);
-                    });
+    // Checking if it's one of our static assets
+    const isStaticAsset = ASSETS_TO_CACHE.some(asset => url.pathname === asset);
+
+    if (isStaticAsset) {
+        // Cache First Strategy for static assets
+        event.respondWith(
+            caches.match(request).then((cachedResponse) => {
+                if (cachedResponse) {
+                    return cachedResponse;
                 }
-                return networkResponse;
-            })
-            .catch(() => {
-                // Network failed, try cache
-                return caches.match(request).then((cachedResponse) => {
-                    if (cachedResponse) {
-                        return cachedResponse;
+                return fetch(request).then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(request, responseClone);
+                        });
                     }
-                    // Return offline page or error for navigation requests
-                    if (request.mode === 'navigate') {
-                        return caches.match('/');
-                    }
-                    return new Response('Offline', { status: 503 });
+                    return networkResponse;
                 });
             })
-    );
+        );
+    } else {
+        // Network First Strategy for everything else (pages, dynamic js)
+        event.respondWith(
+            fetch(request)
+                .then((networkResponse) => {
+                    // If successful, cache and return
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(request, responseClone);
+                        });
+                    }
+                    return networkResponse;
+                })
+                .catch(() => {
+                    // Network failed, try cache
+                    return caches.match(request).then((cachedResponse) => {
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+                        // Return offline page for navigation requests
+                        if (request.mode === 'navigate') {
+                            return caches.match('/');
+                        }
+                        return new Response('Offline', { status: 503 });
+                    });
+                })
+        );
+    }
 });
 
 // Listen for messages to skip waiting
