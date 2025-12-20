@@ -260,7 +260,7 @@ export function LoginScreen() {
                                     </div>
                                     <input
                                         type="password"
-                                        placeholder="Password"
+                                        placeholder="Password : guest "
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className="w-full bg-[var(--os-surface)]/80 border border-[var(--os-border)] rounded px-10 py-3 text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]/50"

@@ -71,10 +71,16 @@ export const metadata: Metadata = {
     url: "https://sddion.vercel.app/",
     images: [
       {
-        url: "https://i.ibb.co/Zzs386fk/Screenshot-2025-10-11-at-18-07-49-Sanju-Full-Stack-Developer-Security-Engineer.png",
+        url: "https://i.postimg.cc/SKc3q4mY/preview.png",
         width: 1200,
         height: 630,
         alt: "SanjuOS - ESP32 Web Flasher and Developer Tools Preview",
+      },
+      {
+        url: "https://postimg.cc/DWyBdtJ7",
+        width: 1200,
+        height: 630,
+        alt: "SanjuOS - ESP32 Web Flasher and Developer Tools Preview (Fallback)",
       },
     ],
   },
@@ -82,7 +88,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SanjuOS | Free ESP32 Flasher & Image to Byte Array Converter",
     description: "Free online tools: Flash ESP32/ESP8266 from browser, convert images to Arduino byte arrays. No installation required.",
-    images: ["https://i.ibb.co/Zzs386fk/Screenshot-2025-10-11-at-18-07-49-Sanju-Full-Stack-Developer-Security-Engineer.png"],
+    images: ["https://i.postimg.cc/SKc3q4mY/preview.png"],
     creator: "@0xd3ds3c",
   },
   verification: {
