@@ -10,8 +10,6 @@ export interface UserSettings {
   dockPosition?: 'bottom' | 'top' | 'left' | 'right'
   isRecruiter?: boolean
   lastSeen?: string
-  font?: string
-  iconSet?: 'lucide' | 'material'
   ide?: IDESettings
   [key: string]: any
 }
@@ -19,8 +17,6 @@ export interface UserSettings {
 export function useUserStore() {
   const [user, setUser] = useState<User | null>(null)
   const [settings, setSettings] = useState<UserSettings>({ 
-    iconSet: 'lucide', 
-    font: 'geist',
     ide: {
         board: "ESP32 Dev Module",
         baudRate: 115200,

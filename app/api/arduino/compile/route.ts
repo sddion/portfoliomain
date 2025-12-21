@@ -218,15 +218,17 @@ export async function POST(request: NextRequest) {
             }, { status: 400 })
         }
 
-        // Try real compilation service first
+        // Try compilation service
         if (COMPILE_SERVICE_URL) {
             const result = await compileViaService(body)
             return NextResponse.json(result)
         }
 
-        // Fallback to syntax validation (no real binary)
-        const result = mockCompile(body)
-        return NextResponse.json(result)
+        // No service configured
+        return NextResponse.json({
+            success: false,
+            errors: ['Compilation service not configured. Set COMPILE_SERVICE_URL environment variable.']
+        }, { status: 503 })
 
     } catch (error: any) {
         console.error('Compile API Error:', error)
@@ -257,7 +259,6 @@ export async function GET() {
     return NextResponse.json({
         serviceConfigured,
         serviceOnline,
-        mode: serviceConfigured && serviceOnline ? 'real' : 'mock',
         supportedBoards: Object.keys(BOARD_FQBN_MAP)
     })
 }

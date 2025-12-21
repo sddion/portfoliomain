@@ -73,7 +73,7 @@ export function Desktop() {
                         <DesktopIcon
                             key={app.id}
                             label={app.title}
-                            icon={<AppIcon iconName={app.iconName} size={42} className="text-[var(--foreground)] drop-shadow-md" />}
+                            icon={<AppIcon iconName={app.iconName} size={42} className="text-[var(--primary)] drop-shadow-md" />}
                             onDoubleClick={() => {
                                 requestAnimationFrame(() => {
                                     openWindow(app.id, app.title, app.component, <AppIcon iconName={app.iconName} size={18} />, { width: app.width, height: app.height })

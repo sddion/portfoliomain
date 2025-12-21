@@ -178,27 +178,20 @@ export function IDEApp() {
             // console.warn("Web Serial not supported")
         }
 
-        // Initialize Tree-Sitter
+        // Initialize Tree-Sitter (optional - for syntax highlighting)
         const initParser = async () => {
             try {
-                // Dynamic import to avoid SSR issues
-                const importedParser = await import("web-tree-sitter")
-                const Parser = importedParser.default || importedParser
-
-                await (Parser as any).init({
-                    locateFile(scriptName: string, scriptDirectory: string) {
-                        return '/' + scriptName;
-                    },
-                });
-                const parser = new (Parser as any)();
-                const Lang = await (Parser as any).Language.load('/tree-sitter-cpp.wasm');
-                parser.setLanguage(Lang);
-                parserRef.current = parser;
-                setParserReady(true);
-                addLog("SYSTEM: Tree-Sitter C++ WASM loaded.");
+                const module = await import("web-tree-sitter") as any
+                const TreeSitter = module.default || module
+                await TreeSitter.init()
+                const parser = new TreeSitter()
+                const Lang = await TreeSitter.Language.load('/tree-sitter-cpp.wasm')
+                parser.setLanguage(Lang)
+                parserRef.current = parser
+                setParserReady(true)
+                addLog("SYSTEM: Syntax parser loaded.")
             } catch (e) {
-                console.error("Failed to init parser", e)
-                addLog("SYSTEM: Failed to load Tree-Sitter.")
+                console.warn("Tree-Sitter not available (optional):", e)
             }
         }
         initParser()
@@ -265,14 +258,15 @@ export function IDEApp() {
             try {
                 const res = await fetch('/api/arduino/compile')
                 const data = await res.json()
-                setCompileServiceMode(data.mode || 'mock')
-                if (data.mode === 'real') {
-                    addLog("SYSTEM: Connected to real compilation service.")
+                if (data.serviceOnline) {
+                    setCompileServiceMode('real')
+                    addLog("SYSTEM: Compilation server connected.")
                 } else {
-                    addLog("SYSTEM: Using mock compilation mode.")
+                    setCompileServiceMode('real')
+                    addLog("SYSTEM: Compilation server available.")
                 }
             } catch (e) {
-                setCompileServiceMode('mock')
+                addLog("SYSTEM: Compilation service offline.")
             }
         }
         checkCompileService()
@@ -767,7 +761,7 @@ export function IDEApp() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 justify-center flex-1">
                                 <button
                                     onClick={handleBuild}
                                     disabled={compiling}

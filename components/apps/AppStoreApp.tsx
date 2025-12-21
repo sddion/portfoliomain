@@ -146,8 +146,8 @@ export function AppStoreApp() {
 
                     {activeTab === "discover" && !searchQuery && <FeaturedHero />}
 
-                    {/* App Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                    {/* App Grid - Responsive with minmax */}
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3 md:gap-6">
                         {filteredApps.map(app => (
                             <AppCard
                                 key={app.id}
