@@ -6,11 +6,12 @@ import { useWindowManager } from "@/components/os/WindowManager"
 interface AdUnitProps {
     slot: string
     format?: "auto" | "fluid" | "rectangle"
+    layout?: string
     style?: React.CSSProperties
     className?: string
 }
 
-export function AdUnit({ slot, format = "auto", style, className }: AdUnitProps) {
+export function AdUnit({ slot, format = "auto", layout, style, className }: AdUnitProps) {
     const { isLoggedIn, isBooting } = useWindowManager()
 
     useEffect(() => {
@@ -36,6 +37,7 @@ export function AdUnit({ slot, format = "auto", style, className }: AdUnitProps)
                 data-ad-client="ca-pub-5565716152868775"
                 data-ad-slot={slot}
                 data-ad-format={format}
+                {...(layout ? { "data-ad-layout": layout } : {})}
                 data-full-width-responsive="true"
             />
         </div>

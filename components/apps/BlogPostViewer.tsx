@@ -1,8 +1,9 @@
 "use client"
 
 import React from "react"
-import { ArrowLeft, Calendar, User, Tag, Clock, Share2, Bookmark, ChevronRight, AlertTriangle, Info, Lightbulb, AlertCircle, Terminal as TerminalIcon, CheckCircle } from "lucide-react"
+import { ArrowLeft, Calendar, User, Clock, Share2, Bookmark, ChevronRight, AlertTriangle, Info, Lightbulb, AlertCircle, Terminal as TerminalIcon, CheckCircle } from "lucide-react"
 import { blogPosts } from "@/data/blog"
+import { AdUnit } from "@/components/os/AdUnit"
 
 interface ContentBlock {
     type: string
@@ -216,7 +217,21 @@ export function BlogPostViewer({ postId, onNavigate }: BlogPostViewerProps) {
 
                 {/* Content Blocks */}
                 <div className="space-y-6">
-                    {post.contentBlocks?.map((block, index) => renderBlock(block, index))}
+                    {post.contentBlocks?.map((block, index) => (
+                        <React.Fragment key={index}>
+                            {renderBlock(block, index)}
+                            {/* Insert Ad after every 3 blocks, or if it's the last block and there are enough blocks */}
+                            {(index + 1) % 3 === 0 && index !== post.contentBlocks!.length - 1 && (
+                                <AdUnit
+                                    slot="5381960161"
+                                    layout="in-article"
+                                    format="fluid"
+                                    className="my-8"
+                                    style={{ textAlign: 'center' }}
+                                />
+                            )}
+                        </React.Fragment>
+                    ))}
                 </div>
 
                 {/* Footer */}

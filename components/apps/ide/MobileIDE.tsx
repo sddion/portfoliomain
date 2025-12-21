@@ -76,7 +76,6 @@ export function MobileIDE({
             <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-[#121212]/80 backdrop-blur-xl sticky top-0 z-20">
                 <div className="flex flex-col">
                     <h1 className="text-sm font-bold tracking-tight text-white/90">Studio Project</h1>
-                    <span className="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-semibold">Android Style</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <button className="p-2.5 text-zinc-400 hover:text-white transition-colors active:bg-white/5 rounded-full">

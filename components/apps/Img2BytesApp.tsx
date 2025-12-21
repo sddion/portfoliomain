@@ -697,7 +697,7 @@ export function Img2BytesApp() {
                     {mobileTab === 'code' && <CodeContent />}
                 </div>
 
-                {/* Bottom Tab Bar - Android Style */}
+                {/* Bottom Tab Bar  */}
                 <div className="shrink-0 bg-slate-900/95 border-t border-slate-700/50 backdrop-blur-xl">
                     <div className="flex">
                         {[

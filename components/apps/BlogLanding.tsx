@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import { Book, Calendar, User, Tag, ArrowLeft, Search, ChevronRight, BookOpen, Star, FileText } from "lucide-react"
 import { blogPosts } from "@/data/blog"
+import { AdUnit } from "@/components/os/AdUnit"
 
 interface BlogPost {
     id: string
@@ -158,34 +159,46 @@ export function BlogLanding({ onNavigate, currentPath }: BlogLandingProps) {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredPosts.map((post, idx) => (
-                        <button
-                            key={post.id}
-                            onClick={() => onNavigate(`sddionOS://blog/${post.id}`)}
-                            className={`group bg-white/[0.03] border rounded-2xl overflow-hidden hover:border-primary/20 hover:bg-white/[0.05] transition-all text-left ${isActivePost(post.id) ? 'border-primary/40 ring-1 ring-primary/20' : 'border-white/5'}`}
-                        >
-                            <div className="aspect-video bg-black/20 relative overflow-hidden">
-                                <div
-                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                                    style={{ backgroundImage: `url(${post.featuredImage})` }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <span className="absolute bottom-3 left-3 px-2 py-1 bg-black/40 backdrop-blur-md rounded-lg text-[10px] font-bold text-white/80">
-                                    {post.category}
-                                </span>
-                            </div>
-                            <div className="p-5">
-                                <h3 className="text-base font-bold mb-2 group-hover:text-primary transition-colors leading-tight line-clamp-2">
-                                    {post.title}
-                                </h3>
-                                <p className="text-xs text-white/40 line-clamp-2 mb-4">{post.description}</p>
-                                <div className="flex items-center justify-between text-[10px] text-white/30">
-                                    <span>{new Date(post.date).toLocaleDateString()}</span>
-                                    <span className="flex items-center gap-1 text-primary font-bold">
-                                        Read <ChevronRight size={12} />
+                        <React.Fragment key={post.id}>
+                            <button
+                                onClick={() => onNavigate(`sddionOS://blog/${post.id}`)}
+                                className={`group bg-white/[0.03] border rounded-2xl overflow-hidden hover:border-primary/20 hover:bg-white/[0.05] transition-all text-left ${isActivePost(post.id) ? 'border-primary/40 ring-1 ring-primary/20' : 'border-white/5'}`}
+                            >
+                                <div className="aspect-video bg-black/20 relative overflow-hidden">
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                                        style={{ backgroundImage: `url(${post.featuredImage})` }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                    <span className="absolute bottom-3 left-3 px-2 py-1 bg-black/40 backdrop-blur-md rounded-lg text-[10px] font-bold text-white/80">
+                                        {post.category}
                                     </span>
                                 </div>
-                            </div>
-                        </button>
+                                <div className="p-5">
+                                    <h3 className="text-base font-bold mb-2 group-hover:text-primary transition-colors leading-tight line-clamp-2">
+                                        {post.title}
+                                    </h3>
+                                    <p className="text-xs text-white/40 line-clamp-2 mb-4">{post.description}</p>
+                                    <div className="flex items-center justify-between text-[10px] text-white/30">
+                                        <span>{new Date(post.date).toLocaleDateString()}</span>
+                                        <span className="flex items-center gap-1 text-primary font-bold">
+                                            Read <ChevronRight size={12} />
+                                        </span>
+                                    </div>
+                                </div>
+                            </button>
+                            {/* Insert Ad after 1st and 4th items */}
+                            {(idx === 0 || idx === 3) && idx < filteredPosts.length - 1 && (
+                                <div className="md:col-span-2 lg:col-span-1">
+                                    <AdUnit
+                                        slot="5381960161"
+                                        format="fluid"
+                                        layout="in-article"
+                                        className="h-full"
+                                    />
+                                </div>
+                            )}
+                        </React.Fragment>
                     ))}
                 </div>
 

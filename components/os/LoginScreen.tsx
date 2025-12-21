@@ -374,7 +374,7 @@ export function LoginScreen() {
                 <div className={`absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-all duration-500 ${step === 'password' ? 'backdrop-blur-xl bg-black/60' : ''}`} />
             </div>
 
-            {/* Error Notification Toast - Android Style */}
+            {/* Error Notification Toast*/}
             <AnimatePresence>
                 {error && (
                     <motion.div
