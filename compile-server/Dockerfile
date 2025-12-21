@@ -1,20 +1,7 @@
-FROM debian:bookworm-slim
+FROM arduino/arduino-cli:latest AS builder
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    ca-certificates \
-    nodejs \
-    npm \
-    python3 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install arduino-cli
-RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | bash && \
-    mv bin/arduino-cli /usr/local/bin/ && \
-    rm -rf bin
-
-# Install board cores
+# Install board cores as root
+USER root
 RUN arduino-cli core update-index && \
     arduino-cli core install arduino:avr && \
     arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json && \
@@ -25,6 +12,16 @@ RUN arduino-cli core update-index && \
 
 # Install common libraries
 RUN arduino-cli lib install WiFi ArduinoJson Adafruit_NeoPixel FastLED DHT
+
+# Use Node image for runtime
+FROM node:20-alpine
+
+# Install bash for shell scripts
+RUN apk add --no-cache bash curl
+
+# Copy arduino-cli and cores from builder
+COPY --from=builder /usr/local/bin/arduino-cli /usr/local/bin/arduino-cli
+COPY --from=builder /root/.arduino15 /root/.arduino15
 
 WORKDIR /app
 
