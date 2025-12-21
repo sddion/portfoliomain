@@ -42,13 +42,7 @@ void loop() {
   delay(1000);
 }`
 
-const LIBS: ArduinoLibrary[] = [
-    { name: "AccelStepper", version: "1.64.0", author: "Mike McCauley", description: "Multi-step motor library.", versions: ["1.64.0", "1.63.0", "1.61.0"], url: "https://www.arduinolibraries.info/libraries/accel-stepper" },
-    { name: "ArduinoJson", version: "7.0.4", author: "Benoit Blanchon", description: "Most popular JSON library for Arduino.", versions: ["7.0.4", "6.21.3", "5.13.5"], url: "https://www.arduinolibraries.info/libraries/arduino-json" },
-    { name: "AceButton", version: "1.10.1", author: "Brian Park", description: "Simplified button handling.", versions: ["1.10.1", "1.9.0"], url: "https://www.arduinolibraries.info/libraries/ace-button" },
-    { name: "AUnit", version: "1.7.1", author: "Brian Park", description: "Unit testing for Arduino.", versions: ["1.7.1", "1.6.0"], url: "https://www.arduinolibraries.info/libraries/a-unit" },
-    { name: "aREST", version: "2.9.0", author: "Marco Schwartz", description: "RESTful API for Arduino.", versions: ["2.9.0", "2.8.5"], url: "https://www.arduinolibraries.info/libraries/a-rest" }
-]
+// Libraries are now fetched dynamically from the API
 
 export function IDEApp() {
     // Core State
@@ -88,10 +82,25 @@ export function IDEApp() {
         "SYSTEM: Tree-Sitter C++ WASM loading...",
     ])
     const [buildErrors, setBuildErrors] = useState<string[]>([])
+    const [buildWarnings, setBuildWarnings] = useState<string[]>([])
     const [isSerialConnected, setIsSerialConnected] = useState(false)
     const [flashing, setFlashing] = useState(false)
     const [flashProgress, setFlashProgress] = useState(0)
     const [platforms, setPlatforms] = useState<BoardPlatform[]>([])
+
+    // Binary data from compilation
+    const [compiledBinary, setCompiledBinary] = useState<string | null>(null)
+    const [binarySize, setBinarySize] = useState<number>(0)
+
+    // Libraries - fetched from API
+    const [libraries, setLibraries] = useState<ArduinoLibrary[]>([])
+    const [installedLibraries, setInstalledLibraries] = useState<string[]>([])
+
+    // Compilation service status
+    const [compileServiceMode, setCompileServiceMode] = useState<'real' | 'mock'>('mock')
+
+    // Git authentication
+    const [gitToken, setGitToken] = useState<string>('')
 
     // 1. Initialize useRef
     const parserRef = useRef<Parser | null>(null)
@@ -212,6 +221,60 @@ export function IDEApp() {
         fetchBoards()
     }, [])
 
+    // Fetch libraries from API
+    useEffect(() => {
+        async function fetchLibraries() {
+            try {
+                const res = await fetch('/api/arduino/libraries')
+                const data = await res.json()
+                if (data.libraries) {
+                    // Transform to match ArduinoLibrary interface
+                    const libs: ArduinoLibrary[] = data.libraries.slice(0, 100).map((lib: any) => ({
+                        name: lib.name,
+                        version: lib.version,
+                        author: lib.author || 'Unknown',
+                        description: lib.description || 'No description',
+                        versions: [lib.version], // API returns latest only
+                        url: lib.url || `https://www.arduinolibraries.info/libraries/${lib.name.toLowerCase().replace(/ /g, '-')}`
+                    }))
+                    setLibraries(libs)
+                    addLog(`SYSTEM: Loaded ${libs.length} libraries from Arduino index.`)
+                }
+            } catch (e) {
+                console.error("Failed to fetch libraries", e)
+                addLog("WARN: Failed to load library index.")
+            }
+        }
+        fetchLibraries()
+
+        // Load installed libraries from localStorage
+        const savedInstalled = localStorage.getItem("sddionOS_installed_libs")
+        if (savedInstalled) {
+            try {
+                setInstalledLibraries(JSON.parse(savedInstalled))
+            } catch (e) { console.error(e) }
+        }
+    }, [])
+
+    // Check compilation service status
+    useEffect(() => {
+        async function checkCompileService() {
+            try {
+                const res = await fetch('/api/arduino/compile')
+                const data = await res.json()
+                setCompileServiceMode(data.mode || 'mock')
+                if (data.mode === 'real') {
+                    addLog("SYSTEM: Connected to real compilation service.")
+                } else {
+                    addLog("SYSTEM: Using mock compilation mode.")
+                }
+            } catch (e) {
+                setCompileServiceMode('mock')
+            }
+        }
+        checkCompileService()
+    }, [])
+
     useEffect(() => {
         const saved = localStorage.getItem("sddionOS_studio_files")
         if (saved) {
@@ -222,6 +285,12 @@ export function IDEApp() {
             const initialFile: IDEFile = { id: "main", name: "main.ino", content: DEFAULT_CODE, isOpen: true, isModified: false }
             setFiles([initialFile])
             setActiveFileId("main")
+        }
+
+        // Load saved Git token
+        const savedToken = localStorage.getItem("sddionOS_git_token")
+        if (savedToken) {
+            setGitToken(savedToken)
         }
     }, [])
 
@@ -338,17 +407,34 @@ export function IDEApp() {
         }
     }
 
-    const handleGitPush = async () => {
+    const handleGitPush = async (token?: string) => {
+        const authToken = token || gitToken
+
+        if (!authToken) {
+            // Prompt user for token
+            const inputToken = prompt("Enter your GitHub/GitLab Personal Access Token:")
+            if (!inputToken) {
+                addLog("GIT ERROR: Push cancelled - no token provided")
+                return
+            }
+            setGitToken(inputToken)
+            // Store token in localStorage for convenience (consider encryption for production)
+            localStorage.setItem("sddionOS_git_token", inputToken)
+            return handleGitPush(inputToken)
+        }
+
         addLog("GIT: Pushing to remote...")
         try {
-            // Token would strictly be needed here. For now we try without or mock?
-            // Real implementation needs a token prompt.
-            // We'll throw/catch to show the flow.
-            throw new Error("Auth token required (Mock: Feature requires Token UI)")
-            // await GitService.push(token)
-            // addLog("GIT: Push successful.")
+            await GitService.push(authToken)
+            addLog("GIT: Push successful!")
         } catch (e: any) {
             addLog(`GIT ERROR: ${e.message}`)
+            // Clear token if auth failed
+            if (e.message?.includes('401') || e.message?.includes('auth') || e.message?.includes('credential')) {
+                setGitToken('')
+                localStorage.removeItem("sddionOS_git_token")
+                addLog("GIT: Token cleared - please try again with valid credentials")
+            }
         }
     }
 
@@ -395,48 +481,80 @@ export function IDEApp() {
     const handleBuild = async () => {
         setCompiling(true)
         setStatus("building")
+        setCompiledBinary(null)
+        setBinarySize(0)
+        setBuildErrors([])
+        setBuildWarnings([])
         addLog("BUILD: Starting compilation...")
+        addLog(`BUILD: Board: ${settings.board}`)
 
-        // Real syntax check using Tree-Sitter
         if (!activeFile?.content) {
+            addLog("BUILD ERROR: No file content to compile")
             setCompiling(false)
+            setStatus("error")
             return
         }
 
-        await new Promise(r => setTimeout(r, 500)) // Minimal mock delay for UI feel
+        try {
+            // Call the real compilation API
+            const response = await fetch('/api/arduino/compile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    code: activeFile.content,
+                    board: settings.board,
+                    libraries: installedLibraries,
+                    verbose: settings.verbose
+                })
+            })
 
-        let errors: string[] = []
-        if (parserRef.current) {
-            errors = validateCode(activeFile.content)
-        } else {
-            addLog("WARN: Parser not ready, skipping syntax check.")
-        }
+            const result = await response.json()
 
-        if (errors.length > 0) {
+            // Log compilation output
+            if (result.output) {
+                result.output.forEach((line: string) => addLog(`BUILD: ${line}`))
+            }
+
+            if (result.success) {
+                setCompiledBinary(result.binary)
+                setBinarySize(result.size || 0)
+                setBuildStatus("success")
+                setStatus("success")
+                setBuildErrors([])
+                setBuildWarnings(result.warnings || [])
+                addLog(`BUILD: Success! Binary size: ${Math.round((result.size || 0) / 1024)}KB`)
+
+                if (result.warnings && result.warnings.length > 0) {
+                    addLog(`BUILD: ${result.warnings.length} warning(s)`)
+                }
+            } else {
+                setBuildStatus("error")
+                setStatus("error")
+                setBuildErrors(result.errors || ['Unknown compilation error'])
+                setTerminalTab("problems")
+                addLog(`BUILD: Failed with ${(result.errors || []).length} error(s)`)
+            }
+        } catch (error: any) {
+            console.error('Compilation error:', error)
             setBuildStatus("error")
             setStatus("error")
-            setBuildErrors(errors)
-            setTerminalTab("problems")
-            addLog(`BUILD: Failed with ${errors.length} errors.`)
-        } else {
-            setBuildStatus("success")
-            setStatus("success")
-            setBuildErrors([])
-            // Estimate binary size for fun
-            const size = Math.round(activeFile.content.length * 1.5 + 200000)
-            addLog(`BUILD: Success! Binary size: ${Math.round(size / 1024)}KB`)
+            setBuildErrors([`Network error: ${error.message}`])
+            addLog(`BUILD ERROR: ${error.message}`)
+        } finally {
+            setCompiling(false)
         }
-        setCompiling(false)
     }
 
     const handleFlash = async () => {
-        // If "building" logic fails (mock), don't proceed.
-        if (buildStatus !== 'success') {
-            // For now, we allow flashing without "build" if it's just a test, 
-            // but strictly speaking we'd want a binary. 
-            // We'll assume a dummy binary for the handshake test.
+        // Check if we have a compiled binary
+        if (!compiledBinary) {
+            addLog("FLASH: No compiled binary. Building first...")
             await handleBuild()
-            // if (buildStatus === 'error') return // Proceed anyway to test connection for now
+            // Re-check after build
+            if (!compiledBinary && buildStatus !== 'success') {
+                addLog("FLASH ERROR: Build failed. Cannot flash without binary.")
+                return
+            }
         }
 
         if (!port || !transport) {
@@ -445,6 +563,7 @@ export function IDEApp() {
         }
 
         setFlashing(true)
+        setFlashProgress(0)
         addLog("FLASH: Initializing ESP Loader...")
 
         try {
@@ -463,17 +582,65 @@ export function IDEApp() {
                 terminal
             } as any)
 
-            addLog("FLASH: Reseting into bootloader...")
-            setFlashProgress(10) // Mock progress
+            addLog("FLASH: Resetting into bootloader...")
+            setFlashProgress(5)
+
             await loader.main('default_reset')
-            setFlashProgress(50) // Mock progress
-
-            // Note: In a real app, here we would pass the 'file' content (compiled binary) to loader.write_flash()
-            // Since we don't have a backend compiler, we stop at handshake success.
+            setFlashProgress(15)
             addLog("FLASH: Chip detected! Handshake successful.")
-            addLog("FLASH: (Skipping write_flash as no binary is available)")
 
+            // Check if we have a real binary (not mock)
+            if (compiledBinary && !compiledBinary.startsWith('TU9DS')) { // 'MOCK' in base64
+                addLog("FLASH: Writing firmware to device...")
+
+                // Decode base64 binary
+                const binaryString = atob(compiledBinary)
+                const binaryData = new Uint8Array(binaryString.length)
+                for (let i = 0; i < binaryString.length; i++) {
+                    binaryData[i] = binaryString.charCodeAt(i)
+                }
+
+                // Determine flash offset based on board type
+                const isESP32 = settings.board.toLowerCase().includes('esp32')
+                const flashOffset = isESP32 ? 0x10000 : 0x0 // ESP32 app starts at 0x10000
+
+                addLog(`FLASH: Writing ${binaryData.length} bytes at offset 0x${flashOffset.toString(16)}...`)
+
+                // Flash the binary with progress callback
+                await (loader as any).writeFlash({
+                    fileArray: [{ data: binaryData, address: flashOffset }],
+                    flashSize: 'keep',
+                    flashMode: 'keep',
+                    flashFreq: 'keep',
+                    eraseAll: false,
+                    compress: true,
+                    reportProgress: (fileIndex: number, written: number, total: number) => {
+                        const progress = 15 + Math.round((written / total) * 80)
+                        setFlashProgress(progress)
+                        if (written % 10000 < 1000) { // Log every ~10KB
+                            addLog(`FLASH: ${Math.round(written / 1024)}KB / ${Math.round(total / 1024)}KB`)
+                        }
+                    }
+                } as any)
+
+                setFlashProgress(95)
+                addLog("FLASH: Write complete!")
+            } else {
+                addLog("FLASH: Mock binary detected - skipping actual flash")
+                addLog("FLASH: (Configure ARDUINO_COMPILE_SERVICE_URL for real compilation)")
+                setFlashProgress(50)
+            }
+
+            // Hard reset to run the new firmware
+            addLog("FLASH: Resetting device...")
+            await (loader as any).hardReset()
+            setFlashProgress(100)
+
+            addLog("FLASH: Complete! Device is running new firmware.")
+
+            // Reconnect serial for monitoring
             await transport.disconnect()
+            await new Promise(r => setTimeout(r, 1000)) // Wait for device to boot
             await transport.connect(settings.baudRate)
             setIsSerialConnected(true)
 
@@ -516,7 +683,7 @@ export function IDEApp() {
                                 settings={settings}
                                 onUpdateSettings={updateSettings}
                                 sidebarWidth={256}
-                                libraries={LIBS}
+                                libraries={libraries}
                                 platforms={platforms}
                                 onCommit={handleCommit}
                                 onGitInit={handleGitInit}

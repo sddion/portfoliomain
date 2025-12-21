@@ -124,7 +124,7 @@ export async function GET() {
                      version: p.version, // Ideally this should be the latest
                      versions: p.versions.sort().reverse(), // Simple sort, reverse for latest first
                      architecture: p.architecture,
-                     installed: p.name.includes("AVR") || p.name.includes("ESP32"), // Mock default install
+                     installed: false, // Installation status managed by frontend state
                      description: `Support for ${p.architecture.toUpperCase()} boards.`, // Simplified desc
                      boards: p.boards
                  };
