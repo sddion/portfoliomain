@@ -3,13 +3,13 @@ import {
     ChevronRight, ChevronDown, FileCode, Folder, Hash,
     MoreHorizontal, Search, FilePlus, FolderPlus, Trash2,
     Settings, Activity, Monitor, Type, AlignLeft, List, Minimize, Terminal as TerminalIcon,
-    GitGraph, Check, Plus, X
+    GitGraph, Check, Plus, X, Minus
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { IDEFile, IDESettings, ArduinoLibrary, BoardPlatform } from "./types"
 
 interface IDESidebarProps {
-    activeTab: "explorer" | "libraries" | "git" | "settings" | "boards"
+    activeTab: "explorer" | "libraries" | "git" | "settings" | "boards" | "tools"
     files: IDEFile[]
     activeFileId: string | null
     onFileClick: (id: string) => void
@@ -76,6 +76,10 @@ export function IDESidebar({
             onPull={onGitPull}
             onRemote={onGitRemote}
         />
+    }
+
+    if (activeTab === "tools") {
+        return <ToolsPanel />
     }
 
     if (activeTab === "explorer") {
@@ -358,11 +362,64 @@ function GitPanel({
     onPull?: () => void,
     onRemote?: (url: string) => void
 }) {
-    const modifiedFiles = files.filter(f => f.isModified)
     const [message, setMessage] = useState("")
     const [isInitialized, setIsInitialized] = useState(false)
     const [remoteUrl, setRemoteUrl] = useState("")
     const [showRemoteInput, setShowRemoteInput] = useState(false)
+    const [showTokenInput, setShowTokenInput] = useState(false)
+    const [authToken, setAuthToken] = useState("")
+    const [currentBranch, setCurrentBranch] = useState("main")
+    const [stagedFiles, setStagedFiles] = useState<string[]>([])
+    const [expandStaged, setExpandStaged] = useState(true)
+    const [expandChanges, setExpandChanges] = useState(true)
+
+    // Files that are modified but not staged
+    const modifiedFiles = files.filter(f => f.isModified)
+    const unstagedFiles = modifiedFiles.filter(f => !stagedFiles.includes(f.id))
+    const stagedFileObjects = modifiedFiles.filter(f => stagedFiles.includes(f.id))
+
+    // Stage a file
+    const stageFile = (fileId: string) => {
+        setStagedFiles(prev => [...new Set([...prev, fileId])])
+    }
+
+    // Unstage a file
+    const unstageFile = (fileId: string) => {
+        setStagedFiles(prev => prev.filter(id => id !== fileId))
+    }
+
+    // Stage all
+    const stageAll = () => {
+        setStagedFiles(modifiedFiles.map(f => f.id))
+    }
+
+    // Unstage all
+    const unstageAll = () => {
+        setStagedFiles([])
+    }
+
+    // Handle commit
+    const handleCommit = () => {
+        if (message.trim() && stagedFileObjects.length > 0 && onCommit) {
+            onCommit(message.trim(), stagedFiles)
+            setMessage("")
+            setStagedFiles([])
+        }
+    }
+
+    // Save token to localStorage
+    const saveToken = () => {
+        if (authToken.trim()) {
+            localStorage.setItem('git_auth_token', authToken)
+            setShowTokenInput(false)
+        }
+    }
+
+    // Load token on mount
+    React.useEffect(() => {
+        const saved = localStorage.getItem('git_auth_token')
+        if (saved) setAuthToken(saved)
+    }, [])
 
     if (!isInitialized) {
         return (
@@ -385,21 +442,42 @@ function GitPanel({
 
     return (
         <div className="h-full flex flex-col bg-[#252526] text-[#cccccc]">
-            <div className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-[#bbbbbb] border-b border-black/20 flex items-center justify-between">
+            {/* Header */}
+            <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#bbbbbb] border-b border-black/20 flex items-center justify-between">
                 <span className="flex items-center gap-2"><GitGraph size={14} /> Source Control</span>
                 <div className="flex gap-1">
-                    <button className="p-1 hover:bg-white/10 rounded" title="Commit"><Check size={14} /></button>
-                    <button onClick={() => setShowRemoteInput(!showRemoteInput)} className="p-1 hover:bg-white/10 rounded" title="Add Remote"><Activity size={14} /></button>
+                    <button onClick={() => setShowTokenInput(!showTokenInput)} className="p-1 hover:bg-white/10 rounded" title="Auth Token">
+                        <Settings size={12} />
+                    </button>
+                    <button onClick={() => setShowRemoteInput(!showRemoteInput)} className="p-1 hover:bg-white/10 rounded" title="Add Remote">
+                        <Activity size={12} />
+                    </button>
                 </div>
             </div>
 
+            {/* Branch Selector */}
+            <div className="px-3 py-2 border-b border-white/5 flex items-center gap-2">
+                <GitGraph size={12} className="text-[var(--primary)]" />
+                <select
+                    value={currentBranch}
+                    onChange={(e) => setCurrentBranch(e.target.value)}
+                    className="flex-1 bg-transparent text-xs outline-none cursor-pointer"
+                >
+                    <option value="main">main</option>
+                    <option value="develop">develop</option>
+                    <option value="feature">feature/new-branch</option>
+                </select>
+            </div>
+
+            {/* Remote Input */}
             {showRemoteInput && (
-                <div className="px-4 py-2 bg-[#1e1e1e] border-b border-white/5">
+                <div className="px-3 py-2 bg-[#1e1e1e] border-b border-white/5">
+                    <label className="text-[10px] text-white/50 uppercase mb-1 block">Remote URL</label>
                     <div className="flex gap-1">
                         <input
                             value={remoteUrl}
                             onChange={e => setRemoteUrl(e.target.value)}
-                            placeholder="https://github.com/..."
+                            placeholder="https://github.com/user/repo.git"
                             className="flex-1 bg-[#3c3c3c] border border-black/20 rounded px-2 py-1 text-xs outline-none"
                         />
                         <button
@@ -407,77 +485,148 @@ function GitPanel({
                                 if (onRemote) onRemote(remoteUrl)
                                 setShowRemoteInput(false)
                             }}
-                            className="bg-[#007acc] text-white px-2 rounded text-xs"
-                        >OK</button>
+                            className="bg-[var(--primary)] text-white px-2 rounded text-xs"
+                        >Set</button>
                     </div>
                 </div>
             )}
 
-            <div className="p-4 flex flex-col gap-4 overflow-y-auto">
-                {/* Actions */}
-                <div className="flex gap-2">
-                    <button onClick={() => onPull && onPull()} className="flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-xs py-1.5 rounded flex items-center justify-center gap-2">
-                        <ChevronDown size={12} /> Pull
-                    </button>
-                    <button onClick={() => onPush && onPush()} className="flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-xs py-1.5 rounded flex items-center justify-center gap-2">
-                        Push <ChevronRight size={12} />
-                    </button>
+            {/* Token Input */}
+            {showTokenInput && (
+                <div className="px-3 py-2 bg-[#1e1e1e] border-b border-white/5">
+                    <label className="text-[10px] text-white/50 uppercase mb-1 block">GitHub Token (PAT)</label>
+                    <div className="flex gap-1">
+                        <input
+                            type="password"
+                            value={authToken}
+                            onChange={e => setAuthToken(e.target.value)}
+                            placeholder="ghp_xxxxxxxxxxxx"
+                            className="flex-1 bg-[#3c3c3c] border border-black/20 rounded px-2 py-1 text-xs outline-none"
+                        />
+                        <button onClick={saveToken} className="bg-[var(--primary)] text-white px-2 rounded text-xs">Save</button>
+                    </div>
+                    <p className="text-[9px] text-white/30 mt-1">Token stored locally for push/pull</p>
                 </div>
-                {/* Message Input */}
-                <div className="flex flex-col gap-2">
+            )}
+
+            <div className="flex-1 overflow-y-auto">
+                {/* Commit Message */}
+                <div className="p-3 border-b border-white/5">
                     <textarea
                         className="w-full bg-[#3c3c3c] border border-black/20 rounded p-2 text-xs text-white placeholder:text-white/30 outline-none focus:border-[var(--primary)] resize-none"
-                        rows={3}
-                        placeholder="Message (Ctrl+Enter to commit)"
+                        rows={2}
+                        placeholder="Commit message"
                         value={message}
                         onChange={e => setMessage(e.target.value)}
-                    />
-                    <button
-                        onClick={() => {
-                            if (message.trim() && modifiedFiles.length > 0 && onCommit) {
-                                onCommit(message.trim(), modifiedFiles.map(f => f.id))
-                                setMessage("")
-                            }
+                        onKeyDown={e => {
+                            if (e.key === 'Enter' && e.ctrlKey) handleCommit()
                         }}
-                        disabled={!message.trim() || modifiedFiles.length === 0}
-                        className={cn(
-                            "bg-[var(--primary)] text-white text-xs font-bold py-1.5 rounded hover:opacity-90 transition-opacity",
-                            (!message.trim() || modifiedFiles.length === 0) && "opacity-50 cursor-not-allowed"
-                        )}
-                    >
-                        Commit
+                    />
+                    <div className="flex gap-2 mt-2">
+                        <button
+                            onClick={handleCommit}
+                            disabled={!message.trim() || stagedFileObjects.length === 0}
+                            className={cn(
+                                "flex-1 bg-[var(--primary)] text-white text-xs font-bold py-1.5 rounded hover:opacity-90 transition-opacity",
+                                (!message.trim() || stagedFileObjects.length === 0) && "opacity-50 cursor-not-allowed"
+                            )}
+                        >
+                            <Check size={12} className="inline mr-1" /> Commit
+                        </button>
+                    </div>
+                </div>
+
+                {/* Push/Pull Actions */}
+                <div className="px-3 py-2 flex gap-2 border-b border-white/5">
+                    <button onClick={() => onPull && onPull()} className="flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-[10px] py-1.5 rounded flex items-center justify-center gap-1">
+                        <ChevronDown size={10} /> Pull
                     </button>
-                    <button className="bg-[#007acc] text-white text-xs font-bold py-1.5 rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                        <Activity size={12} className="animate-pulse" /> Sync Changes
+                    <button onClick={() => onPush && onPush()} className="flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-[10px] py-1.5 rounded flex items-center justify-center gap-1">
+                        <ChevronRight size={10} /> Push
                     </button>
                 </div>
 
-                {/* Changes List */}
-                <div>
-                    <div className="flex items-center justify-between text-xs font-bold uppercase text-[#bbbbbb] mb-2 group">
-                        <span>Changes</span>
-                        <span className="bg-[#4caf50] text-[#1e1e1e] px-1.5 rounded-full text-[10px]">{modifiedFiles.length}</span>
-                    </div>
-                    {modifiedFiles.length === 0 ? (
-                        <div className="text-xs text-white/30 italic text-center py-4">
-                            No changes detected.
+                {/* Staged Changes */}
+                <div className="border-b border-white/5">
+                    <button
+                        onClick={() => setExpandStaged(!expandStaged)}
+                        className="w-full px-3 py-2 flex items-center justify-between text-xs font-bold uppercase text-[#bbbbbb] hover:bg-white/5"
+                    >
+                        <span className="flex items-center gap-1">
+                            {expandStaged ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                            Staged Changes
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="bg-[#4caf50] text-[#1e1e1e] px-1.5 rounded-full text-[10px]">{stagedFileObjects.length}</span>
+                            {stagedFileObjects.length > 0 && (
+                                <button onClick={(e) => { e.stopPropagation(); unstageAll() }} className="p-0.5 hover:bg-white/10 rounded" title="Unstage All">
+                                    <Minus size={12} />
+                                </button>
+                            )}
                         </div>
-                    ) : (
-                        <div className="divide-y divide-white/5">
-                            {modifiedFiles.map(file => (
+                    </button>
+                    {expandStaged && stagedFileObjects.length > 0 && (
+                        <div className="px-3 pb-2">
+                            {stagedFileObjects.map(file => (
                                 <div key={file.id} className="py-1 flex items-center justify-between group cursor-pointer hover:bg-white/5 px-2 -mx-2 rounded">
                                     <div className="flex items-center gap-2 truncate">
-                                        <FilesIcon size={12} className="text-[#e2c08d]" />
-                                        <span className="text-xs text-[#e2c08d] truncate">{file.name}</span>
-                                        <span className="text-[10px] text-white/30 truncate max-w-[60px]">{file.id}</span>
+                                        <span className="text-[10px] text-[#4caf50] font-bold">A</span>
+                                        <span className="text-xs text-[#4caf50] truncate">{file.name}</span>
                                     </div>
                                     <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1">
-                                        <button className="p-0.5 hover:text-white" title="Open File"><FileCode size={12} /></button>
-                                        <button className="p-0.5 hover:text-white" title="Discard Changes"><X size={12} /></button>
-                                        <button className="p-0.5 hover:text-white" title="Stage Changes"><Plus size={12} /></button>
+                                        <button onClick={() => unstageFile(file.id)} className="p-0.5 hover:text-white" title="Unstage">
+                                            <Minus size={12} />
+                                        </button>
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Unstaged Changes */}
+                <div>
+                    <button
+                        onClick={() => setExpandChanges(!expandChanges)}
+                        className="w-full px-3 py-2 flex items-center justify-between text-xs font-bold uppercase text-[#bbbbbb] hover:bg-white/5"
+                    >
+                        <span className="flex items-center gap-1">
+                            {expandChanges ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                            Changes
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="bg-[#e2c08d] text-[#1e1e1e] px-1.5 rounded-full text-[10px]">{unstagedFiles.length}</span>
+                            {unstagedFiles.length > 0 && (
+                                <button onClick={(e) => { e.stopPropagation(); stageAll() }} className="p-0.5 hover:bg-white/10 rounded" title="Stage All">
+                                    <Plus size={12} />
+                                </button>
+                            )}
+                        </div>
+                    </button>
+                    {expandChanges && (
+                        <div className="px-3 pb-2">
+                            {unstagedFiles.length === 0 ? (
+                                <div className="text-xs text-white/30 italic text-center py-3">
+                                    No unstaged changes
+                                </div>
+                            ) : (
+                                unstagedFiles.map(file => (
+                                    <div key={file.id} className="py-1 flex items-center justify-between group cursor-pointer hover:bg-white/5 px-2 -mx-2 rounded">
+                                        <div className="flex items-center gap-2 truncate">
+                                            <span className="text-[10px] text-[#e2c08d] font-bold">M</span>
+                                            <span className="text-xs text-[#e2c08d] truncate">{file.name}</span>
+                                        </div>
+                                        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1">
+                                            <button className="p-0.5 hover:text-red-400" title="Discard Changes">
+                                                <X size={12} />
+                                            </button>
+                                            <button onClick={() => stageFile(file.id)} className="p-0.5 hover:text-white" title="Stage">
+                                                <Plus size={12} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     )}
                 </div>
@@ -714,6 +863,158 @@ function BoardsPanel({ platforms }: { platforms: BoardPlatform[] }) {
                         </div>
                     </div>
                 ))}
+            </div>
+        </div>
+    )
+}
+
+function ToolsPanel() {
+    const [activeView, setActiveView] = useState<'main' | 'partition'>('main')
+    const [dataDir, setDataDir] = useState<File[]>([])
+    const [fsType, setFsType] = useState<'littlefs' | 'spiffs'>('littlefs')
+
+    const partitionSchemes = [
+        { name: 'Default 4MB', flash: '4MB', app: '1.2MB', spiffs: '1.5MB', nvs: '20KB' },
+        { name: 'Huge APP', flash: '4MB', app: '3MB', spiffs: '896KB', nvs: '16KB' },
+        { name: 'No OTA', flash: '4MB', app: '2MB', spiffs: '1.9MB', nvs: '20KB' },
+        { name: 'Minimal', flash: '4MB', app: '1.3MB', spiffs: '64KB', nvs: '12KB' },
+        { name: '16MB Flash', flash: '16MB', app: '4MB', spiffs: '10MB', nvs: '24KB' },
+    ]
+
+    const handleDataDirUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setDataDir(Array.from(e.target.files))
+        }
+    }
+
+    if (activeView === 'partition') {
+        return (
+            <div className="h-full flex flex-col bg-[#252526] text-[#cccccc] overflow-y-auto">
+                <div className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-[#bbbbbb] border-b border-black/20 flex items-center justify-between">
+                    <span className="flex items-center gap-2"><Settings size={14} /> Partition Table</span>
+                    <button onClick={() => setActiveView('main')} className="text-xs hover:text-white">← Back</button>
+                </div>
+
+                <div className="p-4 space-y-3">
+                    <p className="text-[10px] opacity-60">Select a partition scheme for your ESP32 board:</p>
+
+                    {partitionSchemes.map((scheme, i) => (
+                        <div key={i} className="p-3 bg-[#2d2d2d] rounded border border-transparent hover:border-[var(--primary)] cursor-pointer">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-bold text-white">{scheme.name}</span>
+                                <span className="text-[10px] text-[var(--primary)]">{scheme.flash}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-[10px]">
+                                <div>
+                                    <span className="opacity-50">App:</span>
+                                    <span className="ml-1">{scheme.app}</span>
+                                </div>
+                                <div>
+                                    <span className="opacity-50">FS:</span>
+                                    <span className="ml-1">{scheme.spiffs}</span>
+                                </div>
+                                <div>
+                                    <span className="opacity-50">NVS:</span>
+                                    <span className="ml-1">{scheme.nvs}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <div className="h-full flex flex-col bg-[#252526] text-[#cccccc] overflow-y-auto">
+            <div className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-[#bbbbbb] border-b border-black/20 flex items-center gap-2">
+                <Settings size={14} /> Tools
+            </div>
+
+            <div className="p-4 space-y-4">
+                {/* Filesystem Upload */}
+                <div className="p-3 bg-[#2d2d2d] rounded">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs font-bold text-white">Filesystem Image</span>
+                        <select
+                            value={fsType}
+                            onChange={(e) => setFsType(e.target.value as any)}
+                            className="bg-[#3c3c3c] text-[10px] rounded px-2 py-1 outline-none"
+                        >
+                            <option value="littlefs">LittleFS</option>
+                            <option value="spiffs">SPIFFS</option>
+                        </select>
+                    </div>
+
+                    <label className="block w-full p-4 border-2 border-dashed border-white/20 rounded hover:border-[var(--primary)] cursor-pointer text-center transition-colors">
+                        <input
+                            type="file"
+                            multiple
+                            className="hidden"
+                            onChange={handleDataDirUpload}
+                            {...{ webkitdirectory: "", directory: "" } as any}
+                        />
+                        <Hash size={24} className="mx-auto mb-2 opacity-40" />
+                        <span className="text-[10px] opacity-60">
+                            {dataDir.length > 0 ? `${dataDir.length} files selected` : 'Select data folder'}
+                        </span>
+                    </label>
+
+                    {dataDir.length > 0 && (
+                        <button className="w-full mt-3 py-2 bg-[var(--primary)] text-white text-xs font-bold rounded hover:opacity-90">
+                            Upload to Device
+                        </button>
+                    )}
+                </div>
+
+                {/* Partition Viewer */}
+                <button
+                    onClick={() => setActiveView('partition')}
+                    className="w-full text-left p-3 bg-[#2d2d2d] hover:bg-[#3d3d3d] rounded transition-colors group"
+                >
+                    <div className="flex items-center gap-3">
+                        <Settings size={16} className="text-[var(--ide-icon,#858585)] group-hover:text-[var(--ide-accent,#007acc)]" />
+                        <div>
+                            <div className="text-xs font-bold text-white">Partition Table</div>
+                            <div className="text-[10px] opacity-60">View and select partition schemes</div>
+                        </div>
+                    </div>
+                </button>
+
+                {/* Erase Flash */}
+                <button
+                    onClick={() => {
+                        if (confirm('This will erase ALL data on the device. Continue?')) {
+                            alert('Flash erase requires device connection. Use esptool.py for now.')
+                        }
+                    }}
+                    className="w-full text-left p-3 bg-[#2d2d2d] hover:bg-red-900/30 rounded transition-colors group"
+                >
+                    <div className="flex items-center gap-3">
+                        <Trash2 size={16} className="text-[var(--ide-icon,#858585)] group-hover:text-red-400" />
+                        <div>
+                            <div className="text-xs font-bold text-white group-hover:text-red-400">Erase Flash</div>
+                            <div className="text-[10px] opacity-60">Erase entire flash memory</div>
+                        </div>
+                    </div>
+                </button>
+
+                {/* Burn Bootloader */}
+                <button className="w-full text-left p-3 bg-[#2d2d2d] hover:bg-[#3d3d3d] rounded transition-colors group">
+                    <div className="flex items-center gap-3">
+                        <Activity size={16} className="text-[var(--ide-icon,#858585)] group-hover:text-[var(--ide-accent,#007acc)]" />
+                        <div>
+                            <div className="text-xs font-bold text-white">Burn Bootloader</div>
+                            <div className="text-[10px] opacity-60">Flash bootloader to device</div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            <div className="px-4 py-2 border-t border-white/5 mt-auto">
+                <p className="text-[10px] opacity-40 text-center">
+                    Connect a device via Web Serial to use these tools
+                </p>
             </div>
         </div>
     )

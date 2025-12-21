@@ -66,13 +66,13 @@ export const WindowFrame = React.memo(function WindowFrame({
                 scale: 1,
                 opacity: 1,
                 width: isMaximized ? "100vw" : width,
-                height: isMaximized ? "calc(100vh - 48px)" : height,
+                height: isMaximized ? "100vh" : height,
                 x: isMaximized ? 0 : undefined,
                 y: isMaximized ? 0 : undefined,
             }}
             exit={{ scale: 0.9, opacity: 0 }}
             onMouseDown={handleMouseDown}
-            style={{ zIndex }}
+            style={{ zIndex: isMaximized ? 9998 : zIndex }}
             className={cn(
                 "absolute bg-[var(--os-surface)] border border-[var(--os-border)] shadow-xl overflow-hidden flex flex-col backdrop-blur-md",
                 isMaximized ? "top-0 left-0 rounded-none" : "rounded-md"

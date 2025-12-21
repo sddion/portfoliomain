@@ -48,7 +48,7 @@ export function IDEApp() {
     // Core State
     const [files, setFiles] = useState<IDEFile[]>([])
     const [activeFileId, setActiveFileId] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState<"explorer" | "libraries" | "git" | "settings" | "boards">("explorer")
+    const [activeTab, setActiveTab] = useState<"explorer" | "libraries" | "git" | "settings" | "boards" | "tools">("explorer")
     const [isMobile, setIsMobile] = useState(false)
     const [showMobileSidebar, setShowMobileSidebar] = useState(false)
 
@@ -837,8 +837,8 @@ export function IDEApp() {
                                 onClick={() => setTerminalTab("problems")}
                                 className={cn("flex items-center gap-1.5 cursor-pointer h-full border-b-[1px]", terminalTab === "problems" ? "text-white border-[#e7e7e7]" : "hover:text-[#cccccc] border-transparent")}
                             >
-                                <div className={cn("w-2 h-2 rounded-full", buildErrors.length > 0 ? "bg-red-500" : "bg-transparent border border-[#969696]")} />
-                                <span>Problems {buildErrors.length > 0 ? `(${buildErrors.length})` : ""}</span>
+                                <div className={cn("w-2 h-2 rounded-full", buildErrors.length > 0 ? "bg-red-500" : buildWarnings.length > 0 ? "bg-yellow-500" : "bg-transparent border border-[#969696]")} />
+                                <span>Problems {buildErrors.length + buildWarnings.length > 0 ? `(${buildErrors.length + buildWarnings.length})` : ""}</span>
                             </div>
                             <div
                                 onClick={() => setTerminalTab("serial")}
@@ -894,7 +894,14 @@ export function IDEApp() {
                                             <XCircle size={14} className="mt-0.5 shrink-0" />
                                             <span>{e}</span>
                                         </div>
-                                    )) : (
+                                    )) : null}
+                                    {buildWarnings.length > 0 ? buildWarnings.map((w, i) => (
+                                        <div key={`w-${i}`} className="flex gap-2 text-yellow-400 items-start">
+                                            <Activity size={14} className="mt-0.5 shrink-0" />
+                                            <span>{w}</span>
+                                        </div>
+                                    )) : null}
+                                    {buildErrors.length === 0 && buildWarnings.length === 0 && (
                                         <div className="flex items-center gap-2 opacity-50">
                                             <CheckCircle2 size={14} />
                                             <span>No problems have been detected in the workspace.</span>
@@ -962,6 +969,14 @@ export function IDEApp() {
                         <div className="flex items-center gap-1 opacity-80 hover:opacity-100 cursor-pointer">
                             <Cpu size={10} />
                             <span>{parserReady ? "Ready" : "Loading..."}</span>
+                        </div>
+                        {binarySize > 0 && (
+                            <div className="flex items-center gap-1 opacity-80">
+                                <span>{(binarySize / 1024).toFixed(1)}KB</span>
+                            </div>
+                        )}
+                        <div className={cn("flex items-center gap-1 opacity-80", compileServiceMode === 'real' ? "text-green-300" : "text-yellow-300")}>
+                            <span>{compileServiceMode === 'real' ? "●" : "○"}</span>
                         </div>
                     </div>
                 </div>

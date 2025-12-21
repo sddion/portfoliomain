@@ -24,11 +24,15 @@ export interface IDESettings {
 
 export interface ArduinoLibrary {
     name: string
-    version: string
+    version?: string // Kept for backwards compatibility
+    latestVersion: string
     author: string
     description: string
+    category: string
+    architectures: string[]
     versions: string[]
     url: string
+    repository?: string
 }
 
 
@@ -39,6 +43,10 @@ export interface BoardPlatform {
     versions: string[] // All available versions
     architecture: string
     installed: boolean
+    preInstalled?: boolean // True if ESP32/ESP8266/STM32
     description: string
     boards: { name: string, id: string }[] // List of board names in this platform
+    maintainer?: string
+    url?: string
 }
+

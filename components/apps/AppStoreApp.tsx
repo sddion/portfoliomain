@@ -225,23 +225,22 @@ function AppCard({ app, isInstalled, onInstall, onUninstall, onOpen, onClick }: 
     return (
         <div
             onClick={onClick}
-            className="bg-zinc-900 border border-white/5 rounded-xl p-4 hover:border-white/10 transition-colors group flex flex-col h-full cursor-pointer hover:bg-zinc-800/50"
+            className="bg-zinc-900 border border-white/5 rounded-xl p-4 hover:border-white/10 transition-colors group flex flex-col min-h-[200px] cursor-pointer hover:bg-zinc-800/50"
         >
-            <div className="flex items-start justify-between mb-4">
-                <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400 group-hover:scale-105 transition-transform">
-                    <AppIcon iconName={app.iconName} size={28} />
+            <div className="flex items-start justify-between mb-3 gap-2">
+                <div className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400 group-hover:scale-105 transition-transform shrink-0">
+                    <AppIcon iconName={app.iconName} size={24} />
                 </div>
-                <div className="flex flex-col items-end gap-1">
+                <div className="flex flex-col items-end gap-1 shrink-0">
                     {app.isNew && (
-                        <span className="px-2 py-0.5 rounded-full bg-[var(--primary)]/20 text-[var(--primary)] text-[10px] font-bold border border-[var(--primary)]/20 uppercase tracking-widest">
+                        <span className="px-1.5 py-0.5 rounded-full bg-[var(--primary)]/20 text-[var(--primary)] text-[9px] font-bold border border-[var(--primary)]/20 uppercase tracking-wide">
                             New
                         </span>
                     )}
-                    {/* Rating Badge - Only show if there are actual ratings */}
                     {!loading && averageRating > 0 && (
-                        <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-zinc-950 border border-white/5">
-                            <AppIcon iconName="star" size={10} className="text-amber-400 fill-amber-400" />
-                            <span className="text-xs font-medium text-zinc-300">
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-zinc-950 border border-white/5">
+                            <AppIcon iconName="star" size={9} className="text-amber-400 fill-amber-400" />
+                            <span className="text-[10px] font-medium text-zinc-300">
                                 {averageRating}
                             </span>
                         </div>
@@ -249,16 +248,16 @@ function AppCard({ app, isInstalled, onInstall, onUninstall, onOpen, onClick }: 
                 </div>
             </div>
 
-            <h3 className="font-bold text-base mb-1 truncate text-zinc-100">{app.title}</h3>
-            <p className="text-xs text-zinc-500 line-clamp-2 h-8 mb-4">
+            <h3 className="font-bold text-sm mb-1 truncate text-zinc-100">{app.title}</h3>
+            <p className="text-[11px] text-zinc-500 line-clamp-2 mb-3 min-h-[32px]">
                 {app.description}
             </p>
 
-            <div className="mt-auto pt-4 flex items-center justify-between border-t border-white/5">
-                <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">{app.category}</span>
+            <div className="mt-auto pt-3 flex items-center justify-between gap-2 border-t border-white/5">
+                <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-semibold truncate">{app.category}</span>
 
                 {isInstalled ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 shrink-0">
                         <button
                             onClick={(e) => {
                                 e.stopPropagation()
@@ -268,14 +267,14 @@ function AppCard({ app, isInstalled, onInstall, onUninstall, onOpen, onClick }: 
                             title="Uninstall"
                         >
                             <span className="sr-only">Uninstall</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
                         </button>
                         <button
                             onClick={(e) => {
                                 e.stopPropagation()
                                 onOpen()
                             }}
-                            className="px-4 py-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition-colors"
+                            className="px-3 py-1 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold transition-colors"
                         >
                             Open
                         </button>
@@ -286,7 +285,7 @@ function AppCard({ app, isInstalled, onInstall, onUninstall, onOpen, onClick }: 
                             e.stopPropagation()
                             onInstall()
                         }}
-                        className="px-5 py-1.5 rounded-full bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-[var(--primary-foreground)] text-xs font-semibold transition-colors shadow-lg shadow-[var(--primary)]/20"
+                        className="px-4 py-1 rounded-full bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-[var(--primary-foreground)] text-[11px] font-semibold transition-colors shadow-md shadow-[var(--primary)]/20 shrink-0"
                     >
                         Get
                     </button>
@@ -295,3 +294,4 @@ function AppCard({ app, isInstalled, onInstall, onUninstall, onOpen, onClick }: 
         </div>
     )
 }
+

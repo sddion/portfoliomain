@@ -48,6 +48,9 @@ interface WindowContextType {
     uninstallApp: (appId: string) => void
     isAppInstalled: (appId: string) => boolean
     isAppsLoaded: boolean
+
+    // Window state helpers
+    hasMaximizedWindow: boolean
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined)
@@ -227,6 +230,9 @@ export function WindowProvider({ children }: { children: ReactNode }) {
 
     const installedApps = filteredApps.filter(app => installedIds.includes(app.id))
 
+    // Check if any window is maximized (for taskbar auto-hide)
+    const hasMaximizedWindow = windows.some(w => w.isMaximized && !w.isMinimized)
+
     const value = React.useMemo(() => ({
         windows,
         openWindow,
@@ -250,7 +256,8 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         installApp,
         uninstallApp,
         isAppInstalled,
-        isAppsLoaded
+        isAppsLoaded,
+        hasMaximizedWindow
     }), [
         windows,
         openWindow,
@@ -273,7 +280,8 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         installApp,
         uninstallApp,
         isAppInstalled,
-        isAppsLoaded
+        isAppsLoaded,
+        hasMaximizedWindow
     ])
 
     return (
