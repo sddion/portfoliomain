@@ -19,6 +19,7 @@ import {
 import { IDESidebar } from "@/components/apps/ide/IDESidebar"
 import { IDETabs } from "@/components/apps/ide/IDETabs"
 import { IDEStatusBar } from "@/components/apps/ide/IDEStatusBar"
+import { IDEMenuBar } from "@/components/apps/ide/IDEMenuBar"
 import { IDEFile, IDESettings, ArduinoLibrary, BoardPlatform } from "@/components/apps/ide/types"
 import { useUserStore } from "@/hooks/use-user-store"
 import {
@@ -97,7 +98,7 @@ export function IDEApp() {
     const [installedLibraries, setInstalledLibraries] = useState<string[]>([])
 
     // Compilation service status
-    const [compileServiceMode, setCompileServiceMode] = useState<'real' | 'mock'>('mock')
+    const [compileServiceOnline, setCompileServiceOnline] = useState(false)
 
     // Git authentication
     const [gitToken, setGitToken] = useState<string>('')
@@ -109,6 +110,13 @@ export function IDEApp() {
     const parserRef = useRef<Parser | null>(null)
     const [port, setPort] = useState<any>(null)
     const [transport, setTransport] = useState<TransportType | null>(null)
+    const [showSettingsModal, setShowSettingsModal] = useState(false)
+
+    // Available boards for the menu
+    const availableBoards = [
+        "ESP32 Dev Module", "ESP32-S3 Dev Module", "ESP32-C3 Dev Module",
+        "Arduino Uno", "Arduino Mega", "Arduino Nano", "NodeMCU 1.0"
+    ]
 
     const addLog = (msg: string) => {
         setConsoleOutput(prev => [...prev.slice(-99), `[${new Date().toLocaleTimeString()}] ${msg}`])
@@ -181,8 +189,8 @@ export function IDEApp() {
         // Initialize Tree-Sitter (optional - for syntax highlighting)
         const initParser = async () => {
             try {
-                const module = await import("web-tree-sitter") as any
-                const TreeSitter = module.default || module
+                const treeSitterModule = await import("web-tree-sitter") as any
+                const TreeSitter = treeSitterModule.default || treeSitterModule
                 await TreeSitter.init()
                 const parser = new TreeSitter()
                 const Lang = await TreeSitter.Language.load('/tree-sitter-cpp.wasm')
@@ -259,13 +267,17 @@ export function IDEApp() {
                 const res = await fetch('/api/arduino/compile')
                 const data = await res.json()
                 if (data.serviceOnline) {
-                    setCompileServiceMode('real')
+                    setCompileServiceOnline(true)
                     addLog("SYSTEM: Compilation server connected.")
+                } else if (data.serviceConfigured) {
+                    setCompileServiceOnline(false)
+                    addLog("SYSTEM: Compilation server configured but offline.")
                 } else {
-                    setCompileServiceMode('real')
-                    addLog("SYSTEM: Compilation server available.")
+                    setCompileServiceOnline(false)
+                    addLog("SYSTEM: Compilation service not configured.")
                 }
             } catch (e) {
+                setCompileServiceOnline(false)
                 addLog("SYSTEM: Compilation service offline.")
             }
         }
@@ -279,8 +291,45 @@ export function IDEApp() {
                 setFiles(JSON.parse(saved))
             } catch (e) { console.error(e) }
         } else {
-            const initialFile: IDEFile = { id: "main", name: "main.ino", content: DEFAULT_CODE, isOpen: true, isModified: false }
-            setFiles([initialFile])
+            // Initialize with default structure like Arduino IDE
+            const initialFiles: IDEFile[] = [
+                // Main sketch file
+                { id: "main", name: "main.ino", content: DEFAULT_CODE, isOpen: true, isModified: false },
+                // Tools folder - users can add their custom tools here
+                { id: "tools-folder", name: "tools", content: "", isOpen: false, isModified: false, isFolder: true },
+                // Libraries folder - for custom libraries
+                { id: "libraries-folder", name: "libraries", content: "", isOpen: false, isModified: false, isFolder: true },
+                // README inside tools folder
+                {
+                    id: "tools-readme",
+                    name: "README.txt",
+                    content: `Arduino IDE Tools Folder
+========================
+
+This folder is for custom tools.
+
+In the traditional Arduino IDE, you would place:
+- JAR files for custom tools
+- Python scripts
+- External utilities
+
+Since this is a browser-based IDE, you can:
+- Add configuration files
+- Store tool-related scripts
+- Keep documentation for your tools
+
+Folder structure:
+/tools
+  /YourToolName
+    /tool
+      YourTool.jar (or script files)
+`,
+                    isOpen: false,
+                    isModified: false,
+                    parentId: "tools-folder"
+                },
+            ]
+            setFiles(initialFiles)
             setActiveFileId("main")
         }
 
@@ -618,8 +667,8 @@ export function IDEApp() {
             setFlashProgress(15)
             addLog("FLASH: Chip detected! Handshake successful.")
 
-            // Check if we have a real binary (not mock)
-            if (compiledBinary && !compiledBinary.startsWith('TU9DS')) { // 'MOCK' in base64
+            // Flash the compiled binary
+            if (compiledBinary) {
                 addLog("FLASH: Writing firmware to device...")
 
                 // Decode base64 binary
@@ -655,9 +704,9 @@ export function IDEApp() {
                 setFlashProgress(95)
                 addLog("FLASH: Write complete!")
             } else {
-                addLog("FLASH: Mock binary detected - skipping actual flash")
-                addLog("FLASH: (Configure COMPILE_SERVICE_URL for real compilation)")
-                setFlashProgress(50)
+                addLog("FLASH ERROR: No binary data available")
+                setFlashing(false)
+                return
             }
 
             // Hard reset to run the new firmware
@@ -683,6 +732,87 @@ export function IDEApp() {
 
     return (
         <div className="h-full bg-[#1e1e1e] flex flex-col font-sans select-none overflow-hidden relative text-[#cccccc]">
+            {/* VS Code-style Menu Bar (Desktop only) */}
+            {!isMobile && (
+                <IDEMenuBar
+                    onNewFile={handleNewFile}
+                    onSave={() => addLog("File saved")}
+                    onFormat={handleFormatCode}
+                    onBuild={handleBuild}
+                    onFlash={handleFlash}
+                    onOpenSettings={() => setShowSettingsModal(true)}
+                    boardName={settings.board}
+                    boards={availableBoards}
+                    onBoardChange={(board) => updateSettings({ board })}
+                />
+            )}
+
+            {/* Settings Modal */}
+            {showSettingsModal && (
+                <div className="fixed inset-0 bg-black/60 z-[500] flex items-center justify-center" onClick={() => setShowSettingsModal(false)}>
+                    <div className="bg-[#252526] rounded-lg shadow-2xl w-full max-w-lg max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                            <h2 className="text-sm font-bold text-white">Settings</h2>
+                            <button onClick={() => setShowSettingsModal(false)} className="p-1 hover:bg-white/10 rounded">
+                                <X size={16} />
+                            </button>
+                        </div>
+                        <div className="p-4 overflow-y-auto max-h-[60vh] space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-xs text-white/60 uppercase tracking-wider">Board</label>
+                                <select
+                                    value={settings.board}
+                                    onChange={e => updateSettings({ board: e.target.value })}
+                                    className="w-full bg-[#3c3c3c] border border-white/10 rounded px-3 py-2 text-sm text-white"
+                                >
+                                    {availableBoards.map(b => <option key={b} value={b}>{b}</option>)}
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs text-white/60 uppercase tracking-wider">Baud Rate</label>
+                                <select
+                                    value={settings.baudRate}
+                                    onChange={e => updateSettings({ baudRate: Number(e.target.value) })}
+                                    className="w-full bg-[#3c3c3c] border border-white/10 rounded px-3 py-2 text-sm text-white"
+                                >
+                                    {[9600, 115200, 921600].map(b => <option key={b} value={b}>{b}</option>)}
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs text-white/60 uppercase tracking-wider">Font Size</label>
+                                <input
+                                    type="number"
+                                    value={settings.fontSize}
+                                    onChange={e => updateSettings({ fontSize: Number(e.target.value) })}
+                                    className="w-full bg-[#3c3c3c] border border-white/10 rounded px-3 py-2 text-sm text-white"
+                                    min={10}
+                                    max={24}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs text-white/60 uppercase tracking-wider">Theme</label>
+                                <select
+                                    value={settings.theme}
+                                    onChange={e => updateSettings({ theme: e.target.value })}
+                                    className="w-full bg-[#3c3c3c] border border-white/10 rounded px-3 py-2 text-sm text-white"
+                                >
+                                    {["vs-dark", "vs", "hc-black"].map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <label className="text-xs text-white/60 uppercase tracking-wider">Minimap</label>
+                                <input
+                                    type="checkbox"
+                                    checked={settings.minimap}
+                                    onChange={e => updateSettings({ minimap: e.target.checked })}
+                                    className="accent-[#007acc]"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Main Layout */}
             <div className="flex-1 flex overflow-hidden">
                 <IDEActivityBar activeTab={activeTab} onTabChange={setActiveTab} />
@@ -1035,12 +1165,18 @@ export function IDEApp() {
             </div>
 
             {isMobile && (
-                <div className="absolute bottom-0 inset-x-0 h-14 bg-[#1e1e1e] flex items-center justify-around z-[200] border-t border-[#333]">
-                    <button onClick={() => { setActiveTab("explorer"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><FilesIcon size={20} /><span className="text-[9px]">Explorer</span></button>
-
-                    <button onClick={handleBuild} className={cn("p-2 -mt-6 rounded-full bg-blue-600 text-white shadow-lg", compiling ? "animate-pulse" : "")}><Play size={24} fill="currentColor" /></button>
-                    <button onClick={() => { setActiveTab("libraries"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><Library size={20} /><span className="text-[9px]">Libs</span></button>
-                    <button onClick={() => { setActiveTab("settings"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><SlidersHorizontal size={20} /><span className="text-[9px]">Settings</span></button>
+                <div className="absolute bottom-0 inset-x-0 h-14 bg-[#1e1e1e] z-[200] border-t border-[#333]">
+                    {/* Centered Play button */}
+                    <div className="absolute left-1/2 -translate-x-1/2 -top-3">
+                        <button onClick={handleBuild} className={cn("p-3 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30", compiling ? "animate-pulse" : "")}><Play size={24} fill="currentColor" /></button>
+                    </div>
+                    {/* Navigation items */}
+                    <div className="h-full flex items-center justify-around px-4">
+                        <button onClick={() => { setActiveTab("explorer"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><FilesIcon size={20} /><span className="text-[9px]">Explorer</span></button>
+                        <button onClick={() => { setActiveTab("libraries"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><Library size={20} /><span className="text-[9px]">Libs</span></button>
+                        <div className="w-16" /> {/* Spacer for centered button */}
+                        <button onClick={() => { setActiveTab("settings"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><SlidersHorizontal size={20} /><span className="text-[9px]">Settings</span></button>
+                    </div>
                 </div>
             )}
 
@@ -1078,8 +1214,8 @@ export function IDEApp() {
                                 <span>{(binarySize / 1024).toFixed(1)}KB</span>
                             </div>
                         )}
-                        <div className={cn("flex items-center gap-1 opacity-80", compileServiceMode === 'real' ? "text-green-300" : "text-yellow-300")}>
-                            <span>{compileServiceMode === 'real' ? "●" : "○"}</span>
+                        <div className={cn("flex items-center gap-1 opacity-80", compileServiceOnline ? "text-green-300" : "text-red-300")}>
+                            <span>{compileServiceOnline ? "●" : "○"}</span>
                         </div>
                     </div>
                 </div>

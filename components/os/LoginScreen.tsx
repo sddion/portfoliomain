@@ -245,8 +245,8 @@ export function LoginScreen() {
                             onClick={() => handleUserSelect('guest')}
                             className="group flex flex-col items-center gap-4 cursor-pointer"
                         >
-                            <div className="w-40 h-40 bg-[var(--os-surface)] rounded-full border-2 border-[var(--os-border)] group-hover:border-[var(--primary)] flex items-center justify-center shadow-lg group-hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] transition-all duration-300 relative overflow-hidden">
-                                <UserIcon size={64} className="text-[var(--muted-foreground)] group-hover:text-[var(--primary)] transition-colors" />
+                            <div className="w-40 h-40 bg-[var(--os-surface)] rounded-full border-2 border-[var(--os-border)] group-hover:border-[var(--primary)] shadow-lg group-hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] transition-all duration-300 relative overflow-hidden">
+                                <img src="/avatars/guest.png" alt="Guest" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                             </div>
                             <div className="text-center space-y-1">
@@ -263,8 +263,8 @@ export function LoginScreen() {
                             onClick={() => handleUserSelect('recruiter')}
                             className="group flex flex-col items-center gap-4 cursor-pointer"
                         >
-                            <div className="w-40 h-40 bg-[var(--os-surface)] rounded-full border-2 border-[var(--os-border)] group-hover:border-purple-500 flex items-center justify-center shadow-lg group-hover:shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all duration-300 relative overflow-hidden">
-                                <Briefcase size={64} className="text-[var(--muted-foreground)] group-hover:text-purple-400 transition-colors" />
+                            <div className="w-40 h-40 bg-[var(--os-surface)] rounded-full border-2 border-[var(--os-border)] group-hover:border-purple-500 shadow-lg group-hover:shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all duration-300 relative overflow-hidden">
+                                <img src="/avatars/recruiter.png" alt="Recruiter" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                             </div>
                             <div className="text-center space-y-1">
@@ -282,12 +282,8 @@ export function LoginScreen() {
                         className="flex flex-col items-center gap-8 w-full max-w-sm"
                     >
                         {/* Selected User Avatar */}
-                        <div className="w-32 h-32 bg-[var(--os-surface)] rounded-full border-2 border-[var(--primary)]/50 flex items-center justify-center shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)] overflow-hidden relative">
-                            {selectedUser === 'recruiter' ? (
-                                <Briefcase size={48} className="text-purple-400" />
-                            ) : (
-                                <UserIcon size={48} className="text-[var(--primary)]" />
-                            )}
+                        <div className="w-32 h-32 bg-[var(--os-surface)] rounded-full border-2 border-[var(--primary)]/50 shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)] overflow-hidden relative">
+                            <img src={selectedUser === 'recruiter' ? '/avatars/recruiter.png' : '/avatars/guest.png'} alt={selectedUser || 'User'} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                         </div>
 
@@ -463,8 +459,8 @@ export function LoginScreen() {
                             }}
                             className="w-full bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 flex items-center gap-4 active:scale-95 transition-transform"
                         >
-                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                                <UserIcon className="text-white" />
+                            <div className="w-12 h-12 rounded-full overflow-hidden">
+                                <img src="/avatars/guest.png" alt="Guest" className="w-full h-full object-cover" />
                             </div>
                             <div>
                                 <h3 className="text-white font-bold tracking-wider">GUEST</h3>
@@ -479,8 +475,8 @@ export function LoginScreen() {
                             }}
                             className="w-full bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 flex items-center gap-4 active:scale-95 transition-transform"
                         >
-                            <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-                                <Briefcase className="text-purple-300" />
+                            <div className="w-12 h-12 rounded-full overflow-hidden">
+                                <img src="/avatars/recruiter.png" alt="Recruiter" className="w-full h-full object-cover" />
                             </div>
                             <div>
                                 <h3 className="text-white font-bold tracking-wider">RECRUITER</h3>

@@ -788,47 +788,185 @@ function SettingCheckbox({ label, checked, onChange }: { label: string, checked:
 
 function LibrariesPanel({ libraries }: { libraries: ArduinoLibrary[] }) {
     const [searchTerm, setSearchTerm] = useState("")
+    const [filter, setFilter] = useState<"all" | "installed" | "updates">("all")
+    const [installedLibs, setInstalledLibs] = useState<Record<string, string>>({})
+    const [selectedVersions, setSelectedVersions] = useState<Record<string, string>>({})
 
-    const filtered = libraries.filter(l => l.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    const handleInstall = (lib: ArduinoLibrary) => {
+        const version = selectedVersions[lib.name] || lib.latestVersion || lib.versions?.[0] || lib.version || "1.0.0"
+        setInstalledLibs(prev => ({ ...prev, [lib.name]: version }))
+    }
+
+    const handleUninstall = (lib: ArduinoLibrary) => {
+        setInstalledLibs(prev => {
+            const updated = { ...prev }
+            delete updated[lib.name]
+            return updated
+        })
+    }
+
+    const handleVersionChange = (libName: string, version: string) => {
+        setSelectedVersions(prev => ({ ...prev, [libName]: version }))
+    }
+
+    const isInstalled = (lib: ArduinoLibrary) => lib.name in installedLibs
+    const getInstalledVersion = (lib: ArduinoLibrary) => installedLibs[lib.name]
+
+    const filtered = libraries.filter(lib => {
+        const matchesSearch = lib.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            lib.description?.toLowerCase().includes(searchTerm.toLowerCase())
+
+        if (!matchesSearch) return false
+
+        if (filter === "installed") return isInstalled(lib)
+        if (filter === "updates") {
+            return isInstalled(lib) && getInstalledVersion(lib) !== (lib.latestVersion || lib.version)
+        }
+        return true
+    })
+
+    const getCategoryColor = (category: string) => {
+        const colors: Record<string, string> = {
+            "Communication": "text-blue-400 bg-blue-400/10",
+            "Data Processing": "text-purple-400 bg-purple-400/10",
+            "Data Storage": "text-orange-400 bg-orange-400/10",
+            "Device Control": "text-green-400 bg-green-400/10",
+            "Display": "text-cyan-400 bg-cyan-400/10",
+            "Sensors": "text-yellow-400 bg-yellow-400/10",
+            "Signal Input/Output": "text-pink-400 bg-pink-400/10",
+            "Timing": "text-red-400 bg-red-400/10",
+        }
+        return colors[category] || "text-zinc-400 bg-zinc-400/10"
+    }
 
     return (
-        <div className="h-full flex flex-col bg-[#252526] text-[#cccccc] overflow-y-auto">
-            <div className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-[#bbbbbb] border-b border-black/20 flex items-center gap-2">
-                <List size={14} /> Library Manager
+        <div className="h-full flex flex-col bg-[#252526] text-[#cccccc]">
+            {/* Header */}
+            <div className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-[#bbbbbb] border-b border-black/20 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                    <List size={14} /> Library Manager
+                </span>
+                <span className="text-[10px] font-normal normal-case text-white/40">
+                    {filtered.length} libraries
+                </span>
             </div>
 
-            <div className="px-3 py-2">
-                <input
-                    className="w-full bg-[#3c3c3c] border border-transparent focus:border-[var(--primary)] text-xs rounded-sm py-1.5 px-2 outline-none text-white placeholder:text-white/20 transition-all font-sans"
-                    placeholder="Filter libraries..."
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                />
+            {/* Search and Filter */}
+            <div className="px-3 py-2 space-y-2 border-b border-white/5">
+                <div className="relative">
+                    <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-white/30" />
+                    <input
+                        className="w-full bg-[#3c3c3c] border border-transparent focus:border-[#007acc] text-xs rounded py-1.5 pl-7 pr-2 outline-none text-white placeholder:text-white/30"
+                        placeholder="Search libraries..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="flex gap-1">
+                    {(["all", "installed", "updates"] as const).map(f => (
+                        <button
+                            key={f}
+                            onClick={() => setFilter(f)}
+                            className={cn(
+                                "px-2 py-1 text-[10px] rounded capitalize transition-colors",
+                                filter === f
+                                    ? "bg-[#007acc] text-white"
+                                    : "bg-[#3c3c3c] text-white/60 hover:text-white hover:bg-[#4c4c4c]"
+                            )}
+                        >
+                            {f}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            <div className="divide-y divide-white/5">
-                {filtered.map((lib, i) => (
-                    <div key={i} className="p-3 hover:bg-white/5 cursor-default group">
-                        <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-xs text-[var(--primary)]">{lib.name}</span>
-                            <span className="text-[10px] bg-white/10 px-1.5 rounded text-white/70">{lib.version}</span>
-                        </div>
-                        <p className="text-[11px] opacity-70 line-clamp-2">{lib.description}</p>
-                        <div className="mt-2 flex items-center justify-between text-[10px] opacity-50">
-                            <span>{lib.author}</span>
-                            <div className="flex items-center gap-2">
-                                <select
-                                    className="bg-[#3c3c3c] text-[10px] text-white/80 rounded border-none outline-none py-0.5 px-1 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <option>{lib.version}</option>
-                                    <option>1.0.0</option>
-                                </select>
-                                <button className="hover:text-white bg-[#3c3c3c] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">Install</button>
-                            </div>
-                        </div>
+            {/* Library List */}
+            <div className="flex-1 overflow-y-auto">
+                {filtered.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-white/30">
+                        <List size={32} className="mb-2 opacity-50" />
+                        <span className="text-xs">No libraries found</span>
                     </div>
-                ))}
+                ) : (
+                    <div className="divide-y divide-white/5">
+                        {filtered.map((lib, i) => {
+                            const installed = isInstalled(lib)
+                            const installedVersion = getInstalledVersion(lib)
+                            const versions = lib.versions?.length > 0 ? lib.versions : [lib.latestVersion || lib.version || "1.0.0"]
+                            const currentVersion = selectedVersions[lib.name] || versions[0]
+                            const hasUpdate = installed && installedVersion !== (lib.latestVersion || versions[0])
+
+                            return (
+                                <div key={i} className="p-3 hover:bg-white/5 transition-colors">
+                                    {/* Title Row */}
+                                    <div className="flex items-start justify-between gap-2 mb-1">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <span className="font-bold text-sm text-white truncate">{lib.name}</span>
+                                                {lib.category && (
+                                                    <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full font-medium", getCategoryColor(lib.category))}>
+                                                        {lib.category}
+                                                    </span>
+                                                )}
+                                                {hasUpdate && (
+                                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-medium">
+                                                        Update
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-[10px] text-white/50 mt-0.5">by {lib.author}</p>
+                                        </div>
+
+                                        {/* Version and Install */}
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <select
+                                                value={currentVersion}
+                                                onChange={(e) => handleVersionChange(lib.name, e.target.value)}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="bg-[#3c3c3c] text-[10px] text-white rounded border border-white/10 outline-none py-1 px-2 cursor-pointer hover:border-[#007acc] transition-colors min-w-[60px]"
+                                            >
+                                                {versions.map(v => (
+                                                    <option key={v} value={v} className="bg-[#3c3c3c] text-white">{v}</option>
+                                                ))}
+                                            </select>
+
+                                            {installed ? (
+                                                <button
+                                                    onClick={() => handleUninstall(lib)}
+                                                    className="text-[10px] font-medium bg-red-500/20 text-red-400 hover:bg-red-500/30 px-3 py-1 rounded transition-colors border border-red-500/20"
+                                                >
+                                                    Remove
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => {
+                                                        // Use the currently displayed version (from select)
+                                                        const versionToInstall = selectedVersions[lib.name] || versions[0]
+                                                        setInstalledLibs(prev => ({ ...prev, [lib.name]: versionToInstall }))
+                                                    }}
+                                                    className="text-[10px] font-medium bg-[#007acc] hover:bg-[#007acc]/90 text-white px-3 py-1 rounded transition-colors shadow-sm"
+                                                >
+                                                    Install
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Description */}
+                                    <p className="text-[11px] text-white/60 line-clamp-2 mt-1">{lib.description}</p>
+
+                                    {/* Installed Version Badge */}
+                                    {installed && (
+                                        <div className="mt-2 flex items-center gap-1">
+                                            <Check size={10} className="text-green-400" />
+                                            <span className="text-[9px] text-green-400">Installed v{installedVersion}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     )

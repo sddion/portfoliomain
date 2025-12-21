@@ -42,15 +42,15 @@ export function AppStoreApp() {
                 onClick={() => setSelectedAppId(featuredApp.id)}
             >
                 {/* Background Image - Subtle, no intense overlays */}
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30 transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30 transition-transform duration-700 group-hover:scale-105 pointer-events-none" />
 
                 {/* Gradient for text readability only */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
 
                 {/* Content */}
                 <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                        <div className="max-w-xl">
+                        <div className="max-w-xl pointer-events-none">
                             <div className="flex items-center gap-2 mb-3">
                                 <span className="px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-bold border border-[var(--primary)]/20 uppercase tracking-widest">
                                     Featured
@@ -61,11 +61,13 @@ export function AppStoreApp() {
                                 {featuredApp.description}
                             </p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 relative z-10 pointer-events-auto">
                             {isAppInstalled(featuredApp.id) ? (
                                 <button
+                                    type="button"
                                     onClick={(e) => {
                                         e.stopPropagation()
+                                        e.preventDefault()
                                         // Ensure iconName is valid and present
                                         const icon = <AppIcon iconName={featuredApp.iconName || "package"} size={18} />
                                         openWindow(
@@ -76,18 +78,20 @@ export function AppStoreApp() {
                                             { width: featuredApp.width, height: featuredApp.height }
                                         )
                                     }}
-                                    className="bg-white text-black px-8 py-3 rounded-full font-bold hover:bg-zinc-200 transition-colors shrink-0 flex items-center gap-2"
+                                    className="bg-white text-black px-8 py-3 rounded-full font-bold hover:bg-zinc-200 transition-colors shrink-0 flex items-center gap-2 pointer-events-auto"
                                 >
                                     <AppIcon iconName="external-link" size={18} />
                                     Launch App
                                 </button>
                             ) : (
                                 <button
+                                    type="button"
                                     onClick={(e) => {
                                         e.stopPropagation()
+                                        e.preventDefault()
                                         installApp(featuredApp.id)
                                     }}
-                                    className="bg-[var(--primary)] text-[var(--primary-foreground)] px-8 py-3 rounded-full font-bold hover:bg-[var(--primary)]/90 transition-colors shrink-0 flex items-center gap-2 shadow-lg shadow-[var(--primary)]/20"
+                                    className="bg-[var(--primary)] text-[var(--primary-foreground)] px-8 py-3 rounded-full font-bold hover:bg-[var(--primary)]/90 transition-colors shrink-0 flex items-center gap-2 shadow-lg shadow-[var(--primary)]/20 pointer-events-auto"
                                 >
                                     <AppIcon iconName="download" size={18} />
                                     Get App

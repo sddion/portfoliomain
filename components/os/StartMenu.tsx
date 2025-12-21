@@ -52,7 +52,7 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                                     }}
                                     className="w-full flex items-center gap-3 p-2 hover:bg-[var(--os-surface-hover)] rounded transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm"
                                 >
-                                    <AppIcon iconName={app.iconName} size={18} className="text-[var(--primary)]" />
+                                    <AppIcon iconName={app.iconName} size={18} className={app.iconColor || "text-[var(--primary)]"} />
                                     <span className="truncate">{app.title}</span>
                                 </button>
                             ))}

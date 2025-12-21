@@ -455,7 +455,7 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
             <div className="flex-1 overflow-hidden relative">
                 {activeTab.isHome ? (
                     <div className="h-full overflow-auto bg-[var(--background)]">
-                        <div className="max-w-4xl mx-auto pt-20 px-6 flex flex-col items-center">
+                        <div className="max-w-4xl mx-auto pt-20 pb-24 px-6 flex flex-col items-center">
                             <div className="mb-12 flex flex-col items-center gap-4">
                                 <div className="w-20 h-20 bg-primary/20 rounded-2xl flex items-center justify-center text-primary shadow-2xl shadow-primary/20">
                                     <Globe size={40} />

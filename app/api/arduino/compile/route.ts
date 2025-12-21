@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getOrCache } from '@/lib/Redis'
 
-// Compilation service URL - should be set in environment
+// Compilation service URL - must be set in environment
 const COMPILE_SERVICE_URL = process.env.COMPILE_SERVICE_URL || ''
 
 // Board FQBN mappings for common boards
@@ -44,7 +43,7 @@ export interface CompileResponse {
     output?: string[]
 }
 
-// Fallback: Direct compilation via external service
+// Compile via external Arduino compilation service
 async function compileViaService(request: CompileRequest): Promise<CompileResponse> {
     if (!COMPILE_SERVICE_URL) {
         return {
@@ -88,118 +87,6 @@ async function compileViaService(request: CompileRequest): Promise<CompileRespon
     }
 }
 
-// Mock compilation for development/demo when service is unavailable
-function mockCompile(request: CompileRequest): CompileResponse {
-    const code = request.code || ''
-    const fqbn = BOARD_FQBN_MAP[request.board] || request.board
-    
-    // Basic syntax validation
-    const errors: string[] = []
-    const warnings: string[] = []
-    const output: string[] = []
-
-    output.push(`Arduino Compilation Service (Mock Mode)`)
-    output.push(`Board: ${request.board} (${fqbn})`)
-    output.push(`Sketch size: ${code.length} characters`)
-    output.push(``)
-
-    // Check for common syntax errors
-    const braceOpen = (code.match(/{/g) || []).length
-    const braceClose = (code.match(/}/g) || []).length
-    if (braceOpen !== braceClose) {
-        errors.push(`sketch.ino: error: Mismatched braces. Found ${braceOpen} '{' and ${braceClose} '}'`)
-    }
-
-    const parenOpen = (code.match(/\(/g) || []).length
-    const parenClose = (code.match(/\)/g) || []).length
-    if (parenOpen !== parenClose) {
-        errors.push(`sketch.ino: error: Mismatched parentheses. Found ${parenOpen} '(' and ${parenClose} ')'`)
-    }
-
-    // Check for setup() and loop()
-    if (!code.includes('void setup()') && !code.includes('void setup ()')) {
-        errors.push(`sketch.ino: error: 'setup' function not defined`)
-    }
-    if (!code.includes('void loop()') && !code.includes('void loop ()')) {
-        errors.push(`sketch.ino: error: 'loop' function not defined`)
-    }
-
-    // Check for missing semicolons (basic heuristic)
-    const lines = code.split('\n')
-    lines.forEach((line, idx) => {
-        const trimmed = line.trim()
-        // Skip empty lines, comments, preprocessor, braces, control statements
-        if (!trimmed || 
-            trimmed.startsWith('//') || 
-            trimmed.startsWith('#') ||
-            trimmed.startsWith('/*') ||
-            trimmed.startsWith('*') ||
-            trimmed.endsWith('{') ||
-            trimmed.endsWith('}') ||
-            trimmed === '{' ||
-            trimmed === '}' ||
-            trimmed.startsWith('if') ||
-            trimmed.startsWith('else') ||
-            trimmed.startsWith('for') ||
-            trimmed.startsWith('while') ||
-            trimmed.startsWith('switch') ||
-            trimmed.startsWith('case') ||
-            trimmed.startsWith('default') ||
-            trimmed.startsWith('void ') ||
-            trimmed.startsWith('int ') ||
-            trimmed.startsWith('float ') ||
-            trimmed.startsWith('char ') ||
-            trimmed.startsWith('bool ') ||
-            trimmed.startsWith('class ') ||
-            trimmed.startsWith('struct ') ||
-            trimmed.startsWith('public:') ||
-            trimmed.startsWith('private:') ||
-            trimmed.startsWith('protected:')) {
-            return
-        }
-        // Check if line ends with statement and no semicolon
-        if (trimmed.match(/[a-zA-Z0-9_)\]"']$/) && !trimmed.endsWith(')') && 
-            !trimmed.includes('//') && trimmed.length > 3) {
-            warnings.push(`sketch.ino:${idx + 1}: warning: Possible missing semicolon`)
-        }
-    })
-
-    if (errors.length > 0) {
-        output.push(`Compilation failed with ${errors.length} error(s)`)
-        return {
-            success: false,
-            errors,
-            warnings,
-            output
-        }
-    }
-
-    // Calculate mock binary size based on code complexity
-    const baseSize = fqbn.includes('esp32') ? 250000 : fqbn.includes('esp8266') ? 200000 : 15000
-    const codeSize = Math.round(code.length * 1.2)
-    const totalSize = baseSize + codeSize
-
-    output.push(`Compiling sketch...`)
-    output.push(`Linking...`)
-    output.push(`Creating binary...`)
-    output.push(``)
-    output.push(`Sketch uses ${totalSize} bytes (${Math.round(totalSize / (fqbn.includes('esp') ? 1310720 : 32256) * 100)}%) of program storage space.`)
-    output.push(`Global variables use ${Math.round(totalSize * 0.15)} bytes of dynamic memory.`)
-    output.push(``)
-    output.push(`Compilation complete.`)
-
-    // Generate mock binary (just a placeholder - real compilation needed for actual flashing)
-    const mockBinary = Buffer.from(`MOCK_BINARY_${Date.now()}_${fqbn}`).toString('base64')
-
-    return {
-        success: true,
-        binary: mockBinary,
-        size: totalSize,
-        warnings,
-        output
-    }
-}
-
 export async function POST(request: NextRequest) {
     try {
         const body: CompileRequest = await request.json()
@@ -218,17 +105,16 @@ export async function POST(request: NextRequest) {
             }, { status: 400 })
         }
 
-        // Try compilation service
-        if (COMPILE_SERVICE_URL) {
-            const result = await compileViaService(body)
-            return NextResponse.json(result)
+        // Compile via service - no fallback, real compilation only
+        if (!COMPILE_SERVICE_URL) {
+            return NextResponse.json({
+                success: false,
+                errors: ['Compilation service not configured. Set COMPILE_SERVICE_URL environment variable.']
+            }, { status: 503 })
         }
 
-        // No service configured
-        return NextResponse.json({
-            success: false,
-            errors: ['Compilation service not configured. Set COMPILE_SERVICE_URL environment variable.']
-        }, { status: 503 })
+        const result = await compileViaService(body)
+        return NextResponse.json(result)
 
     } catch (error: any) {
         console.error('Compile API Error:', error)

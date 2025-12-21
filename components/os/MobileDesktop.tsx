@@ -14,6 +14,7 @@ import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 import { LoginScreen } from "@/components/os/LoginScreen"
+import { RecruiterWelcome } from "@/components/os/RecruiterWelcome"
 import { PWAInstall } from "@/components/os/PWAInstall"
 import { cn } from "@/lib/utils"
 
@@ -25,21 +26,16 @@ export function MobileDesktop() {
     const [currentPage, setCurrentPage] = useState(0)
     const [isRecentsOpen, setIsRecentsOpen] = useState(false)
 
-    // Recruiter Detection
+    // Recruiter Detection via URL parameter
     React.useEffect(() => {
         if (typeof window !== "undefined" && isLoggedIn) {
             const params = new URLSearchParams(window.location.search)
             if (params.get("ref") === "recruiter" && !settings.isRecruiter) {
                 updateSettings({ isRecruiter: true })
-
-                // Show personalized greeting
-                showNotification("Recruiter Access Detected", {
-                    body: "Welcome! I've personalized the OS for your visit. Feel free to explore my projects and resume.",
-                    icon: "favicon.png"
-                })
+                // RecruiterWelcome component handles the welcome message
             }
         }
-    }, [isLoggedIn, settings.isRecruiter, updateSettings, showNotification])
+    }, [isLoggedIn, settings.isRecruiter, updateSettings])
 
     // Handle home state in history
     React.useEffect(() => {
@@ -108,7 +104,7 @@ export function MobileDesktop() {
         return installedApps.map(app => ({
             id: app.id,
             label: app.title,
-            icon: <AppIcon iconName={app.iconName} size={18} />,
+            icon: <AppIcon iconName={app.iconName} size={18} className={app.iconColor} />,
             bg: getAppColor(app.id, app.category),
             content: app.component,
             action: null // Add action if needed, currently unused in original except logic
@@ -430,6 +426,7 @@ export function MobileDesktop() {
 
             <div className="crt-effect pointer-events-none opacity-[0.03] z-[999]" />
             <PWAInstall />
+            <RecruiterWelcome isRecruiter={settings.isRecruiter || false} onComplete={() => { }} />
         </div>
     )
 }

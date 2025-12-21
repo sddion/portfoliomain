@@ -20,14 +20,40 @@ export type IconName =
     | "smartphone" | "bell" | "plus" | "check" | "chevron-left"
     | "monitor" | "droplet" | "ghost" | "external-link" | "download"
 
-interface AppIconProps extends LucideProps {
-    iconName: IconName
-    className?: string
+// Custom PNG icons disabled - they have solid backgrounds that don't look good in the UI
+// Using Lucide SVG icons instead (transparent by default)
+// To re-enable, add entries like: "user": "/icons/about.png"
+const CUSTOM_ICON_MAP: Partial<Record<IconName, string>> = {
+    // Icons with transparent backgrounds can be added here
 }
 
-export function AppIcon({ iconName, className, ...props }: AppIconProps) {
+interface AppIconProps extends Omit<LucideProps, 'ref'> {
+    iconName: IconName
+    className?: string
+    useCustomIcon?: boolean
+}
+
+export function AppIcon({ iconName, className, useCustomIcon = true, size = 24, ...props }: AppIconProps) {
+    const customIconPath = CUSTOM_ICON_MAP[iconName]
+
+    // Use custom PNG icon if available and enabled
+    if (useCustomIcon && customIconPath) {
+        const sizeNum = typeof size === 'number' ? size : parseInt(size, 10) || 24
+        return (
+            <img
+                src={customIconPath}
+                alt={iconName}
+                width={sizeNum}
+                height={sizeNum}
+                className={cn("object-contain", className)}
+                style={{ width: sizeNum, height: sizeNum }}
+            />
+        )
+    }
+
+    // Fallback to Lucide icon
     const LucideIcon = getLucideIcon(iconName)
-    return <LucideIcon className={cn("stroke-current", className)} {...props} />
+    return <LucideIcon className={cn("stroke-current", className)} size={size} {...props} />
 }
 
 function getLucideIcon(name: IconName) {

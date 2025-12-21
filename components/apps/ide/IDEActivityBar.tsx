@@ -1,5 +1,5 @@
 import React from "react"
-import { Files, Library, Settings, GitBranch, Cpu, Wrench } from "lucide-react"
+import { Files, Library, GitBranch, Cpu } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface IDEActivityBarProps {
@@ -33,19 +33,6 @@ export function IDEActivityBar({ activeTab, onTabChange }: IDEActivityBarProps) 
                 isActive={activeTab === "libraries"}
                 onClick={() => onTabChange("libraries")}
                 label="Library Manager"
-            />
-            <ActivityBarItem
-                icon={<Wrench size={22} />}
-                isActive={activeTab === "tools"}
-                onClick={() => onTabChange("tools")}
-                label="Tools"
-            />
-            <div className="flex-1" />
-            <ActivityBarItem
-                icon={<Settings size={22} />}
-                isActive={activeTab === "settings"}
-                onClick={() => onTabChange("settings")}
-                label="Settings"
             />
         </div>
     )

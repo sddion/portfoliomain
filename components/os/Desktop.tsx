@@ -9,6 +9,7 @@ import { WindowFrame } from "@/components/os/WindowFrame"
 import { DesktopIcon } from "./DesktopIcon"
 import { ConkyWidget } from "@/components/os/ConkyWidget"
 import { LoginScreen } from "@/components/os/LoginScreen"
+import { RecruiterWelcome } from "@/components/os/RecruiterWelcome"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 import { useNotifications } from "@/hooks/useNotifications"
 
@@ -18,21 +19,16 @@ export function Desktop() {
     const { isBooting, setBooting, windows, openWindow, isLoggedIn, settings, updateSettings, installedApps, isAppsLoaded } = useWindowManager()
     const { showNotification } = useNotifications()
 
-    // Recruiter Detection
+    // Recruiter Detection via URL parameter
     React.useEffect(() => {
         if (typeof window !== "undefined" && isLoggedIn) {
             const params = new URLSearchParams(window.location.search)
             if (params.get("ref") === "recruiter" && !settings.isRecruiter) {
                 updateSettings({ isRecruiter: true })
-
-                // Show personalized greeting
-                showNotification("Recruiter Access Detected", {
-                    body: "Welcome! I've personalized the OS for your visit. Feel free to explore my projects and resume.",
-                    icon: "favicon.png"
-                })
+                // RecruiterWelcome component handles the welcome message
             }
         }
-    }, [isLoggedIn, settings.isRecruiter, updateSettings, showNotification])
+    }, [isLoggedIn, settings.isRecruiter, updateSettings])
 
     if (!isLoggedIn) {
         return <LoginScreen />
@@ -73,7 +69,7 @@ export function Desktop() {
                         <DesktopIcon
                             key={app.id}
                             label={app.title}
-                            icon={<AppIcon iconName={app.iconName} size={42} className="text-[var(--primary)] drop-shadow-md" />}
+                            icon={<AppIcon iconName={app.iconName} size={42} className={`${app.iconColor || 'text-[var(--primary)]'} drop-shadow-md`} />}
                             onDoubleClick={() => {
                                 requestAnimationFrame(() => {
                                     openWindow(app.id, app.title, app.component, <AppIcon iconName={app.iconName} size={18} />, { width: app.width, height: app.height })
@@ -96,6 +92,9 @@ export function Desktop() {
             </div>
 
             <Taskbar />
+
+            {/* Recruiter Welcome Overlay */}
+            <RecruiterWelcome isRecruiter={settings.isRecruiter || false} onComplete={() => { }} />
         </div>
     )
 }
