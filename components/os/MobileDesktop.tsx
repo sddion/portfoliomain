@@ -122,7 +122,16 @@ export function MobileDesktop() {
 
     const activeApp = useMemo(() => apps.find(app => app.id === activeWindowId), [apps, activeWindowId])
 
+    const goFullscreen = () => {
+        if (typeof document !== 'undefined' && !document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {
+                // Silently fail if not supported or blocked
+            })
+        }
+    }
+
     const handleAppClick = (app: any) => {
+        goFullscreen()
         if (app.action) {
             app.action()
         } else {
@@ -135,6 +144,7 @@ export function MobileDesktop() {
     }
 
     const goHome = () => {
+        goFullscreen()
         if (activeWindowId) {
             window.history.pushState({ appId: 'home' }, "", "/")
             closeWindow(activeWindowId)
@@ -143,6 +153,7 @@ export function MobileDesktop() {
     }
 
     const toggleRecents = () => {
+        goFullscreen()
         setIsRecentsOpen(prev => !prev)
     }
 
@@ -157,7 +168,7 @@ export function MobileDesktop() {
 
     return (
         <div
-            className="h-[100dvh] w-screen bg-cover bg-center text-[var(--foreground)] overflow-hidden relative font-sans transition-[background-image] duration-500 ease-in-out"
+            className="h-[100dvh] w-screen bg-cover bg-center text-[var(--foreground)] overflow-hidden relative font-sans transition-[background-image] duration-500 ease-in-out scrollbar-hide"
             style={{
                 backgroundImage: settings.wallpaper ? `url(${settings.wallpaper})` : "var(--mobile-bg)",
                 backgroundSize: 'cover',
@@ -169,7 +180,10 @@ export function MobileDesktop() {
             {/* Status Bar - Always on top */}
             <div
                 className="absolute top-0 left-0 right-0 z-[150] px-6 h-12 flex items-center justify-between text-[var(--foreground)] text-xs bg-gradient-to-b from-black/40 to-transparent cursor-pointer transition-colors backdrop-blur-[2px]"
-                onClick={() => setNotificationOpen(prev => !prev)}
+                onClick={() => {
+                    goFullscreen()
+                    setNotificationOpen(prev => !prev)
+                }}
             >
                 <span className="font-bold tracking-tight">{format(time, "HH:mm")}</span>
                 <div className="flex items-center gap-3">
@@ -197,6 +211,7 @@ export function MobileDesktop() {
                 dragElastic={0.2}
                 onDragEnd={(_, info) => {
                     if (info.offset.y > 60) {
+                        goFullscreen()
                         setNotificationOpen(true)
                     }
                 }}
@@ -217,7 +232,7 @@ export function MobileDesktop() {
                         onClick={() => setIsRecentsOpen(false)}
                     >
                         <div className="text-white/50 text-xs font-black uppercase tracking-[0.2em] mb-12">Recent Applications</div>
-                        <div className="w-full flex gap-6 overflow-x-auto px-12 pb-12 snap-x no-scrollbar">
+                        <div className="w-full flex gap-6 overflow-x-auto px-12 pb-12 snap-x scrollbar-hide">
                             {windows.length === 0 ? (
                                 <div className="w-full text-center text-white/30 py-20 flex flex-col items-center gap-4">
                                     <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center opacity-50">
@@ -299,6 +314,7 @@ export function MobileDesktop() {
                                 </button>
                                 <button
                                     onClick={() => {
+                                        goFullscreen()
                                         closeWindow(activeApp.id)
                                         window.history.back()
                                     }}
@@ -310,7 +326,7 @@ export function MobileDesktop() {
                         </div>
 
                         {/* App Content - Full Screen Padding Adjustment */}
-                        <div className="flex-1 overflow-y-auto custom-scrollbar relative">
+                        <div className="flex-1 overflow-y-auto scrollbar-hide relative">
                             {activeApp.content}
                         </div>
 

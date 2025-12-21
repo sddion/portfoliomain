@@ -17,12 +17,8 @@ export function SettingsApp() {
     ]
 
     const handleThemeChange = (newTheme: string) => {
-        // Apply theme immediately for visual feedback
-        setTheme(newTheme)
-        // Defer the settings sync to avoid blocking interaction
-        requestAnimationFrame(() => {
-            updateSettings({ theme: newTheme })
-        })
+        // Just update settings, WindowManager will handle the theme sync
+        updateSettings({ theme: newTheme })
     }
 
     return (

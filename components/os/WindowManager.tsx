@@ -73,19 +73,18 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (authLoading) return
 
-        if (settings?.theme) {
-            if (settings.theme !== theme) {
-                setTheme(settings.theme)
+        const activeTheme = settings?.theme
+        if (activeTheme) {
+            if (activeTheme !== theme) {
+                setTheme(activeTheme)
             }
         } else {
-            // Set default theme if not specified in settings
+            // Set default theme only if no theme is set at all (first time or reset)
             const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
             const defaultTheme = isMobile ? 'ubuntu' : 'ocean'
 
-            if (theme !== defaultTheme) {
+            if (theme !== defaultTheme && !theme) {
                 setTheme(defaultTheme)
-                // We don't necessarily need to persist the default theme immediately to Supabase
-                // unless the user explicitly changes it, but setting it in state helps consistency.
             }
         }
     }, [settings?.theme, theme, setTheme, authLoading])
