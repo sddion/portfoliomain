@@ -77,7 +77,6 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
     }, [activeTabId, activeTab.isHome])
 
     // Handle initialUrl and incoming events
-    const initialUrlProcessed = useRef(false)
     useEffect(() => {
         const handleOpenUrl = (url: string) => {
             if (url && url !== "about:home") {
@@ -95,9 +94,8 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
             }
         }
 
-        if (initialUrl && !initialUrlProcessed.current) {
+        if (initialUrl) {
             handleOpenUrl(initialUrl)
-            initialUrlProcessed.current = true
         }
 
         const onOpenUrlEvent = (e: any) => {
@@ -485,10 +483,9 @@ export function BrowserApp({ initialUrl }: { initialUrl?: string }) {
                                     <div className="h-[1px] flex-1 translate-y-[1px] bg-[var(--os-border)] ml-4" />
                                 </div>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                     {[
                                         { label: "Blog", url: "sddionOS://blog", icon: <BookOpen size={24} className="text-primary" />, color: "bg-primary/10" },
-                                        { label: "Infinite", url: "https://sddion.vercel.app", icon: <RotateCcw size={24} className="text-purple-500" />, color: "bg-purple-500/10" },
                                         { label: "GitHub", url: "https://github.com/sddion", icon: <Github size={24} className="text-white" />, color: "bg-zinc-800" },
                                         { label: "GitLab", url: "https://gitlab.com/0xd3ds3c", icon: <Gitlab size={24} className="text-orange-500" />, color: "bg-orange-500/10" },
                                         { label: "WhatsApp", url: "https://wa.me/918822972607", icon: <MessageCircle size={24} className="text-green-500" />, color: "bg-green-500/10" },
