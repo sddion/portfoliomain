@@ -1,5 +1,5 @@
 // increment version on each deploy 
-const CACHE_VERSION = 'v20251220-232344';
+const CACHE_VERSION = 'v20251221-181021';
 const CACHE_NAME = `sddionOS-cache-${CACHE_VERSION}`;
 
 // Only cache critical static assets

@@ -48,56 +48,23 @@ export function AppStoreApp() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
 
                 {/* Content */}
-                <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                        <div className="max-w-xl pointer-events-none">
-                            <div className="flex items-center gap-2 mb-3">
-                                <span className="px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-bold border border-[var(--primary)]/20 uppercase tracking-widest">
-                                    Featured
+                <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end pointer-events-none">
+                    <div className="max-w-xl">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-bold border border-[var(--primary)]/20 uppercase tracking-widest">
+                                Featured
+                            </span>
+                            {isAppInstalled(featuredApp.id) && (
+                                <span className="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-xs font-bold border border-green-500/20 uppercase tracking-widest">
+                                    Installed
                                 </span>
-                            </div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">{featuredApp.title}</h1>
-                            <p className="text-zinc-300 text-sm md:text-base line-clamp-2">
-                                {featuredApp.description}
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-3 relative z-10 pointer-events-auto">
-                            {isAppInstalled(featuredApp.id) ? (
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        e.preventDefault()
-                                        // Ensure iconName is valid and present
-                                        const icon = <AppIcon iconName={featuredApp.iconName || "package"} size={18} />
-                                        openWindow(
-                                            featuredApp.id,
-                                            featuredApp.title,
-                                            featuredApp.component,
-                                            icon,
-                                            { width: featuredApp.width, height: featuredApp.height }
-                                        )
-                                    }}
-                                    className="bg-white text-black px-8 py-3 rounded-full font-bold hover:bg-zinc-200 transition-colors shrink-0 flex items-center gap-2 pointer-events-auto"
-                                >
-                                    <AppIcon iconName="external-link" size={18} />
-                                    Launch App
-                                </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        e.preventDefault()
-                                        installApp(featuredApp.id)
-                                    }}
-                                    className="bg-[var(--primary)] text-[var(--primary-foreground)] px-8 py-3 rounded-full font-bold hover:bg-[var(--primary)]/90 transition-colors shrink-0 flex items-center gap-2 shadow-lg shadow-[var(--primary)]/20 pointer-events-auto"
-                                >
-                                    <AppIcon iconName="download" size={18} />
-                                    Get App
-                                </button>
                             )}
                         </div>
+                        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">{featuredApp.title}</h1>
+                        <p className="text-zinc-300 text-sm md:text-base line-clamp-2">
+                            {featuredApp.description}
+                        </p>
+                        <p className="text-zinc-500 text-xs mt-3">Click to view details</p>
                     </div>
                 </div>
             </div>
@@ -232,7 +199,7 @@ function AppCard({ app, isInstalled, onInstall, onUninstall, onOpen, onClick }: 
             className="bg-zinc-900 border border-white/5 rounded-xl p-4 hover:border-white/10 transition-colors group flex flex-col min-h-[200px] cursor-pointer hover:bg-zinc-800/50"
         >
             <div className="flex items-start justify-between mb-3 gap-2">
-                <div className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400 group-hover:scale-105 transition-transform shrink-0">
+                <div className={`w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 ${app.iconColor || 'text-zinc-400'}`}>
                     <AppIcon iconName={app.iconName} size={24} />
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0">

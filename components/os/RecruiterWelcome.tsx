@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Sparkles, ArrowRight, Briefcase, Code, Rocket } from "lucide-react"
+import { ArrowRight, Briefcase, Code, Layers, Terminal, Heart } from "lucide-react"
 
 interface RecruiterWelcomeProps {
     isRecruiter: boolean
@@ -36,26 +36,50 @@ export function RecruiterWelcome({ isRecruiter, onComplete }: RecruiterWelcomePr
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-xl"
+                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-black via-zinc-900 to-black"
                 >
-                    {/* Animated background particles */}
+                    {/* Animated gradient orbs */}
                     <div className="absolute inset-0 overflow-hidden">
-                        {[...Array(20)].map((_, i) => (
+                        <motion.div
+                            className="absolute w-96 h-96 bg-primary/20 rounded-full blur-3xl"
+                            animate={{
+                                x: [0, 100, 0],
+                                y: [0, -50, 0],
+                                scale: [1, 1.2, 1],
+                            }}
+                            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                            style={{ top: '20%', left: '10%' }}
+                        />
+                        <motion.div
+                            className="absolute w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"
+                            animate={{
+                                x: [0, -80, 0],
+                                y: [0, 60, 0],
+                                scale: [1, 1.3, 1],
+                            }}
+                            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                            style={{ bottom: '20%', right: '15%' }}
+                        />
+                    </div>
+
+                    {/* Floating particles */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        {[...Array(15)].map((_, i) => (
                             <motion.div
                                 key={i}
-                                className="absolute w-2 h-2 bg-primary/30 rounded-full"
+                                className="absolute w-1 h-1 bg-white/30 rounded-full"
                                 initial={{
                                     x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
-                                    y: (typeof window !== 'undefined' ? window.innerHeight : 800) + 50
+                                    y: (typeof window !== 'undefined' ? window.innerHeight : 800) + 20
                                 }}
                                 animate={{
-                                    y: -50,
-                                    x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000)
+                                    y: -20,
+                                    opacity: [0, 1, 0]
                                 }}
                                 transition={{
-                                    duration: 3 + Math.random() * 3,
+                                    duration: 4 + Math.random() * 4,
                                     repeat: Infinity,
-                                    delay: Math.random() * 2,
+                                    delay: Math.random() * 3,
                                     ease: "linear"
                                 }}
                             />
@@ -70,83 +94,107 @@ export function RecruiterWelcome({ isRecruiter, onComplete }: RecruiterWelcomePr
                         transition={{ type: "spring", damping: 20, stiffness: 100 }}
                         className="relative z-10 text-center max-w-2xl mx-4"
                     >
-                        {/* Icon with glow */}
+                        {/* Animated icon with ring */}
                         <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: 0.2, type: "spring" }}
-                            className="relative mx-auto mb-8 w-24 h-24"
+                            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                            className="relative mx-auto mb-8 w-28 h-28"
                         >
-                            <div className="absolute inset-0 bg-primary/30 rounded-full blur-2xl animate-pulse" />
-                            <div className="relative w-24 h-24 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center shadow-2xl shadow-primary/50">
-                                <Sparkles size={40} className="text-white" />
+                            {/* Animated ring */}
+                            <motion.div
+                                className="absolute inset-0 rounded-full border-2 border-primary/50"
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                            />
+                            <motion.div
+                                className="absolute inset-2 rounded-full border border-dashed border-white/20"
+                                animate={{ rotate: -360 }}
+                                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                            />
+                            {/* Glow */}
+                            <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
+                            {/* Icon */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/70 rounded-xl flex items-center justify-center shadow-2xl shadow-primary/40">
+                                    <Terminal size={32} className="text-white" />
+                                </div>
                             </div>
                         </motion.div>
 
-                        {/* Welcome text */}
+                        {/* Welcome text with gradient */}
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="text-4xl md:text-5xl font-bold text-white mb-4"
+                            className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent"
                         >
-                            Hey there! 👋
+                            Welcome!
                         </motion.h1>
 
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="text-xl text-white/80 mb-8"
+                            className="text-lg md:text-xl text-white/70 mb-8 max-w-md mx-auto"
                         >
-                            Thanks for checking out my portfolio!
+                            Thanks for taking the time to explore my work. I built this portfolio to showcase what I can do.
                         </motion.p>
 
-                        {/* Feature highlights */}
+                        {/* Feature highlights with stagger animation */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}
-                            className="flex flex-wrap justify-center gap-4 mb-10"
+                            className="flex flex-wrap justify-center gap-3 mb-10"
                         >
-                            <div className="flex items-center gap-2 bg-white/5 backdrop-blur px-4 py-2 rounded-full border border-white/10">
-                                <Code size={16} className="text-primary" />
-                                <span className="text-sm text-white/70">Live Projects</span>
-                            </div>
-                            <div className="flex items-center gap-2 bg-white/5 backdrop-blur px-4 py-2 rounded-full border border-white/10">
-                                <Briefcase size={16} className="text-primary" />
-                                <span className="text-sm text-white/70">Experience</span>
-                            </div>
-                            <div className="flex items-center gap-2 bg-white/5 backdrop-blur px-4 py-2 rounded-full border border-white/10">
-                                <Rocket size={16} className="text-primary" />
-                                <span className="text-sm text-white/70">Full-Stack Skills</span>
-                            </div>
+                            {[
+                                { icon: Code, label: "Live Projects", color: "text-blue-400" },
+                                { icon: Briefcase, label: "Experience", color: "text-green-400" },
+                                { icon: Layers, label: "Full-Stack", color: "text-purple-400" },
+                            ].map((item, i) => (
+                                <motion.div
+                                    key={item.label}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.5 + i * 0.1 }}
+                                    className="flex items-center gap-2 bg-white/5 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10"
+                                >
+                                    <item.icon size={16} className={item.color} />
+                                    <span className="text-sm text-white/80">{item.label}</span>
+                                </motion.div>
+                            ))}
                         </motion.div>
 
-                        {/* CTA Button */}
+                        {/* CTA Button with glow */}
                         <motion.button
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.6, type: "spring" }}
+                            transition={{ delay: 0.8, type: "spring" }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={handleContinue}
-                            className="group relative px-8 py-4 bg-primary text-primary-foreground font-bold rounded-full text-lg shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-shadow"
+                            className="group relative px-10 py-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold rounded-full text-lg shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all overflow-hidden"
                         >
-                            <span className="flex items-center gap-2">
-                                Let's Go
+                            <span className="relative z-10 flex items-center gap-2">
+                                Explore
                                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                             </span>
-                            <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <motion.div
+                                className="absolute inset-0 bg-white/20"
+                                initial={{ x: '-100%' }}
+                                whileHover={{ x: '100%' }}
+                                transition={{ duration: 0.5 }}
+                            />
                         </motion.button>
 
                         <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: 0.8 }}
-                            className="mt-6 text-sm text-white/40"
+                            transition={{ delay: 1 }}
+                            className="mt-8 text-xs text-white/30 flex items-center justify-center gap-1"
                         >
-                            Feel free to explore everything — it's all interactive!
+                            Built with <Heart size={12} className="text-red-400 fill-red-400" /> by Sanju
                         </motion.p>
                     </motion.div>
                 </motion.div>
@@ -154,3 +202,4 @@ export function RecruiterWelcome({ isRecruiter, onComplete }: RecruiterWelcomePr
         </AnimatePresence>
     )
 }
+

@@ -189,11 +189,14 @@ export function IDEApp() {
         // Initialize Tree-Sitter (optional - for syntax highlighting)
         const initParser = async () => {
             try {
-                const treeSitterModule = await import("web-tree-sitter") as any
-                const TreeSitter = treeSitterModule.default || treeSitterModule
-                await TreeSitter.init()
-                const parser = new TreeSitter()
-                const Lang = await TreeSitter.Language.load('/tree-sitter-cpp.wasm')
+                const { Parser, Language } = await import("web-tree-sitter")
+                await Parser.init({
+                    locateFile(scriptName: string) {
+                        return `/${scriptName}`
+                    }
+                })
+                const parser = new Parser()
+                const Lang = await Language.load('/tree-sitter-cpp.wasm')
                 parser.setLanguage(Lang)
                 parserRef.current = parser
                 setParserReady(true)
