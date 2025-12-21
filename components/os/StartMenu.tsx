@@ -45,8 +45,10 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                                 <button
                                     key={app.id}
                                     onClick={() => {
-                                        openWindow(app.id, app.title, app.component, <AppIcon iconName={app.iconName} size={18} />, { width: app.width, height: app.height })
                                         onClose()
+                                        requestAnimationFrame(() => {
+                                            openWindow(app.id, app.title, app.component, <AppIcon iconName={app.iconName} size={18} />, { width: app.width, height: app.height })
+                                        })
                                     }}
                                     className="w-full flex items-center gap-3 p-2 hover:bg-[var(--os-surface-hover)] rounded transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm"
                                 >
@@ -61,12 +63,14 @@ export function StartMenu({ isOpen, onClose }: StartMenuProps) {
                             {/* Static System Actions */}
                             <button
                                 onClick={() => {
-                                    openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <AppIcon iconName="globe" size={18} />)
                                     onClose()
+                                    requestAnimationFrame(() => {
+                                        openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <AppIcon iconName="globe" size={18} />)
+                                    })
                                 }}
                                 className="w-full flex items-center gap-3 p-2 hover:bg-[var(--os-surface-hover)] rounded transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm"
                             >
-                                <AppIcon iconName="globe" size={18} className="text-white" />
+                                <AppIcon iconName="globe" size={18} className="text-[var(--primary)]" />
                                 <span>GitHub</span>
                             </button>
 

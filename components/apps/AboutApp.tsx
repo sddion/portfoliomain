@@ -1,9 +1,23 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { BrowserApp } from "@/components/apps/BrowserApp"
 import { Globe, ExternalLink } from "lucide-react"
 
-function ServerStatusDisplay() {
+const UptimeBars = React.memo(function UptimeBars({ statusColor }: { statusColor: string }) {
+    const bars = useMemo(() => Array.from({ length: 90 }), [])
+    return (
+        <div className="flex gap-[1px] h-6 overflow-hidden rounded">
+            {bars.map((_, i) => (
+                <div
+                    key={i}
+                    className={`flex-1 min-w-[2px] ${i < 89 ? 'bg-[#3d5a80]' : statusColor}`}
+                />
+            ))}
+        </div>
+    )
+})
+
+const ServerStatusDisplay = React.memo(function ServerStatusDisplay() {
     const [status, setStatus] = useState<'checking' | 'up' | 'down'>('checking')
     const [uptime, setUptime] = useState(100)
 
@@ -67,16 +81,8 @@ function ServerStatusDisplay() {
                         </div>
                     </div>
 
-                    {/* Uptime Bars */}
-                    <div className="flex gap-[1px] h-6 overflow-hidden rounded">
-                        {Array.from({ length: 90 }).map((_, i) => (
-                            <div
-                                key={i}
-                                className={`flex-1 min-w-[2px] ${i < 89 ? 'bg-[#3d5a80]' : statusColor
-                                    }`}
-                            />
-                        ))}
-                    </div>
+                    {/* Uptime Bars - Memoized */}
+                    <UptimeBars statusColor={statusColor} />
                 </div>
             </div>
 
@@ -91,7 +97,8 @@ function ServerStatusDisplay() {
             </a>
         </div>
     )
-}
+})
+
 
 export function AboutApp() {
     const { openWindow } = useWindowManager()
@@ -154,7 +161,9 @@ export function AboutApp() {
                 <div className="flex gap-4 pt-4">
                     <button
                         onClick={() => {
-                            openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />)
+                            requestAnimationFrame(() => {
+                                openWindow("browser", "Browser", <BrowserApp initialUrl="https://github.com/sddion" />, <Globe size={18} />)
+                            })
                         }}
                         className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100 font-bold"
                     >
@@ -162,7 +171,9 @@ export function AboutApp() {
                     </button>
                     <button
                         onClick={() => {
-                            openWindow("browser", "Browser", <BrowserApp initialUrl="https://gitlab.com/0xd3ds3c" />, <Globe size={18} />)
+                            requestAnimationFrame(() => {
+                                openWindow("browser", "Browser", <BrowserApp initialUrl="https://gitlab.com/0xd3ds3c" />, <Globe size={18} />)
+                            })
                         }}
                         className="text-[var(--primary)] hover:underline opacity-80 hover:opacity-100 font-bold"
                     >

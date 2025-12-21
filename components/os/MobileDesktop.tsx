@@ -122,8 +122,10 @@ export function MobileDesktop() {
             app.action()
         } else {
             window.history.pushState({ appId: app.id }, "", `#${app.id}`)
-            openWindow(app.id, app.label, app.content)
             setIsRecentsOpen(false)
+            requestAnimationFrame(() => {
+                openWindow(app.id, app.label, app.content)
+            })
         }
     }
 

@@ -17,8 +17,12 @@ export function SettingsApp() {
     ]
 
     const handleThemeChange = (newTheme: string) => {
+        // Apply theme immediately for visual feedback
         setTheme(newTheme)
-        updateSettings({ theme: newTheme })
+        // Defer the settings sync to avoid blocking interaction
+        requestAnimationFrame(() => {
+            updateSettings({ theme: newTheme })
+        })
     }
 
     // Sync theme from Supabase on load
