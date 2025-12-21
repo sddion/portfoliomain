@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { Github, Code, Terminal, Quote, Activity, Bluetooth } from "lucide-react"
 import { format } from "date-fns"
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { useBluetooth } from "@/hooks/useBluetooth"
 
@@ -18,13 +18,13 @@ interface LanguageStats {
 }
 
 export function ConkyWidget() {
-    const { windows } = useWindowManager()
+    const { windows, settings } = useWindowManager()
     const [stats, setStats] = useState<GithubStats | null>(null)
     const [time, setTime] = useState(new Date())
     const [logs, setLogs] = useState<string[]>([])
     const [languages, setLanguages] = useState<{ name: string; percent: number; color: string; textColor: string }[]>([])
     const [memMetrics, setMemMetrics] = useState({ used: 0, total: 0 })
-    const { device, requestDevice, supported, connecting } = useBluetooth()
+    const { device, requestDevice, supported, connecting } = useBluetooth(settings?.bluetoothEnabled !== false)
 
     useEffect(() => {
         const updateMem = () => {
@@ -274,6 +274,9 @@ export function ConkyWidget() {
                     <DialogTitle className="flex items-center gap-2 text-[var(--foreground)] uppercase tracking-widest border-b border-[var(--primary)]/20 pb-2">
                         <Terminal size={16} /> System Control Panel
                     </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        Detailed system status, GitHub telemetry, and active tech stack.
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="grid grid-cols-2 gap-4 mt-4">

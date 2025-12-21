@@ -21,6 +21,7 @@ import { IDETabs } from "@/components/apps/ide/IDETabs"
 import { IDEStatusBar } from "@/components/apps/ide/IDEStatusBar"
 import { IDEMenuBar } from "@/components/apps/ide/IDEMenuBar"
 import { IDEFile, IDESettings, ArduinoLibrary, BoardPlatform } from "@/components/apps/ide/types"
+import { MobileIDE } from "@/components/apps/ide/MobileIDE"
 import { useUserStore } from "@/hooks/use-user-store"
 import {
     Activity, Play, Save, Vibrate, CheckCircle2,
@@ -731,6 +732,95 @@ Folder structure:
         } finally {
             setFlashing(false)
         }
+    }
+
+    if (isMobile) {
+        return (
+            <>
+                <MobileIDE
+                    files={files}
+                    activeFileId={activeFileId}
+                    onFileClick={handleFileClick}
+                    onUpdateContent={handleUpdateContent}
+                    onBuild={handleBuild}
+                    onFlash={handleFlash}
+                    compiling={compiling}
+                    status={status}
+                    consoleOutput={consoleOutput}
+                    settings={settings}
+                    onDelete={handleFileDelete}
+                    onCreateFile={handleCreateFile}
+                    onOpenSettings={() => setShowSettingsModal(true)}
+                    onCommit={handleCommit}
+                    onGitInit={handleGitInit}
+                    onGitPush={handleGitPush}
+                    onGitPull={handleGitPull}
+                />
+                {showSettingsModal && (
+                    <div className="fixed inset-0 bg-black/80 z-[500] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setShowSettingsModal(false)}>
+                        <div className="bg-[#1c1c1c] rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden border border-white/10" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
+                                <h2 className="text-lg font-bold text-white">IDE Settings</h2>
+                                <button onClick={() => setShowSettingsModal(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-6">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest pl-1">Target Board</label>
+                                    <select
+                                        value={settings.board}
+                                        onChange={e => updateSettings({ board: e.target.value })}
+                                        className="w-full bg-[#252525] border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 outline-none focus:ring-1 focus:ring-[#c0ff33]/30"
+                                    >
+                                        {availableBoards.map(b => <option key={b} value={b}>{b}</option>)}
+                                    </select>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest pl-1">Baud Rate</label>
+                                    <select
+                                        value={settings.baudRate}
+                                        onChange={e => updateSettings({ baudRate: Number(e.target.value) })}
+                                        className="w-full bg-[#252525] border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 outline-none focus:ring-1 focus:ring-[#c0ff33]/30"
+                                    >
+                                        {[9600, 115200, 921600].map(b => <option key={b} value={b}>{b}</option>)}
+                                    </select>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest pl-1">Editor Font Size</label>
+                                    <div className="flex items-center gap-4">
+                                        <input
+                                            type="range"
+                                            value={settings.fontSize}
+                                            onChange={e => updateSettings({ fontSize: Number(e.target.value) })}
+                                            className="flex-1 accent-[#c0ff33]"
+                                            min={10}
+                                            max={24}
+                                        />
+                                        <span className="text-sm font-bold w-6 text-center">{settings.fontSize}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between pt-2">
+                                    <span className="text-sm font-medium text-zinc-300">Minimap</span>
+                                    <button
+                                        onClick={() => updateSettings({ minimap: !settings.minimap })}
+                                        className={cn(
+                                            "w-12 h-6 rounded-full relative transition-colors duration-200",
+                                            settings.minimap ? "bg-[#c0ff33]" : "bg-zinc-800"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-200",
+                                            settings.minimap ? "left-7" : "left-1"
+                                        )} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </>
+        )
     }
 
     return (

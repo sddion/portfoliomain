@@ -4,13 +4,25 @@ import { BrowserApp } from "@/components/apps/BrowserApp"
 import { Globe, ExternalLink } from "lucide-react"
 
 const UptimeBars = React.memo(function UptimeBars({ statusColor }: { statusColor: string }) {
-    const bars = useMemo(() => Array.from({ length: 90 }), [])
+    const [barCount, setBarCount] = useState(90)
+
+    useEffect(() => {
+        const updateCount = () => {
+            setBarCount(window.innerWidth < 640 ? 40 : 90)
+        }
+        updateCount()
+        window.addEventListener('resize', updateCount)
+        return () => window.removeEventListener('resize', updateCount)
+    }, [])
+
+    const bars = useMemo(() => Array.from({ length: barCount }), [barCount])
+
     return (
         <div className="flex gap-[1px] h-6 overflow-hidden rounded">
             {bars.map((_, i) => (
                 <div
                     key={i}
-                    className={`flex-1 min-w-[2px] ${i < 89 ? 'bg-[#3d5a80]' : statusColor}`}
+                    className={`flex-1 min-w-[2px] ${i < bars.length - 1 ? 'bg-[#3d5a80]' : statusColor}`}
                 />
             ))}
         </div>

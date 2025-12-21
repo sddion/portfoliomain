@@ -104,7 +104,7 @@ export function MobileDesktop() {
         return installedApps.map(app => ({
             id: app.id,
             label: app.title,
-            icon: <AppIcon iconName={app.iconName} size={18} className={app.iconColor} />,
+            icon: app.icon,
             bg: getAppColor(app.id, app.category),
             content: app.component,
             action: null // Add action if needed, currently unused in original except logic

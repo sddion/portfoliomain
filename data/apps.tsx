@@ -24,8 +24,11 @@ import { BlogApp } from "@/components/apps/BlogApp"
 const ResumeApp = dynamic(() => import("@/components/apps/ResumeApp").then(mod => mod.ResumeApp), { ssr: false })
 const AppStoreApp = dynamic(() => import("@/components/apps/AppStoreApp").then(mod => mod.AppStoreApp), { ssr: false })
 
+import { AppIcon } from "@/components/os/IconManager"
+
 export type AppWithComponent = AppConfig & {
     component: React.ReactNode
+    icon: React.ReactNode
 }
 
 const COMPONENT_MAP: Record<string, React.ReactNode> = {
@@ -47,5 +50,6 @@ const COMPONENT_MAP: Record<string, React.ReactNode> = {
 
 export const INITIAL_APPS: AppWithComponent[] = APPS_METADATA.map(app => ({
     ...app,
-    component: COMPONENT_MAP[app.id] || <div>App not found</div>
+    component: COMPONENT_MAP[app.id] || <div>App not found</div>,
+    icon: <AppIcon iconName={app.iconName} className={app.iconColor} />
 }))

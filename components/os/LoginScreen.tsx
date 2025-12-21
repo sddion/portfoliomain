@@ -402,9 +402,16 @@ export function LoginScreen() {
                         key="lock-screen"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0, y: -100 }}
-                        onClick={() => setStep('selection')}
-                        className="relative h-full w-full flex flex-col items-center justify-between py-20 px-6"
+                        exit={{ opacity: 0, y: -500 }}
+                        drag="y"
+                        dragConstraints={{ top: 0, bottom: 0 }}
+                        dragElastic={0.7}
+                        onDragEnd={(_, info) => {
+                            if (info.offset.y < -100 || info.velocity.y < -500) {
+                                setStep('selection')
+                            }
+                        }}
+                        className="relative h-full w-full flex flex-col items-center justify-between py-24 px-6 select-none touch-none"
                     >
                         {/* Status Icon */}
                         <div className="flex flex-col items-center gap-2">
@@ -436,10 +443,10 @@ export function LoginScreen() {
                         <motion.div
                             animate={{ y: [0, -10, 0] }}
                             transition={{ repeat: Infinity, duration: 2 }}
-                            className="flex flex-col items-center gap-4"
+                            className="flex flex-col items-center gap-4 py-8 pointer-events-none"
                         >
                             <ArrowUp className="text-white/50" />
-                            <span className="text-sm font-bold tracking-[0.2em] text-white/50 uppercase">Tap or Swipe to Unlock</span>
+                            <span className="text-sm font-bold tracking-[0.2em] text-white/50 uppercase">Swipe up to Unlock</span>
                         </motion.div>
                     </motion.div>
                 ) : step === 'selection' ? (

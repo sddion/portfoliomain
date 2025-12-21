@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 // Type definitions for Web Bluetooth API
 interface BluetoothRequestDeviceFilter {
@@ -21,7 +21,7 @@ export interface BluetoothDeviceInfo {
   connected: boolean;
 }
 
-export function useBluetooth() {
+export function useBluetooth(enabled: boolean = true) {
   const [device, setDevice] = useState<BluetoothDeviceInfo | null>(null);
   const [supported, setSupported] = useState(() => {
     return typeof navigator !== "undefined" && "bluetooth" in navigator;
@@ -29,7 +29,24 @@ export function useBluetooth() {
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const disconnect = useCallback(async () => {
+    setDevice(null);
+    setError(null);
+  }, []);
+
+  // Handle auto-disconnection when disabled
+  useEffect(() => {
+    if (!enabled && device) {
+      disconnect();
+    }
+  }, [enabled, device, disconnect]);
+
   const requestDevice = useCallback(async (options?: RequestDeviceOptions) => {
+    if (!enabled) {
+      setError("Bluetooth is currently disabled");
+      return null;
+    }
+
     if (!supported) {
       setError("Web Bluetooth API is not supported in this browser");
       return null;
@@ -81,12 +98,7 @@ export function useBluetooth() {
       setConnecting(false);
       return null;
     }
-  }, [supported]);
-
-  const disconnect = useCallback(async () => {
-    setDevice(null);
-    setError(null);
-  }, []);
+  }, [supported, enabled]);
 
   return {
     supported,

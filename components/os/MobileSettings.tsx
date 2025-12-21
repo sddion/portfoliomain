@@ -32,12 +32,12 @@ interface MobileSettingsProps {
 
 export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
     const [activeSection, setActiveSection] = useState<'main' | 'bluetooth' | 'display' | 'about'>('main')
-    const { device, error, requestDevice } = useBluetooth()
+    const { settings, updateSettings } = useWindowManager()
+    const isBluetoothEnabled = settings?.bluetoothEnabled !== false
+    const { device, error, requestDevice } = useBluetooth(isBluetoothEnabled)
     const [pairedDevices, setPairedDevices] = useState<BluetoothDeviceInfo[]>([])
     const { permission, requestPermission } = useNotifications()
-    const [bluetoothEnabled, setBluetoothEnabled] = useState(true)
     const { theme, setTheme } = useTheme()
-    const { settings, updateSettings } = useWindowManager()
 
     // Mock previously paired devices if native getDevices is not available or empty
     useEffect(() => {
@@ -71,7 +71,7 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
             id: 'bluetooth',
             icon: <Bluetooth size={20} className="text-blue-500" />,
             label: "Bluetooth",
-            value: device?.connected ? "Connected" : "Disconnected",
+            value: isBluetoothEnabled ? (device?.connected ? "Connected" : "Disconnected") : "Off",
             color: "bg-blue-500/10"
         },
         {
@@ -115,29 +115,29 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
         <div className="space-y-6">
             <div className="flex items-center justify-between p-4 bg-[var(--os-surface)] rounded-2xl border border-[var(--os-border)]">
                 <div className="flex items-center gap-3">
-                    <Bluetooth className={cn("transition-colors", bluetoothEnabled ? "text-blue-500" : "text-zinc-500")} />
+                    <Bluetooth className={cn("transition-colors", isBluetoothEnabled ? "text-blue-500" : "text-zinc-500")} />
                     <div>
                         <p className="font-bold">Bluetooth</p>
                         <p className="text-xs text-[var(--muted-foreground)]">
-                            {bluetoothEnabled ? "Visible to nearby devices" : "Currently disabled"}
+                            {isBluetoothEnabled ? "Visible to nearby devices" : "Currently disabled"}
                         </p>
                     </div>
                 </div>
                 <button
-                    onClick={() => setBluetoothEnabled(!bluetoothEnabled)}
+                    onClick={() => updateSettings({ bluetoothEnabled: !isBluetoothEnabled })}
                     className={cn(
                         "w-12 h-6 rounded-full relative transition-colors duration-200",
-                        bluetoothEnabled ? "bg-blue-600" : "bg-zinc-700"
+                        isBluetoothEnabled ? "bg-blue-600" : "bg-zinc-700"
                     )}
                 >
                     <motion.div
-                        animate={{ x: bluetoothEnabled ? 24 : 4 }}
+                        animate={{ x: isBluetoothEnabled ? 24 : 4 }}
                         className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
                     />
                 </button>
             </div>
 
-            {bluetoothEnabled && (
+            {isBluetoothEnabled && (
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -172,6 +172,13 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                 </motion.div>
             )}
 
+            {!isBluetoothEnabled && (
+                <div className="flex flex-col items-center justify-center py-10 opacity-50">
+                    <Bluetooth size={48} className="mb-4 text-zinc-500" />
+                    <p className="text-xs font-bold text-zinc-500">Bluetooth is turned off</p>
+                </div>
+            )}
+
             {error && <p className="text-xs text-red-500 p-2 text-center">{error}</p>}
         </div>
     )
@@ -199,57 +206,6 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                                 {t.icon}
                             </div>
                             <span className="text-xs font-black">{t.label}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <h3 className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest px-2">Typography</h3>
-                <div className="grid grid-cols-1 gap-2">
-                    {[
-                        { id: 'geist', label: 'Geist Sans', font: 'var(--font-geist-sans)' },
-                        { id: 'inter', label: 'Inter', font: 'var(--font-inter)' },
-                        { id: 'roboto', label: 'Roboto', font: 'var(--font-roboto)' },
-                        { id: 'lato', label: 'Lato', font: 'var(--font-lato)' },
-                        { id: 'open-sans', label: 'Open Sans', font: 'var(--font-open-sans)' },
-                    ].map((f) => (
-                        <button
-                            key={f.id}
-                            onClick={() => updateSettings({ font: f.id })}
-                            className={cn(
-                                "flex items-center justify-between p-3 rounded-xl border transition-all active:scale-95",
-                                (settings.font || 'geist') === f.id
-                                    ? "bg-primary/10 border-primary text-primary"
-                                    : "bg-[var(--os-surface)] border-[var(--os-border)] text-zinc-400"
-                            )}
-                            style={{ fontFamily: f.font }}
-                        >
-                            <span className="text-sm">{f.label}</span>
-                            {(settings.font || 'geist') === f.id && <Check size={16} />}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <h3 className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest px-2">Iconography</h3>
-                <div className="grid grid-cols-2 gap-3">
-                    {[
-                        { id: 'lucide', label: 'Lucide' },
-                        { id: 'material', label: 'Material' },
-                    ].map((i) => (
-                        <button
-                            key={i.id}
-                            onClick={() => updateSettings({ iconSet: i.id as any })}
-                            className={cn(
-                                "p-3 rounded-xl border text-center text-sm font-bold transition-all active:scale-95",
-                                (settings.iconSet || 'lucide') === i.id
-                                    ? "bg-primary/10 border-primary text-primary"
-                                    : "bg-[var(--os-surface)] border-[var(--os-border)] text-zinc-400"
-                            )}
-                        >
-                            {i.label}
                         </button>
                     ))}
                 </div>
@@ -311,7 +267,7 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                                             </div>
                                             <div className="flex-1 text-left">
                                                 <p className="text-sm font-bold">{s.label}</p>
-                                                <p className="text-[10px] text-[var(--muted-foreground)] font-medium">{s.id === 'bluetooth' ? (bluetoothEnabled ? s.value : 'Off') : s.value}</p>
+                                                <p className="text-[10px] text-[var(--muted-foreground)] font-medium">{s.id === 'bluetooth' ? (isBluetoothEnabled ? s.value : 'Off') : s.value}</p>
                                             </div>
                                             <div className="text-[var(--muted-foreground)] opacity-20 transition-opacity group-hover:opacity-100">
                                                 <ChevronLeft size={16} className="rotate-180" />

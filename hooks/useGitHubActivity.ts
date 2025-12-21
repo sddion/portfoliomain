@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export interface GitHubCommit {
   sha: string;
@@ -13,6 +13,7 @@ export function useGitHubActivity(username: string, enabled: boolean = true) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
+  const initializedRef = useRef(false);
 
   const fetchRecentCommits = useCallback(async () => {
     if (!enabled || !username) return;
@@ -57,28 +58,30 @@ export function useGitHubActivity(username: string, enabled: boolean = true) {
         (c) => !storedCommitShas.includes(c.sha)
       );
 
+      let results: GitHubCommit[] = [];
       if (newCommits.length > 0) {
         // Save new commit SHAs
         const allShas = recentCommits.map((c) => c.sha).slice(0, 50);
         localStorage.setItem(`github-commits-${username}`, JSON.stringify(allShas));
 
-        // Only trigger notifications after first load (when lastChecked exists)
-        if (lastChecked) {
-          return newCommits;
+        // Only trigger notifications after first load
+        if (initializedRef.current) {
+          results = newCommits;
         }
       }
 
       setCommits(recentCommits);
       setLastChecked(new Date());
+      initializedRef.current = true;
       setLoading(false);
-      return [];
+      return results;
     } catch (err) {
       console.error("Error fetching GitHub activity:", err);
       setError(err instanceof Error ? err.message : "Unknown error");
       setLoading(false);
       return [];
     }
-  }, [username, enabled, lastChecked]);
+  }, [username, enabled]);
 
   // Poll every 5 minutes
   useEffect(() => {
