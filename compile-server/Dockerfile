@@ -15,8 +15,8 @@ RUN arduino-cli core update-index \
     && arduino-cli core install esp32:esp32 \
     && arduino-cli core install esp8266:esp8266
 
-# Install common libraries
-RUN arduino-cli lib install WiFi ArduinoJson Adafruit_NeoPixel FastLED DHT
+# Install common libraries (ignore failures for optional libs)
+RUN arduino-cli lib install ArduinoJson "Adafruit NeoPixel" FastLED || true
 
 WORKDIR /app
 
