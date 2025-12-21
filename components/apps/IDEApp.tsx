@@ -984,7 +984,7 @@ Folder structure:
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 justify-center flex-1">
+                            <div className="flex items-center gap-2">
                                 <button
                                     onClick={handleBuild}
                                     disabled={compiling}

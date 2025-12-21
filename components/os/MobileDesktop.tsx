@@ -49,6 +49,15 @@ export function MobileDesktop() {
         return () => clearInterval(timer)
     }, [])
 
+    // Sync active window with history for back button support
+    React.useEffect(() => {
+        if (isLoggedIn && activeWindowId) {
+            if (window.history.state?.appId !== activeWindowId) {
+                window.history.pushState({ appId: activeWindowId }, "", `#${activeWindowId}`)
+            }
+        }
+    }, [activeWindowId, isLoggedIn])
+
     React.useEffect(() => {
         const handlePopState = (event: PopStateEvent) => {
             if (isRecentsOpen) {
@@ -111,7 +120,7 @@ export function MobileDesktop() {
         }))
     }, [installedApps])
 
-    const activeApp = useMemo(() => apps.find(app => windows.find(w => w.id === app.id)?.isOpen), [apps, windows])
+    const activeApp = useMemo(() => apps.find(app => app.id === activeWindowId), [apps, activeWindowId])
 
     const handleAppClick = (app: any) => {
         if (app.action) {

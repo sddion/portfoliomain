@@ -1,5 +1,4 @@
 
-import React from "react"
 import { IconName } from "@/components/os/IconManager"
 
 export interface AppConfig {

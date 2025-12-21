@@ -191,7 +191,10 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                     {themeOptions.map(t => (
                         <button
                             key={t.id}
-                            onClick={() => setTheme(t.id)}
+                            onClick={() => {
+                                setTheme(t.id)
+                                updateSettings({ theme: t.id })
+                            }}
                             className={cn(
                                 "p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all active:scale-95",
                                 theme === t.id
@@ -250,8 +253,7 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                                         <img src="/icon-192.png" alt="sddionOS" className="w-full h-full object-contain" />
                                     </div>
                                     <div>
-                                        <p className="font-black text-lg">sddionOS Admin</p>
-                                        <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Master Repository Access</p>
+                                        <p className="font-black text-lg">Admin</p>
                                     </div>
                                 </div>
 

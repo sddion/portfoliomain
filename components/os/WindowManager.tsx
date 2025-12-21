@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react"
+import { useTheme } from "next-themes"
 import { useUserStore } from "@/hooks/use-user-store"
 import { INITIAL_APPS, AppWithComponent } from "@/data/apps"
 
@@ -57,6 +58,7 @@ const WindowContext = createContext<WindowContextType | undefined>(undefined)
 
 export function WindowProvider({ children }: { children: ReactNode }) {
     const { user, settings, updateSettings, loading: authLoading } = useUserStore()
+    const { theme, setTheme } = useTheme()
     const [windows, setWindows] = useState<WindowState[]>([])
     const [activeWindowId, setActiveWindowId] = useState<string | null>(null)
     const [isBooting, setBooting] = useState(false)
@@ -66,6 +68,27 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     // App State
     const [installedIds, setInstalledIds] = useState<string[]>([])
     const [isAppsLoaded, setIsAppsLoaded] = useState(false)
+
+    // Sync theme from settings or set default based on device
+    useEffect(() => {
+        if (authLoading) return
+
+        if (settings?.theme) {
+            if (settings.theme !== theme) {
+                setTheme(settings.theme)
+            }
+        } else {
+            // Set default theme if not specified in settings
+            const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+            const defaultTheme = isMobile ? 'ubuntu' : 'ocean'
+
+            if (theme !== defaultTheme) {
+                setTheme(defaultTheme)
+                // We don't necessarily need to persist the default theme immediately to Supabase
+                // unless the user explicitly changes it, but setting it in state helps consistency.
+            }
+        }
+    }, [settings?.theme, theme, setTheme, authLoading])
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !authLoading && user) {
@@ -164,9 +187,25 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const closeWindow = useCallback((id: string) => {
-        setWindows((prev) => prev.filter((w) => w.id !== id))
-        setActiveWindowId(prev => prev === id ? null : prev)
-    }, [])
+        setWindows((prev) => {
+            const updated = prev.filter((w) => w.id !== id)
+
+            // If we closed the active window, find the next one to focus
+            if (activeWindowId === id) {
+                if (updated.length > 0) {
+                    // Find window with highest zIndex
+                    const next = updated.reduce((prev, current) =>
+                        (prev.zIndex > current.zIndex) ? prev : current
+                    )
+                    setActiveWindowId(next.id)
+                } else {
+                    setActiveWindowId(null)
+                }
+            }
+
+            return updated
+        })
+    }, [activeWindowId])
 
     const minimizeWindow = useCallback((id: string) => {
         setWindows((prev) =>

@@ -25,13 +25,6 @@ export function SettingsApp() {
         })
     }
 
-    // Sync theme from Supabase on load
-    useEffect(() => {
-        if (settings.theme && settings.theme !== theme) {
-            setTheme(settings.theme)
-        }
-    }, [settings.theme, theme, setTheme])
-
     return (
         <div className="h-full bg-[var(--background)] text-[var(--foreground)] p-4 sm:p-6 font-sans overflow-y-auto">
             <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 border-b border-[var(--os-border)] pb-2">Appearance Settings</h2>
