@@ -407,18 +407,24 @@ function GitPanel({
         }
     }
 
-    // Save token to localStorage
-    const saveToken = () => {
-        if (authToken.trim()) {
-            localStorage.setItem('git_auth_token', authToken)
-            setShowTokenInput(false)
-        }
-    }
-
-    // Load token on mount
+    // Check for GitHub auth on mount
     React.useEffect(() => {
-        const saved = localStorage.getItem('git_auth_token')
-        if (saved) setAuthToken(saved)
+        const checkGitHubAuth = async () => {
+            try {
+                const { getGitHubToken } = await import('@/lib/Supabase')
+                const token = await getGitHubToken()
+                if (token) {
+                    setAuthToken(token)
+                } else {
+                    const saved = localStorage.getItem('git_auth_token')
+                    if (saved) setAuthToken(saved)
+                }
+            } catch {
+                const saved = localStorage.getItem('git_auth_token')
+                if (saved) setAuthToken(saved)
+            }
+        }
+        checkGitHubAuth()
     }, [])
 
     if (!isInitialized) {
@@ -491,21 +497,44 @@ function GitPanel({
                 </div>
             )}
 
-            {/* Token Input */}
+            {/* GitHub Auth */}
             {showTokenInput && (
                 <div className="px-3 py-2 bg-[#1e1e1e] border-b border-white/5">
-                    <label className="text-[10px] text-white/50 uppercase mb-1 block">GitHub Token (PAT)</label>
-                    <div className="flex gap-1">
-                        <input
-                            type="password"
-                            value={authToken}
-                            onChange={e => setAuthToken(e.target.value)}
-                            placeholder="ghp_xxxxxxxxxxxx"
-                            className="flex-1 bg-[#3c3c3c] border border-black/20 rounded px-2 py-1 text-xs outline-none"
-                        />
-                        <button onClick={saveToken} className="bg-[var(--primary)] text-white px-2 rounded text-xs">Save</button>
-                    </div>
-                    <p className="text-[9px] text-white/30 mt-1">Token stored locally for push/pull</p>
+                    <label className="text-[10px] text-white/50 uppercase mb-2 block">GitHub Authentication</label>
+                    {authToken ? (
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-full bg-[#4caf50] flex items-center justify-center">
+                                    <Check size={12} className="text-white" />
+                                </div>
+                                <span className="text-xs text-[#4caf50]">Connected</span>
+                            </div>
+                            <button
+                                onClick={() => setAuthToken('')}
+                                className="text-[10px] text-white/50 hover:text-red-400"
+                            >
+                                Disconnect
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={async () => {
+                                try {
+                                    const { signInWithGitHub } = await import('@/lib/Supabase')
+                                    await signInWithGitHub()
+                                } catch (e) {
+                                    console.error('GitHub login error:', e)
+                                }
+                            }}
+                            className="w-full py-2 bg-[#24292e] hover:bg-[#2f363d] text-white text-xs font-bold rounded flex items-center justify-center gap-2"
+                        >
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                            </svg>
+                            Sign in with GitHub
+                        </button>
+                    )}
+                    <p className="text-[9px] text-white/30 mt-2">Enables push/pull to your repositories</p>
                 </div>
             )}
 
@@ -644,6 +673,15 @@ function SettingsPanel({ settings, onUpdateSettings }: { settings: IDESettings, 
             </div>
 
             <div className="p-4 space-y-6">
+                <OptionSection title="Appearance">
+                    <SettingDropdown
+                        label="Editor Theme"
+                        value={settings.theme}
+                        options={["vs-dark", "vs", "hc-black"]}
+                        onChange={(v) => onUpdateSettings({ theme: v as string })}
+                    />
+                </OptionSection>
+
                 <OptionSection title="Text Editor">
                     <SettingToggle
                         icon={<Type size={14} />}

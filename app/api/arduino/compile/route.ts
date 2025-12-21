@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getOrCache } from '@/lib/Redis'
 
 // Compilation service URL - should be set in environment
-const COMPILE_SERVICE_URL = process.env.ARDUINO_COMPILE_SERVICE_URL || ''
+const COMPILE_SERVICE_URL = process.env.COMPILE_SERVICE_URL || ''
 
 // Board FQBN mappings for common boards
 const BOARD_FQBN_MAP: Record<string, string> = {
@@ -49,7 +49,7 @@ async function compileViaService(request: CompileRequest): Promise<CompileRespon
     if (!COMPILE_SERVICE_URL) {
         return {
             success: false,
-            errors: ['Compilation service not configured. Set ARDUINO_COMPILE_SERVICE_URL environment variable.']
+            errors: ['Compilation service not configured. Set COMPILE_SERVICE_URL environment variable.']
         }
     }
 
@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(result)
         }
 
-        // Fallback to mock compilation
+        // Fallback to syntax validation (no real binary)
         const result = mockCompile(body)
         return NextResponse.json(result)
 

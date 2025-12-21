@@ -26,7 +26,7 @@ import {
     XCircle, Terminal as TerminalIcon, Monitor,
     Cpu, History, Files as FilesIcon,
     Library, SlidersHorizontal, Plus, X, Copy, Trash2, Plug,
-    RefreshCw
+    RefreshCw, AlignLeft
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -102,7 +102,10 @@ export function IDEApp() {
     // Git authentication
     const [gitToken, setGitToken] = useState<string>('')
 
-    // 1. Initialize useRef
+    // Editor reference for context menu actions
+    const editorRef = useRef<any>(null)
+    const monacoRef = useRef<any>(null)
+
     const parserRef = useRef<Parser | null>(null)
     const [port, setPort] = useState<any>(null)
     const [transport, setTransport] = useState<TransportType | null>(null)
@@ -443,9 +446,41 @@ export function IDEApp() {
         try {
             await GitService.pull()
             addLog("GIT: Pull successful (Files updated in FS - Refresh needed).")
-            // In a real app we would read files back from FS here and update 'files' state
         } catch (e: any) {
             addLog(`GIT ERROR: ${e.message}`)
+        }
+    }
+
+    const handleFormatCode = async () => {
+        if (!activeFile) return
+
+        const isCpp = activeFile.name.endsWith('.cpp') ||
+            activeFile.name.endsWith('.ino') ||
+            activeFile.name.endsWith('.c') ||
+            activeFile.name.endsWith('.h')
+
+        addLog("FORMAT: Formatting code...")
+
+        try {
+            if (isCpp) {
+                const clangFormat = await import('@wasm-fmt/clang-format')
+                await clangFormat.default()
+                const formatted = clangFormat.format(activeFile.content, 'main.cpp', JSON.stringify({
+                    BasedOnStyle: 'Google',
+                    IndentWidth: settings.tabSize,
+                    ColumnLimit: 100
+                }))
+                handleUpdateContent(formatted)
+                addLog("FORMAT: Complete (clang-format)")
+            } else if (activeFile.name.endsWith('.json')) {
+                const formatted = JSON.stringify(JSON.parse(activeFile.content), null, settings.tabSize)
+                handleUpdateContent(formatted)
+                addLog("FORMAT: Complete (JSON)")
+            } else {
+                addLog("FORMAT: Unsupported file type")
+            }
+        } catch (e: any) {
+            addLog(`FORMAT ERROR: ${e.message}`)
         }
     }
 
@@ -627,7 +662,7 @@ export function IDEApp() {
                 addLog("FLASH: Write complete!")
             } else {
                 addLog("FLASH: Mock binary detected - skipping actual flash")
-                addLog("FLASH: (Configure ARDUINO_COMPILE_SERVICE_URL for real compilation)")
+                addLog("FLASH: (Configure COMPILE_SERVICE_URL for real compilation)")
                 setFlashProgress(50)
             }
 
@@ -776,6 +811,9 @@ export function IDEApp() {
                                 <button onClick={() => addLog("Project Saved.")} className="p-1.5 hover:bg-white/10 rounded text-white/60 hover:text-white" title="Save Project">
                                     <Save size={14} />
                                 </button>
+                                <button onClick={handleFormatCode} className="p-1.5 hover:bg-white/10 rounded text-white/60 hover:text-white" title="Format Code (Shift+Alt+F)">
+                                    <AlignLeft size={14} />
+                                </button>
                                 <button className="p-1.5 hover:bg-white/10 rounded text-white/60 hover:text-white" title="Reload Window">
                                     <RefreshCw size={14} />
                                 </button>
@@ -793,12 +831,73 @@ export function IDEApp() {
                                 value={activeFile.content}
                                 theme={settings.theme}
                                 onChange={handleUpdateContent}
-                                onMount={(editor) => {
+                                onMount={(editor, monaco) => {
+                                    editorRef.current = editor
+                                    monacoRef.current = monaco
+
                                     editor.onDidChangeCursorPosition((e) => {
                                         setCursorPos({ line: e.position.lineNumber, col: e.position.column })
                                     })
-                                    // This block is inserted here based on the user's instruction,
-                                    // but it seems to be out of context for an Editor's onMount.
+
+                                    // Add Format Document action
+                                    editor.addAction({
+                                        id: 'format-document',
+                                        label: 'Format Document',
+                                        keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF],
+                                        contextMenuGroupId: '1_modification',
+                                        contextMenuOrder: 1.5,
+                                        run: () => handleFormatCode()
+                                    })
+
+                                    // Add Comment Line action
+                                    editor.addAction({
+                                        id: 'toggle-comment',
+                                        label: 'Toggle Line Comment',
+                                        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Slash],
+                                        contextMenuGroupId: '1_modification',
+                                        contextMenuOrder: 1.6,
+                                        run: () => editor.trigger('keyboard', 'editor.action.commentLine', null)
+                                    })
+
+                                    // Add Duplicate Line action
+                                    editor.addAction({
+                                        id: 'duplicate-line',
+                                        label: 'Duplicate Line',
+                                        keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.DownArrow],
+                                        contextMenuGroupId: '1_modification',
+                                        contextMenuOrder: 1.7,
+                                        run: () => editor.trigger('keyboard', 'editor.action.copyLinesDownAction', null)
+                                    })
+
+                                    // Add Go to Definition placeholder
+                                    editor.addAction({
+                                        id: 'go-to-definition',
+                                        label: 'Go to Definition',
+                                        keybindings: [monaco.KeyCode.F12],
+                                        contextMenuGroupId: 'navigation',
+                                        contextMenuOrder: 1,
+                                        run: () => addLog('Go to Definition: Not available for Arduino sketches')
+                                    })
+
+                                    // Add Find References placeholder
+                                    editor.addAction({
+                                        id: 'find-references',
+                                        label: 'Find All References',
+                                        keybindings: [monaco.KeyMod.Shift | monaco.KeyCode.F12],
+                                        contextMenuGroupId: 'navigation',
+                                        contextMenuOrder: 2,
+                                        run: () => addLog('Find References: Not available for Arduino sketches')
+                                    })
+
+                                    // Add Rename Symbol placeholder
+                                    editor.addAction({
+                                        id: 'rename-symbol',
+                                        label: 'Rename Symbol',
+                                        keybindings: [monaco.KeyCode.F2],
+                                        contextMenuGroupId: '1_modification',
+                                        contextMenuOrder: 1.8,
+                                        run: () => editor.trigger('keyboard', 'editor.action.rename', null)
+                                    })
                                 }}
                                 options={{
                                     fontSize: settings.fontSize,
@@ -809,7 +908,17 @@ export function IDEApp() {
                                     tabSize: settings.tabSize,
                                     scrollBeyondLastLine: false,
                                     automaticLayout: true,
-                                    padding: { top: 16 }
+                                    padding: { top: 16 },
+                                    contextmenu: true,
+                                    quickSuggestions: true,
+                                    suggestOnTriggerCharacters: true,
+                                    bracketPairColorization: { enabled: true },
+                                    autoClosingBrackets: 'always',
+                                    autoClosingQuotes: 'always',
+                                    formatOnPaste: true,
+                                    folding: true,
+                                    foldingHighlight: true,
+                                    showFoldingControls: 'mouseover'
                                 }}
                             />
                         ) : (

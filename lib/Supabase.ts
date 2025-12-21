@@ -22,10 +22,6 @@ export const supabase = createClient(
 
 let authPromise: Promise<any> | null = null
 
-/**
- * Helper to ensure user is logged in anonymously
- * Deduplicates concurrent requests to prevent multiple sign-ins
- */
 export async function ensureAnonymousAuth() {
   if (authPromise) return authPromise
 
@@ -46,11 +42,9 @@ export async function ensureAnonymousAuth() {
         return null
       }
       
-      // Attempt to sync profile with previous session based on IP
       try {
         const { data: { session: newSession } } = await supabase.auth.getSession()
         if (newSession?.access_token) {
-          // Fetch public IP
           let publicIp = null
           try {
             const ipRes = await fetch('https://ipapi.co/json/')
@@ -75,11 +69,74 @@ export async function ensureAnonymousAuth() {
   
       return authData.user
     } finally {
-      // Clear promise after a short delay to allow fresh checks later if needed,
-      // but keep it long enough to cover React Strict Mode double-invocations
       setTimeout(() => { authPromise = null }, 1000)
     }
   })()
 
   return authPromise
 }
+
+/**
+ * Sign in with GitHub OAuth via Supabase
+ * Returns GitHub access token that can be used for Git operations
+ */
+export async function signInWithGitHub() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    options: {
+      scopes: 'repo read:user user:email',
+      redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined
+    }
+  })
+  
+  if (error) {
+    console.error('GitHub OAuth error:', error)
+    throw error
+  }
+  
+  return data
+}
+
+/**
+ * Get current GitHub provider token if user is logged in via GitHub
+ */
+export async function getGitHubToken(): Promise<string | null> {
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  if (!session) return null
+  
+  // Check if user logged in via GitHub
+  if (session.user?.app_metadata?.provider === 'github') {
+    return session.provider_token || null
+  }
+  
+  return null
+}
+
+/**
+ * Get current user info including GitHub details
+ */
+export async function getCurrentUser() {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+}
+
+/**
+ * Sign out current user
+ */
+export async function signOut() {
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    console.error('Sign out error:', error)
+    throw error
+  }
+}
+
+/**
+ * Check if user is authenticated with GitHub
+ */
+export async function isGitHubAuthenticated(): Promise<boolean> {
+  const { data: { session } } = await supabase.auth.getSession()
+  return session?.user?.app_metadata?.provider === 'github'
+}
+
