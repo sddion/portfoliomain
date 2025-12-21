@@ -75,19 +75,18 @@ export function WindowProvider({ children }: { children: ReactNode }) {
 
         const activeTheme = settings?.theme
         if (activeTheme) {
+            // Only update if it's actually different from current mounted theme
             if (activeTheme !== theme) {
                 setTheme(activeTheme)
             }
-        } else {
-            // Set default theme only if no theme is set at all (first time or reset)
+        } else if (!theme) {
+            // No theme set yet and no theme in settings, apply environment default
             const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
             const defaultTheme = isMobile ? 'ubuntu' : 'ocean'
-
-            if (theme !== defaultTheme && !theme) {
-                setTheme(defaultTheme)
-            }
+            setTheme(defaultTheme)
         }
-    }, [settings?.theme, theme, setTheme, authLoading])
+        // Removed 'theme' from dependencies to prevent feedback loops when setting theme locally
+    }, [settings?.theme, setTheme, authLoading])
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !authLoading && user) {

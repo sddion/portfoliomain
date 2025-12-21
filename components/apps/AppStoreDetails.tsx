@@ -56,7 +56,7 @@ export function AppStoreDetails({ appId, onBack }: AppDetailsProps) {
                 <span className="font-bold text-lg">Back to Store</span>
             </div>
 
-            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700/20 p-4 md:p-8">
+            <div className="flex-1 overflow-y-auto scrollbar-hide p-4 md:p-8" style={{ overscrollBehaviorY: 'contain' }}>
                 <div className="max-w-4xl mx-auto space-y-8">
 
                     {/* App Hero */}

@@ -89,7 +89,7 @@ export function AppStoreApp() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700/20 active:scrollbar-thumb-zinc-600/50">
+            <div className="flex-1 overflow-y-auto scrollbar-hide" style={{ overscrollBehaviorY: 'contain' }}>
                 <div className="p-4 md:p-8 max-w-7xl mx-auto pb-24 md:pb-8">
 
                     {/* Header / Search */}

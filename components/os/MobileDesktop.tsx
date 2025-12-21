@@ -3,12 +3,10 @@
 import React, { useState, useMemo } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { useNotifications } from "@/hooks/useNotifications"
-import { AppIcon } from "@/components/os/IconManager"
 
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
 import { Battery, Wifi, MessageCircle, Activity, X, Minus } from "lucide-react"
-import { AppWithComponent } from "@/data/apps"
 
 import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
@@ -20,7 +18,7 @@ import { cn } from "@/lib/utils"
 
 export function MobileDesktop() {
     const { windows, openWindow, closeWindow, activeWindowId, isLoggedIn, settings, updateSettings, installedApps, isAppsLoaded } = useWindowManager()
-    const { notifications, showNotification } = useNotifications()
+    const { notifications } = useNotifications()
     const [time, setTime] = useState(new Date())
     const [notificationOpen, setNotificationOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
@@ -326,7 +324,10 @@ export function MobileDesktop() {
                         </div>
 
                         {/* App Content - Full Screen Padding Adjustment */}
-                        <div className="flex-1 overflow-y-auto scrollbar-hide relative">
+                        <div
+                            className="flex-1 overflow-y-auto scrollbar-hide relative"
+                            style={{ overscrollBehaviorY: 'contain' }}
+                        >
                             {activeApp.content}
                         </div>
 

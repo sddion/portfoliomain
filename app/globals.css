@@ -119,11 +119,13 @@
   --os-border: #6272a4;
 }
 
+html,
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow: hidden;
+  overscroll-behavior: none;
   /* Desktop env shouldn't scroll overall */
 }
 
@@ -148,15 +150,26 @@ body {
 
 /* Hide scrollbar for mobile */
 .scrollbar-hide {
-  -ms-overflow-style: none;
+  -ms-overflow-style: none !important;
   /* IE and Edge */
-  scrollbar-width: none;
+  scrollbar-width: none !important;
   /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;
+  display: none !important;
   /* Chrome, Safari and Opera */
+}
+
+/* Aggressive mobile scrollbar hide */
+@media (max-width: 768px) {
+  .flex-1.overflow-y-auto {
+    scrollbar-width: none !important;
+  }
+
+  .flex-1.overflow-y-auto::-webkit-scrollbar {
+    display: none !important;
+  }
 }
 
 .crt-effect {

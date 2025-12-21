@@ -7,7 +7,7 @@ import { useWindowManager } from "@/components/os/WindowManager"
 
 export function SettingsApp() {
     const { theme, setTheme } = useTheme()
-    const { settings, updateSettings } = useWindowManager()
+    const { updateSettings } = useWindowManager()
 
     const themes = [
         { id: "dark", label: "Cyberpunk", color: "bg-[#00ff41]", icon: <Monitor size={20} /> },
@@ -17,7 +17,8 @@ export function SettingsApp() {
     ]
 
     const handleThemeChange = (newTheme: string) => {
-        // Just update settings, WindowManager will handle the theme sync
+        // Apply immediately for visual feedback, and update settings to persist
+        setTheme(newTheme)
         updateSettings({ theme: newTheme })
     }
 

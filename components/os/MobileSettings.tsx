@@ -192,7 +192,8 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                         <button
                             key={t.id}
                             onClick={() => {
-                                // Just update settings, WindowManager will handle the theme sync
+                                // Apply immediately for visual feedback, and update settings to persist
+                                setTheme(t.id)
                                 updateSettings({ theme: t.id })
                             }}
                             className={cn(
@@ -244,7 +245,7 @@ export function MobileSettings({ isOpen, onClose }: MobileSettingsProps) {
                         </h1>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide" style={{ overscrollBehaviorY: 'contain' }}>
                         {activeSection === 'main' ? (
                             <>
                                 {/* User Profile Card */}
