@@ -1,10 +1,10 @@
 import React from "react"
-import { Files, Library, Settings, Search, GitGraph, Cpu } from "lucide-react"
+import { Files, Library, Settings, GitGraph, Cpu } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface IDEActivityBarProps {
-    activeTab: "explorer" | "search" | "libraries" | "git" | "settings" | "boards"
-    onTabChange: (tab: "explorer" | "search" | "libraries" | "git" | "settings" | "boards") => void
+    activeTab: "explorer" | "libraries" | "git" | "settings" | "boards"
+    onTabChange: (tab: "explorer" | "libraries" | "git" | "settings" | "boards") => void
 }
 
 export function IDEActivityBar({ activeTab, onTabChange }: IDEActivityBarProps) {
@@ -15,12 +15,6 @@ export function IDEActivityBar({ activeTab, onTabChange }: IDEActivityBarProps) 
                 isActive={activeTab === "explorer"}
                 onClick={() => onTabChange("explorer")}
                 label="Explorer"
-            />
-            <ActivityBarItem
-                icon={<Search size={24} />}
-                isActive={activeTab === "search"}
-                onClick={() => onTabChange("search")}
-                label="Search"
             />
             <ActivityBarItem
                 icon={<GitGraph size={24} />}

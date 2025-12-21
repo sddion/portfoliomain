@@ -84,7 +84,7 @@ export function AppIcon({ iconName, className, ...props }: AppIconProps) {
         // Convert Lucide 'size' prop to MUI fontSize style if present
         const style = props.size ? { fontSize: props.size, ...props.style } : props.style
         // FORCE fill-current to respect text colors
-        return <MuiIcon className={cn("fill-current", className)} style={style} />
+        return <MuiIcon className={cn("fill-current", className)} style={{ ...style, color: 'inherit' }} />
     }
 
     // Lucide Icons

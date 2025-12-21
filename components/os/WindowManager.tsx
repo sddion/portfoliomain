@@ -65,7 +65,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     const [isAppsLoaded, setIsAppsLoaded] = useState(false)
 
     useEffect(() => {
-        if (!authLoading && user) {
+        if (typeof window !== 'undefined' && !authLoading && user) {
             // Check if user was previously "logged in" to the OS UI
             const storedLogin = localStorage.getItem("sddionOS_login")
             if (storedLogin) {
@@ -76,23 +76,19 @@ export function WindowProvider({ children }: { children: ReactNode }) {
 
     // Load installed apps
     useEffect(() => {
-        // Simulate a small delay for the skeleton effect if desired, or just load
-        const loadApps = () => {
-            const storedApps = localStorage.getItem("sddionOS_installed_apps")
-            if (storedApps) {
-                try {
-                    setInstalledIds(JSON.parse(storedApps))
-                } catch (e) {
-                    setInstalledIds(INITIAL_APPS.filter(a => a.isDefault).map(a => a.id))
-                }
-            } else {
+        if (typeof window === 'undefined') return
+
+        const storedApps = localStorage.getItem("sddionOS_installed_apps")
+        if (storedApps) {
+            try {
+                setInstalledIds(JSON.parse(storedApps))
+            } catch (e) {
                 setInstalledIds(INITIAL_APPS.filter(a => a.isDefault).map(a => a.id))
             }
-            setIsAppsLoaded(true)
+        } else {
+            setInstalledIds(INITIAL_APPS.filter(a => a.isDefault).map(a => a.id))
         }
-
-        // Small delay to make sure skeleton is visible (optional, remove setTimeout for instant load)
-        setTimeout(loadApps, 500)
+        setIsAppsLoaded(true)
     }, [])
 
     const login = useCallback(() => {

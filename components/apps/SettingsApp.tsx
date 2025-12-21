@@ -63,7 +63,7 @@ export function SettingsApp() {
                     <h3 className="text-sm font-bold text-[var(--muted-foreground)] uppercase tracking-wider">Typography</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {[
-                            { id: 'geist', label: 'Geist (Default)', font: 'var(--font-geist-sans)' },
+                            { id: 'geist', label: 'Geist', font: 'var(--font-geist-sans)' },
                             { id: 'inter', label: 'Inter', font: 'var(--font-inter)' },
                             { id: 'roboto', label: 'Roboto', font: 'var(--font-roboto)' },
                             { id: 'lato', label: 'Lato', font: 'var(--font-lato)' },

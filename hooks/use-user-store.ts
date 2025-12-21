@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase, ensureAnonymousAuth } from '@/lib/Supabase'
 import { User } from '@supabase/supabase-js'
 
+import { IDESettings } from '@/components/apps/ide/types'
+
 export interface UserSettings {
   wallpaper?: string
   theme?: string
@@ -10,6 +12,7 @@ export interface UserSettings {
   lastSeen?: string
   font?: string
   iconSet?: 'lucide' | 'material'
+  ide?: IDESettings
   [key: string]: any
 }
 
@@ -17,7 +20,19 @@ export function useUserStore() {
   const [user, setUser] = useState<User | null>(null)
   const [settings, setSettings] = useState<UserSettings>({ 
     iconSet: 'lucide', 
-    font: 'geist' 
+    font: 'geist',
+    ide: {
+        board: "ESP32 Dev Module",
+        baudRate: 115200,
+        fontSize: 14,
+        fontFamily: "'Fira Code', monospace",
+        verbose: false,
+        theme: "vs-dark",
+        tabSize: 4,
+        wordWrap: "off",
+        minimap: true,
+        lineNumbers: "on"
+    }
   })
   const [loading, setLoading] = useState(true)
 

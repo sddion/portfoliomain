@@ -52,7 +52,7 @@ export function AppStoreApp() {
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div className="max-w-xl">
                             <div className="flex items-center gap-2 mb-3">
-                                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20 uppercase tracking-widest">
+                                <span className="px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-bold border border-[var(--primary)]/20 uppercase tracking-widest">
                                     Featured
                                 </span>
                             </div>
@@ -66,7 +66,15 @@ export function AppStoreApp() {
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation()
-                                        openWindow(featuredApp.id, featuredApp.title, featuredApp.component, <AppIcon iconName={featuredApp.iconName} size={18} />, { width: featuredApp.width, height: featuredApp.height })
+                                        // Ensure iconName is valid and present
+                                        const icon = <AppIcon iconName={featuredApp.iconName || "package"} size={18} />
+                                        openWindow(
+                                            featuredApp.id,
+                                            featuredApp.title,
+                                            featuredApp.component,
+                                            icon,
+                                            { width: featuredApp.width, height: featuredApp.height }
+                                        )
                                     }}
                                     className="bg-white text-black px-8 py-3 rounded-full font-bold hover:bg-zinc-200 transition-colors shrink-0 flex items-center gap-2"
                                 >
@@ -79,7 +87,7 @@ export function AppStoreApp() {
                                         e.stopPropagation()
                                         installApp(featuredApp.id)
                                     }}
-                                    className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-500 transition-colors shrink-0 flex items-center gap-2 shadow-lg shadow-blue-500/20"
+                                    className="bg-[var(--primary)] text-[var(--primary-foreground)] px-8 py-3 rounded-full font-bold hover:bg-[var(--primary)]/90 transition-colors shrink-0 flex items-center gap-2 shadow-lg shadow-[var(--primary)]/20"
                                 >
                                     <AppIcon iconName="download" size={18} />
                                     Get App
@@ -97,7 +105,7 @@ export function AppStoreApp() {
             {/* Desktop Sidebar */}
             <div className="hidden md:flex w-64 border-r border-white/5 bg-zinc-900/50 backdrop-blur-xl flex-col p-4 shrink-0">
                 <div className="flex items-center gap-2 px-2 py-4 mb-4">
-                    <AppIcon iconName="package" className="text-blue-500" size={24} />
+                    <AppIcon iconName="package" className="text-[var(--primary)]" size={24} />
                     <span className="font-bold text-lg tracking-tight">App Store</span>
                 </div>
 
@@ -119,7 +127,7 @@ export function AppStoreApp() {
 
                         {/* Mobile Header Title */}
                         <div className="flex md:hidden items-center gap-2 mb-2">
-                            <AppIcon iconName="package" className="text-blue-500" size={20} />
+                            <AppIcon iconName="package" className="text-[var(--primary)]" size={20} />
                             <span className="font-bold text-lg">App Store</span>
                         </div>
 
@@ -130,7 +138,8 @@ export function AppStoreApp() {
                                 placeholder="Search apps..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-blue-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-600"
+
+                                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-[var(--primary)]/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-600"
                             />
                         </div>
                     </div>
@@ -177,7 +186,7 @@ function SidebarItem({ icon, label, active, onClick }: { icon: any, label: strin
         <button
             onClick={onClick}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${active
-                ? "bg-blue-600/10 text-blue-400"
+                ? "bg-[var(--primary)]/10 text-[var(--primary)]"
                 : "text-zinc-400 hover:text-zinc-100 hover:bg-white/5"
                 }`}
         >
@@ -192,7 +201,7 @@ function MobileTab({ icon, label, active, onClick }: { icon: any, label: string,
         <button
             onClick={onClick}
             className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${active
-                ? "text-blue-400"
+                ? "text-[var(--primary)]"
                 : "text-zinc-500 hover:text-zinc-300"
                 }`}
         >
@@ -224,17 +233,19 @@ function AppCard({ app, isInstalled, onInstall, onUninstall, onOpen, onClick }: 
                 </div>
                 <div className="flex flex-col items-end gap-1">
                     {app.isNew && (
-                        <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-bold border border-blue-500/20 uppercase tracking-widest">
+                        <span className="px-2 py-0.5 rounded-full bg-[var(--primary)]/20 text-[var(--primary)] text-[10px] font-bold border border-[var(--primary)]/20 uppercase tracking-widest">
                             New
                         </span>
                     )}
-                    {/* Rating Badge */}
-                    <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-zinc-950 border border-white/5">
-                        <AppIcon iconName="star" size={10} className="text-amber-400 fill-amber-400" />
-                        <span className="text-xs font-medium text-zinc-300">
-                            {loading || averageRating === 0 ? "New" : averageRating}
-                        </span>
-                    </div>
+                    {/* Rating Badge - Only show if there are actual ratings */}
+                    {!loading && averageRating > 0 && (
+                        <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-zinc-950 border border-white/5">
+                            <AppIcon iconName="star" size={10} className="text-amber-400 fill-amber-400" />
+                            <span className="text-xs font-medium text-zinc-300">
+                                {averageRating}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -275,7 +286,7 @@ function AppCard({ app, isInstalled, onInstall, onUninstall, onOpen, onClick }: 
                             e.stopPropagation()
                             onInstall()
                         }}
-                        className="px-5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shadow-lg shadow-blue-500/20"
+                        className="px-5 py-1.5 rounded-full bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-[var(--primary-foreground)] text-xs font-semibold transition-colors shadow-lg shadow-[var(--primary)]/20"
                     >
                         Get
                     </button>

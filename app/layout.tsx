@@ -314,7 +314,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable} ${inter.variable} ${roboto.variable} ${lato.variable} ${openSans.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -347,7 +347,7 @@ export default function RootLayout({
 
       </head>
       <body
-        className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${inter.variable} ${roboto.variable} ${lato.variable} ${openSans.variable} antialiased bg-neutral-950 text-neutral-50`}
+        className={`font-sans antialiased bg-neutral-950 text-neutral-50`}
         suppressHydrationWarning
       >
         <ThemeProvider

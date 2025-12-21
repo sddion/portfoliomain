@@ -74,19 +74,20 @@ export function MobileDesktop() {
 
     const getAppColor = (appId: string, category: string) => {
         const colorMap: Record<string, string> = {
-            "terminal": "bg-zinc-800",
+            "terminal": "bg-[#0c0c0c]", // Keep terminal dark/black
             "sys-monitor": "bg-emerald-600",
             "iot-control": "bg-blue-600",
-            "about": "bg-zinc-800",
-            "projects": "bg-zinc-800",
-            "experience": "bg-zinc-800",
-            "resume": "bg-zinc-800",
-            "browser": "bg-blue-600",
+            "about": "bg-[#1e1e1e]", // Neutral
+            "projects": "bg-[#1e1e1e]",
+            "experience": "bg-[#1e1e1e]",
+            "resume": "bg-[#1e1e1e]",
+            "browser": "bg-[var(--primary)]", // Themed browser icon
             "blog": "bg-teal-600",
             "img2bytes": "bg-cyan-600",
             "esp32-flasher": "bg-orange-600",
-            "studio": "bg-zinc-800",
-            "app-store": "bg-blue-500",
+            "studio": "bg-[#1e1e1e]",
+            "app-store": "bg-[var(--primary)]", // Themed App Store
+            "settings": "bg-zinc-600",
         }
 
         if (colorMap[appId]) return colorMap[appId]

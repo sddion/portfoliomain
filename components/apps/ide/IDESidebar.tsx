@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 import { IDEFile, IDESettings, ArduinoLibrary, BoardPlatform } from "./types"
 
 interface IDESidebarProps {
-    activeTab: "explorer" | "search" | "libraries" | "git" | "settings" | "boards"
+    activeTab: "explorer" | "libraries" | "git" | "settings" | "boards"
     files: IDEFile[]
     activeFileId: string | null
     onFileClick: (id: string) => void
@@ -21,11 +21,17 @@ interface IDESidebarProps {
     sidebarWidth: number
     libraries?: ArduinoLibrary[]
     platforms?: BoardPlatform[]
+    onCommit?: (message: string, fileIds: string[]) => void
+    onGitInit?: () => void
+    onGitPush?: () => void
+    onGitPull?: () => void
+    onGitRemote?: (url: string) => void
 }
 
 export function IDESidebar({
     activeTab, files, activeFileId, onFileClick, onFileDelete,
-    onCreateFile, onCreateFolder, settings, onUpdateSettings, sidebarWidth, libraries, platforms
+    onCreateFile, onCreateFolder, settings, onUpdateSettings, sidebarWidth, libraries, platforms,
+    onCommit, onGitInit, onGitPush, onGitPull, onGitRemote
 }: IDESidebarProps) {
 
     // Global creation state for the sidebar interactions
@@ -62,7 +68,14 @@ export function IDESidebar({
     }
 
     if (activeTab === "git") {
-        return <GitPanel files={files} />
+        return <GitPanel
+            files={files}
+            onCommit={onCommit}
+            onInit={onGitInit}
+            onPush={onGitPush}
+            onPull={onGitPull}
+            onRemote={onGitRemote}
+        />
     }
 
     if (activeTab === "explorer") {
@@ -335,9 +348,40 @@ function InlineCreateInput({ type, depth, onConfirm, onCancel }: {
     )
 }
 
-function GitPanel({ files }: { files: IDEFile[] }) {
+function GitPanel({
+    files, onCommit, onInit, onPush, onPull, onRemote
+}: {
+    files: IDEFile[],
+    onCommit?: (msg: string, ids: string[]) => void,
+    onInit?: () => void,
+    onPush?: () => void,
+    onPull?: () => void,
+    onRemote?: (url: string) => void
+}) {
     const modifiedFiles = files.filter(f => f.isModified)
     const [message, setMessage] = useState("")
+    const [isInitialized, setIsInitialized] = useState(false)
+    const [remoteUrl, setRemoteUrl] = useState("")
+    const [showRemoteInput, setShowRemoteInput] = useState(false)
+
+    if (!isInitialized) {
+        return (
+            <div className="h-full flex flex-col bg-[#252526] text-[#cccccc] items-center justify-center p-4 text-center">
+                <GitGraph size={48} className="opacity-20 mb-4" />
+                <p className="text-sm font-bold mb-2">No Repository Found</p>
+                <p className="text-xs opacity-60 mb-4">Initialize a git repository to track changes in this workspace.</p>
+                <button
+                    onClick={() => {
+                        setIsInitialized(true)
+                        if (onInit) onInit()
+                    }}
+                    className="bg-[var(--primary)] text-white text-xs font-bold py-1.5 px-4 rounded hover:opacity-90"
+                >
+                    Initialize Repository
+                </button>
+            </div>
+        )
+    }
 
     return (
         <div className="h-full flex flex-col bg-[#252526] text-[#cccccc]">
@@ -345,11 +389,40 @@ function GitPanel({ files }: { files: IDEFile[] }) {
                 <span className="flex items-center gap-2"><GitGraph size={14} /> Source Control</span>
                 <div className="flex gap-1">
                     <button className="p-1 hover:bg-white/10 rounded" title="Commit"><Check size={14} /></button>
-                    <button className="p-1 hover:bg-white/10 rounded" title="Refresh"><Activity size={14} /></button>
+                    <button onClick={() => setShowRemoteInput(!showRemoteInput)} className="p-1 hover:bg-white/10 rounded" title="Add Remote"><Activity size={14} /></button>
                 </div>
             </div>
 
+            {showRemoteInput && (
+                <div className="px-4 py-2 bg-[#1e1e1e] border-b border-white/5">
+                    <div className="flex gap-1">
+                        <input
+                            value={remoteUrl}
+                            onChange={e => setRemoteUrl(e.target.value)}
+                            placeholder="https://github.com/..."
+                            className="flex-1 bg-[#3c3c3c] border border-black/20 rounded px-2 py-1 text-xs outline-none"
+                        />
+                        <button
+                            onClick={() => {
+                                if (onRemote) onRemote(remoteUrl)
+                                setShowRemoteInput(false)
+                            }}
+                            className="bg-[#007acc] text-white px-2 rounded text-xs"
+                        >OK</button>
+                    </div>
+                </div>
+            )}
+
             <div className="p-4 flex flex-col gap-4 overflow-y-auto">
+                {/* Actions */}
+                <div className="flex gap-2">
+                    <button onClick={() => onPull && onPull()} className="flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-xs py-1.5 rounded flex items-center justify-center gap-2">
+                        <ChevronDown size={12} /> Pull
+                    </button>
+                    <button onClick={() => onPush && onPush()} className="flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-xs py-1.5 rounded flex items-center justify-center gap-2">
+                        Push <ChevronRight size={12} />
+                    </button>
+                </div>
                 {/* Message Input */}
                 <div className="flex flex-col gap-2">
                     <textarea
@@ -359,7 +432,19 @@ function GitPanel({ files }: { files: IDEFile[] }) {
                         value={message}
                         onChange={e => setMessage(e.target.value)}
                     />
-                    <button className="bg-[var(--primary)] text-white text-xs font-bold py-1.5 rounded hover:opacity-90 transition-opacity">
+                    <button
+                        onClick={() => {
+                            if (message.trim() && modifiedFiles.length > 0 && onCommit) {
+                                onCommit(message.trim(), modifiedFiles.map(f => f.id))
+                                setMessage("")
+                            }
+                        }}
+                        disabled={!message.trim() || modifiedFiles.length === 0}
+                        className={cn(
+                            "bg-[var(--primary)] text-white text-xs font-bold py-1.5 rounded hover:opacity-90 transition-opacity",
+                            (!message.trim() || modifiedFiles.length === 0) && "opacity-50 cursor-not-allowed"
+                        )}
+                    >
                         Commit
                     </button>
                     <button className="bg-[#007acc] text-white text-xs font-bold py-1.5 rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-2">

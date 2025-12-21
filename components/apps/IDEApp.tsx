@@ -1,4 +1,15 @@
 "use client"
+import { useWindowManager } from "@/components/os/WindowManager"
+import type { Transport as TransportType } from "esptool-js"
+import type { Parser } from "web-tree-sitter"
+import { GitService } from "./ide/git-service"
+
+// Polyfill for Navigator Serial if plain TS doesn't know it
+declare global {
+    interface Navigator {
+        serial: any
+    }
+}
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Editor from "@monaco-editor/react"
@@ -13,8 +24,9 @@ import { useUserStore } from "@/hooks/use-user-store"
 import {
     Activity, Play, Save, Vibrate, CheckCircle2,
     XCircle, Terminal as TerminalIcon, Monitor,
-    Cpu, History, Files as FilesIcon, Search as SearchIcon,
-    Library, SlidersHorizontal, Menu, Plus, X
+    Cpu, History, Files as FilesIcon,
+    Library, SlidersHorizontal, Plus, X, Copy, Trash2, Plug,
+    RefreshCw
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -42,12 +54,15 @@ export function IDEApp() {
     // Core State
     const [files, setFiles] = useState<IDEFile[]>([])
     const [activeFileId, setActiveFileId] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState<"explorer" | "search" | "libraries" | "git" | "settings" | "boards">("explorer")
+    const [activeTab, setActiveTab] = useState<"explorer" | "libraries" | "git" | "settings" | "boards">("explorer")
     const [isMobile, setIsMobile] = useState(false)
     const [showMobileSidebar, setShowMobileSidebar] = useState(false)
 
     // Status State
-    const [settings, setSettings] = useState<IDESettings>({
+    const { settings: globalSettings, updateSettings: updateGlobalSettings } = useWindowManager()
+
+    // Fallback if settings are not yet loaded or if ide is undefined
+    const settings = globalSettings.ide || {
         board: "ESP32 Dev Module",
         baudRate: 115200,
         fontSize: 14,
@@ -58,7 +73,7 @@ export function IDEApp() {
         wordWrap: "off",
         minimap: true,
         lineNumbers: "on"
-    })
+    }
 
     const [status, setStatus] = useState<"idle" | "building" | "success" | "error">("idle")
     const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 })
@@ -79,7 +94,56 @@ export function IDEApp() {
     const [platforms, setPlatforms] = useState<BoardPlatform[]>([])
 
     // 1. Initialize useRef
-    const parserRef = useRef<any>(null)
+    const parserRef = useRef<Parser | null>(null)
+    const [port, setPort] = useState<any>(null)
+    const [transport, setTransport] = useState<TransportType | null>(null)
+
+    const addLog = (msg: string) => {
+        setConsoleOutput(prev => [...prev.slice(-99), `[${new Date().toLocaleTimeString()}] ${msg}`])
+    }
+
+
+    // Handlers
+    const handleConnect = async () => {
+        const nav = navigator as any
+        if (!nav.serial) {
+            alert("Web Serial API not supported in this browser.")
+            return
+        }
+
+        try {
+            const p = await nav.serial.requestPort()
+            await p.open({ baudRate: settings.baudRate })
+            setPort(p)
+            setIsSerialConnected(true)
+
+            // Create transport/loader instance
+            const { Transport } = await import("esptool-js")
+            const t = new Transport(p)
+            setTransport(t)
+            // We don't init loader yet, we do that on flash
+
+            addLog(`SYSTEM: Connected to serial port.`)
+        } catch (e: any) {
+            console.error(e)
+            addLog(`ERROR: Failed to connect: ${e.message}`)
+        }
+    }
+
+    const handleDisconnect = async () => {
+        if (port) {
+            try {
+                await port.close()
+                setPort(null)
+                setTransport(null)
+                setIsSerialConnected(false)
+                addLog("SYSTEM: Disconnected.")
+            } catch (e) {
+                console.error(e)
+            }
+        }
+    }
+
 
     const { user } = useUserStore()
 
@@ -91,12 +155,41 @@ export function IDEApp() {
 
         // Initialize parser placeholder
         const timeout = setTimeout(() => {
-            parserRef.current = "READY"
             setParserReady(true)
         }, 1500)
 
         // Log user login for demo purposes
         if (user) console.log("IDE: User session active", user.id)
+
+        // Check serial support
+        if (!(navigator as any).serial) {
+            // console.warn("Web Serial not supported")
+        }
+
+        // Initialize Tree-Sitter
+        const initParser = async () => {
+            try {
+                // Dynamic import to avoid SSR issues
+                const importedParser = await import("web-tree-sitter")
+                const Parser = importedParser.default || importedParser
+
+                await (Parser as any).init({
+                    locateFile(scriptName: string, scriptDirectory: string) {
+                        return '/' + scriptName;
+                    },
+                });
+                const parser = new (Parser as any)();
+                const Lang = await (Parser as any).Language.load('/tree-sitter-cpp.wasm');
+                parser.setLanguage(Lang);
+                parserRef.current = parser;
+                setParserReady(true);
+                addLog("SYSTEM: Tree-Sitter C++ WASM loaded.");
+            } catch (e) {
+                console.error("Failed to init parser", e)
+                addLog("SYSTEM: Failed to load Tree-Sitter.")
+            }
+        }
+        initParser()
 
         return () => {
             clearTimeout(timeout)
@@ -130,22 +223,11 @@ export function IDEApp() {
             setFiles([initialFile])
             setActiveFileId("main")
         }
-
-        const savedSettings = localStorage.getItem("sddionOS_studio_settings")
-        if (savedSettings) {
-            try {
-                setSettings(prev => ({ ...prev, ...JSON.parse(savedSettings) }))
-            } catch (e) { console.error(e) }
-        }
     }, [])
 
     useEffect(() => {
         if (files.length > 0) localStorage.setItem("sddionOS_studio_files", JSON.stringify(files))
     }, [files])
-
-    useEffect(() => {
-        localStorage.setItem("sddionOS_studio_settings", JSON.stringify(settings))
-    }, [settings])
 
 
     // File Operations
@@ -204,10 +286,110 @@ export function IDEApp() {
         handleCreateFile(`Untitled-${Date.now().toString().slice(-4)}.cpp`)
     }
 
-    const updateSettings = (s: Partial<IDESettings>) => setSettings(prev => ({ ...prev, ...s }))
+    // Update Settings handler for global store
+    const updateSettings = (s: Partial<IDESettings>) => {
+        updateGlobalSettings({ ide: { ...settings, ...s } })
+    }
 
-    const addLog = (msg: string) => {
-        setConsoleOutput(prev => [...prev.slice(-99), `[${new Date().toLocaleTimeString()}] ${msg}`])
+
+
+    const handleCommit = async (message: string, fileIds: string[]) => {
+        try {
+            // 1. Sync files to FS
+            const modified = files.filter(f => fileIds.includes(f.id))
+            for (const file of modified) {
+                // Remove leading slash if present in name to match simple relative paths
+                const path = file.name
+                await GitService.writeFile(path, file.content)
+                await GitService.add(path)
+            }
+
+            // 2. Commit
+            await GitService.commit(message)
+
+            // 3. Update UI state
+            setFiles(prev => prev.map(f => fileIds.includes(f.id) ? { ...f, isModified: false } : f))
+            addLog(`GIT: Commit "${message}" successful.`)
+        } catch (e: any) {
+            console.error(e)
+            addLog(`GIT ERROR: ${e.message}`)
+        }
+    }
+
+    const handleGitInit = async () => {
+        try {
+            await GitService.init()
+            // Sync all current files to cache
+            for (const f of files) {
+                await GitService.writeFile(f.name, f.content)
+            }
+            addLog("GIT: Repository initialized.")
+        } catch (e: any) {
+            addLog(`GIT ERROR: ${e.message}`)
+        }
+    }
+
+    const handleGitRemote = async (url: string) => {
+        try {
+            await GitService.addRemote(url)
+            addLog(`GIT: Remote added: ${url}`)
+        } catch (e: any) {
+            addLog(`GIT ERROR: ${e.message}`)
+        }
+    }
+
+    const handleGitPush = async () => {
+        addLog("GIT: Pushing to remote...")
+        try {
+            // Token would strictly be needed here. For now we try without or mock?
+            // Real implementation needs a token prompt.
+            // We'll throw/catch to show the flow.
+            throw new Error("Auth token required (Mock: Feature requires Token UI)")
+            // await GitService.push(token)
+            // addLog("GIT: Push successful.")
+        } catch (e: any) {
+            addLog(`GIT ERROR: ${e.message}`)
+        }
+    }
+
+    const handleGitPull = async () => {
+        addLog("GIT: Pulling from remote...")
+        try {
+            await GitService.pull()
+            addLog("GIT: Pull successful (Files updated in FS - Refresh needed).")
+            // In a real app we would read files back from FS here and update 'files' state
+        } catch (e: any) {
+            addLog(`GIT ERROR: ${e.message}`)
+        }
+    }
+
+    const validateCode = (code: string) => {
+        if (!parserRef.current) return []
+        const tree = parserRef.current.parse(code)
+        if (!tree) return []
+        const errors: string[] = []
+
+        // Simple traversal to find error nodes
+        // Note: web-tree-sitter's cursor or rootNode.hasError can be used
+        const cursor = tree.walk()
+
+        const traverse = (c: any) => {
+            // In tree-sitter, error nodes usually have type 'ERROR' or 'MISSING'
+            if (c.nodeType === 'ERROR' || c.nodeType === 'MISSING') {
+                // Format: line:col: message
+                errors.push(`src/main.cpp:${c.startPosition.row + 1}:${c.startPosition.column + 1}: error: Syntax error near '${code.substring(c.startIndex, Math.min(c.endIndex, c.startIndex + 10)).split('\n')[0]}'`)
+            }
+            if (c.gotoFirstChild()) {
+                traverse(c)
+                while (c.gotoNextSibling()) {
+                    traverse(c)
+                }
+                c.gotoParent()
+            }
+        }
+
+        traverse(cursor)
+        return errors
     }
 
     const handleBuild = async () => {
@@ -215,43 +397,92 @@ export function IDEApp() {
         setStatus("building")
         addLog("BUILD: Starting compilation...")
 
-        await new Promise(r => setTimeout(r, 1500))
+        // Real syntax check using Tree-Sitter
+        if (!activeFile?.content) {
+            setCompiling(false)
+            return
+        }
 
-        const hasError = Math.random() > 0.9 // 10% chance of random error for demo
+        await new Promise(r => setTimeout(r, 500)) // Minimal mock delay for UI feel
 
-        if (hasError) {
+        let errors: string[] = []
+        if (parserRef.current) {
+            errors = validateCode(activeFile.content)
+        } else {
+            addLog("WARN: Parser not ready, skipping syntax check.")
+        }
+
+        if (errors.length > 0) {
             setBuildStatus("error")
             setStatus("error")
-            setBuildErrors(["src/main.cpp:14:22: error: expected ';' before '}' token"])
+            setBuildErrors(errors)
             setTerminalTab("problems")
-            addLog("BUILD: Failed with errors.")
+            addLog(`BUILD: Failed with ${errors.length} errors.`)
         } else {
             setBuildStatus("success")
             setStatus("success")
             setBuildErrors([])
-            addLog("BUILD: Success! Binary size: 428KB")
+            // Estimate binary size for fun
+            const size = Math.round(activeFile.content.length * 1.5 + 200000)
+            addLog(`BUILD: Success! Binary size: ${Math.round(size / 1024)}KB`)
         }
         setCompiling(false)
     }
 
     const handleFlash = async () => {
+        // If "building" logic fails (mock), don't proceed.
         if (buildStatus !== 'success') {
+            // For now, we allow flashing without "build" if it's just a test, 
+            // but strictly speaking we'd want a binary. 
+            // We'll assume a dummy binary for the handshake test.
             await handleBuild()
-            if (buildStatus === 'error') return
+            // if (buildStatus === 'error') return // Proceed anyway to test connection for now
+        }
+
+        if (!port || !transport) {
+            addLog("ERROR: No device connected. Click the plug icon to connect.")
+            return
         }
 
         setFlashing(true)
-        addLog("FLASH: Connecting to ESP32...")
+        addLog("FLASH: Initializing ESP Loader...")
 
-        // Simulating flash
-        for (let i = 0; i <= 100; i += 10) {
-            setFlashProgress(i)
-            await new Promise(r => setTimeout(r, 200))
+        try {
+            const terminal = {
+                clean: () => { },
+                writeLine: (data: string) => addLog(`ESP: ${data}`),
+                write: (data: string) => addLog(`ESP: ${data}`)
+            }
+
+            const { ESPLoader } = await import("esptool-js")
+
+            const loader = new ESPLoader({
+                transport,
+                baudrate: settings.baudRate,
+                romBaudrate: settings.baudRate,
+                terminal
+            } as any)
+
+            addLog("FLASH: Reseting into bootloader...")
+            setFlashProgress(10) // Mock progress
+            await loader.main('default_reset')
+            setFlashProgress(50) // Mock progress
+
+            // Note: In a real app, here we would pass the 'file' content (compiled binary) to loader.write_flash()
+            // Since we don't have a backend compiler, we stop at handshake success.
+            addLog("FLASH: Chip detected! Handshake successful.")
+            addLog("FLASH: (Skipping write_flash as no binary is available)")
+
+            await transport.disconnect()
+            await transport.connect(settings.baudRate)
+            setIsSerialConnected(true)
+
+        } catch (e: any) {
+            console.error(e)
+            addLog(`FLASH ERROR: ${e.message || e}`)
+        } finally {
+            setFlashing(false)
         }
-
-        addLog("FLASH: Write complete. Resetting board...")
-        setFlashing(false)
-        setIsSerialConnected(true)
     }
 
     return (
@@ -287,6 +518,11 @@ export function IDEApp() {
                                 sidebarWidth={256}
                                 libraries={LIBS}
                                 platforms={platforms}
+                                onCommit={handleCommit}
+                                onGitInit={handleGitInit}
+                                onGitPush={handleGitPush}
+                                onGitPull={handleGitPull}
+                                onGitRemote={handleGitRemote}
                             />
                         </div>
                     ) : null}
@@ -358,8 +594,23 @@ export function IDEApp() {
 
                                 <div className="w-[1px] h-4 bg-white/10 mx-1" />
 
+                                <button
+                                    onClick={isSerialConnected ? handleDisconnect : handleConnect}
+                                    className={cn(
+                                        "p-1.5 hover:bg-white/10 rounded  hover:text-white flex items-center gap-2 transition-colors",
+                                        isSerialConnected ? "text-green-400" : "text-white/60"
+                                    )}
+                                    title={isSerialConnected ? "Disconnect Board" : "Connect Board"}
+                                >
+                                    <Plug size={14} />
+                                    {isSerialConnected && <span className="text-[10px] font-bold">Connected</span>}
+                                </button>
+
                                 <button onClick={() => addLog("Project Saved.")} className="p-1.5 hover:bg-white/10 rounded text-white/60 hover:text-white" title="Save Project">
                                     <Save size={14} />
+                                </button>
+                                <button className="p-1.5 hover:bg-white/10 rounded text-white/60 hover:text-white" title="Reload Window">
+                                    <RefreshCw size={14} />
                                 </button>
                             </div>
                         </div>
@@ -429,9 +680,34 @@ export function IDEApp() {
                                 <Monitor size={12} />
                                 <span>Serial Monitor</span>
                             </div>
+
+                            {/* Terminal Actions */}
+                            <div className="flex-1" /> {/* Spacer */}
+                            <div className="flex items-center gap-2 mr-2">
+                                <button
+                                    onClick={() => {
+                                        const text = terminalTab === "output" ? consoleOutput.join("\n") : buildErrors.join("\n")
+                                        navigator.clipboard.writeText(text.replace(/\[.*?\]/g, "").trim())
+                                    }}
+                                    className="p-1 hover:bg-white/10 rounded text-[#cccccc] hover:text-white transition-colors"
+                                    title="Copy Output"
+                                >
+                                    <Copy size={12} />
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (terminalTab === "output") setConsoleOutput([])
+                                        if (terminalTab === "problems") setBuildErrors([])
+                                    }}
+                                    className="p-1 hover:bg-white/10 rounded text-[#cccccc] hover:text-white transition-colors"
+                                    title="Clear Terminal"
+                                >
+                                    <Trash2 size={12} />
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-2 font-mono text-[12px] space-y-0.5 bg-[#1e1e1e]">
+                        <div className="flex-1 overflow-y-auto p-2 font-mono text-[12px] space-y-0.5 bg-[#1e1e1e] select-text">
                             {terminalTab === "output" ? (
                                 consoleOutput.map((log, i) => (
                                     <div key={i} className="flex gap-2">
@@ -484,7 +760,7 @@ export function IDEApp() {
             {isMobile && (
                 <div className="absolute bottom-0 inset-x-0 h-14 bg-[#1e1e1e] flex items-center justify-around z-[200] border-t border-[#333]">
                     <button onClick={() => { setActiveTab("explorer"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><FilesIcon size={20} /><span className="text-[9px]">Explorer</span></button>
-                    <button onClick={() => { setActiveTab("search"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><SearchIcon size={20} /><span className="text-[9px]">Search</span></button>
+
                     <button onClick={handleBuild} className={cn("p-2 -mt-6 rounded-full bg-blue-600 text-white shadow-lg", compiling ? "animate-pulse" : "")}><Play size={24} fill="currentColor" /></button>
                     <button onClick={() => { setActiveTab("libraries"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><Library size={20} /><span className="text-[9px]">Libs</span></button>
                     <button onClick={() => { setActiveTab("settings"); setShowMobileSidebar(true) }} className="p-2 text-[#cccccc] flex flex-col items-center gap-1 active:scale-95 transition-transform"><SlidersHorizontal size={20} /><span className="text-[9px]">Settings</span></button>
