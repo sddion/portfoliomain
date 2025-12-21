@@ -1,8 +1,7 @@
-FROM node:20-slim
+FROM node:20
 
 # Install arduino-cli
-RUN apt-get update && apt-get install -y curl python3 python3-pip && \
-    curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh && \
+RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh && \
     mv bin/arduino-cli /usr/local/bin/ && \
     rm -rf bin
 

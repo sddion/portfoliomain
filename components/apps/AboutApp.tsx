@@ -1,7 +1,97 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 import { BrowserApp } from "@/components/apps/BrowserApp"
-import { Globe } from "lucide-react"
+import { Globe, ExternalLink } from "lucide-react"
+
+function ServerStatusDisplay() {
+    const [status, setStatus] = useState<'checking' | 'up' | 'down'>('checking')
+    const [uptime, setUptime] = useState(100)
+
+    useEffect(() => {
+        const checkStatus = async () => {
+            try {
+                const response = await fetch('/api/arduino/compile', {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(5000)
+                })
+                const data = await response.json()
+                setStatus(data.serviceOnline ? 'up' : 'down')
+                setUptime(data.serviceOnline ? 100 : 0)
+            } catch {
+                setStatus('down')
+                setUptime(0)
+            }
+        }
+        checkStatus()
+        const interval = setInterval(checkStatus, 60000)
+        return () => clearInterval(interval)
+    }, [])
+
+    const statusColor = status === 'up' ? 'bg-green-500' : status === 'down' ? 'bg-red-500' : 'bg-yellow-500'
+    const statusText = status === 'up' ? 'Operational' : status === 'down' ? 'Down' : 'Checking...'
+
+    return (
+        <div className="space-y-4">
+            {/* Overall Status */}
+            <div className="flex items-center gap-3 p-4 bg-[#1a1a2e] rounded-lg">
+                <div className={`w-8 h-8 rounded-full ${statusColor} flex items-center justify-center`}>
+                    {status === 'up' && <span className="text-white text-lg">✓</span>}
+                    {status === 'down' && <span className="text-white text-lg">×</span>}
+                </div>
+                <div>
+                    <span className="text-lg font-bold text-white">All systems </span>
+                    <span className={status === 'up' ? 'text-green-400' : 'text-red-400'}>
+                        {statusText}
+                    </span>
+                </div>
+            </div>
+
+            {/* Services */}
+            <div className="space-y-2">
+                <h4 className="text-[var(--foreground)] font-semibold">Services</h4>
+
+                <div className="p-3 bg-[var(--os-surface)] rounded border border-[var(--os-border)]">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-[var(--foreground)]">compileserver.onrender.com/health</span>
+                            <ExternalLink size={12} className="text-[var(--muted-foreground)]" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-green-400">{uptime.toFixed(3)}%</span>
+                            <div className="flex items-center gap-1">
+                                <div className={`w-2 h-2 rounded-full ${statusColor}`} />
+                                <span className={`text-xs ${status === 'up' ? 'text-green-400' : 'text-red-400'}`}>
+                                    {statusText}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Uptime Bars */}
+                    <div className="flex gap-[1px] h-6 overflow-hidden rounded">
+                        {Array.from({ length: 90 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={`flex-1 min-w-[2px] ${i < 89 ? 'bg-[#3d5a80]' : statusColor
+                                    }`}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* View Full Status */}
+            <a
+                href="https://stats.uptimerobot.com/a2F2jnGyuk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center text-xs text-[var(--primary)] hover:underline py-2"
+            >
+                View Full Status Page →
+            </a>
+        </div>
+    )
+}
 
 export function AboutApp() {
     const { openWindow } = useWindowManager()
@@ -78,6 +168,18 @@ export function AboutApp() {
                     >
                         GitLab
                     </button>
+                </div>
+
+                {/* Server Status - UptimeRobot */}
+                <div className="mt-6 pt-4 border-t border-[var(--os-border)]">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-[var(--foreground)] font-bold">Server Status</h3>
+                        <span className="text-xs text-[var(--muted-foreground)]">
+                            Powered by UptimeRobot
+                        </span>
+                    </div>
+
+                    <ServerStatusDisplay />
                 </div>
             </div>
         </div>
