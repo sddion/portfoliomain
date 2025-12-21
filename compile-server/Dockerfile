@@ -1,7 +1,16 @@
-FROM node:20
+FROM debian:bookworm-slim
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    nodejs \
+    npm \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install arduino-cli
-RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh && \
+RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | bash && \
     mv bin/arduino-cli /usr/local/bin/ && \
     rm -rf bin
 
