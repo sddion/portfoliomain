@@ -179,13 +179,7 @@ export function IDEApp() {
             setParserReady(true)
         }, 1500)
 
-        // Log user login for demo purposes
-        if (user) console.log("IDE: User session active", user.id)
 
-        // Check serial support
-        if (!(navigator as any).serial) {
-            // console.warn("Web Serial not supported")
-        }
 
         // Initialize Tree-Sitter (optional - for syntax highlighting)
         const initParser = async () => {

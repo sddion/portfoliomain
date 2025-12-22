@@ -93,14 +93,14 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     }, [settings?.theme, setTheme, authLoading, theme])
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && !authLoading && user) {
+        if (typeof window !== 'undefined' && !authLoading) {
             // Check if user was previously "logged in" to the OS UI
             const storedLogin = localStorage.getItem("sddionOS_login")
             if (storedLogin) {
                 setIsLoggedIn(true)
             }
         }
-    }, [authLoading, user])
+    }, [authLoading])
 
     // Load installed apps
     useEffect(() => {

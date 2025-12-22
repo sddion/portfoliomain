@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import {
     ChevronRight, ChevronDown, FileCode, Folder, Hash,
     MoreHorizontal, Search, FilePlus, FolderPlus, Trash2,
-    Settings, Activity, Monitor, Type, AlignLeft, List, Minimize, Terminal as TerminalIcon,
+    Settings, CheckCircle, Activity, Monitor, Type, AlignLeft, List, Minimize, Terminal as TerminalIcon,
     GitGraph, Check, Plus, X, Minus
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -416,11 +416,11 @@ function GitPanel({
                 if (token) {
                     setAuthToken(token)
                 } else {
-                    const saved = localStorage.getItem('git_auth_token')
+                    const saved = localStorage.getItem('sddionOS_git_token')
                     if (saved) setAuthToken(saved)
                 }
             } catch {
-                const saved = localStorage.getItem('git_auth_token')
+                const saved = localStorage.getItem('sddionOS_git_token')
                 if (saved) setAuthToken(saved)
             }
         }
@@ -505,12 +505,15 @@ function GitPanel({
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <div className="w-6 h-6 rounded-full bg-[#4caf50] flex items-center justify-center">
-                                    <Check size={12} className="text-white" />
+                                    <CheckCircle size={12} className="text-white" />
                                 </div>
                                 <span className="text-xs text-[#4caf50]">Connected</span>
                             </div>
                             <button
-                                onClick={() => setAuthToken('')}
+                                onClick={() => {
+                                    setAuthToken('')
+                                    localStorage.removeItem('sddionOS_git_token')
+                                }}
                                 className="text-[10px] text-white/50 hover:text-red-400"
                             >
                                 Disconnect
