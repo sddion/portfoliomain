@@ -44,11 +44,6 @@ export function SettingsApp() {
                 ))}
             </div>
 
-            <div className="mt-8 p-3 sm:p-4 bg-[var(--os-surface)] rounded text-xs sm:text-sm text-[var(--muted-foreground)]">
-                <p>Selected Theme: <span className="text-[var(--primary)] font-bold uppercase">{theme}</span></p>
-                <p className="mt-2">Themes affect window highlights, terminal text, accents, and icon colors.</p>
-                <p className="mt-2 text-[var(--primary)]">Synced with Cloud Personalization (Supabase)</p>
-            </div>
         </div>
     )
 }
