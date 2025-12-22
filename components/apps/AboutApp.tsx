@@ -74,19 +74,19 @@ const ServerStatusDisplay = React.memo(function ServerStatusDisplay() {
 
             {/* Services */}
             <div className="space-y-2">
-                <h4 className="text-[var(--foreground)] font-semibold">Services</h4>
+                <h3 className="text-[var(--foreground)] font-semibold">Services</h3>
 
                 <div className="p-3 bg-[var(--os-surface)] rounded border border-[var(--os-border)]">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-[var(--foreground)]">compileserver.onrender.com/health</span>
-                            <ExternalLink size={12} className="text-[var(--muted-foreground)]" />
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-sm text-[var(--foreground)] truncate">compileserver.onrender.com/health</span>
+                            <ExternalLink size={12} className="text-[var(--muted-foreground)] shrink-0" />
                         </div>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-green-400">{uptime.toFixed(3)}%</span>
-                            <div className="flex items-center gap-1">
-                                <div className={`w-2 h-2 rounded-full ${statusColor}`} />
-                                <span className={`text-xs ${status === 'up' ? 'text-green-400' : 'text-red-400'}`}>
+                        <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 border-t sm:border-t-0 border-[var(--os-border)] pt-2 sm:pt-0">
+                            <span className="text-sm font-bold text-green-400">{uptime.toFixed(3)}%</span>
+                            <div className="flex items-center gap-2 bg-black/20 px-2 py-0.5 rounded border border-white/5">
+                                <div className={`w-1.5 h-1.5 rounded-full ${statusColor} animate-pulse`} />
+                                <span className={`text-[10px] uppercase font-bold tracking-wider ${status === 'up' ? 'text-green-400' : 'text-red-400'}`}>
                                     {statusText}
                                 </span>
                             </div>
@@ -155,7 +155,7 @@ export function AboutApp() {
                 </p>
 
                 <div className="bg-[var(--os-surface)] p-4 rounded border border-[var(--os-border)]">
-                    <h3 className="text-[var(--foreground)] font-bold mb-2">Current Focus</h3>
+                    <h2 className="text-[var(--foreground)] font-bold mb-2">Current Focus</h2>
                     <p className="text-sm">
                         Building full-stack applications with TypeScript, exploring new technologies, and contributing to open-source projects.
                     </p>
@@ -196,7 +196,7 @@ export function AboutApp() {
                 {/* Server Status - UptimeRobot */}
                 <div className="mt-6 pt-4 border-t border-[var(--os-border)]">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-[var(--foreground)] font-bold">Server Status</h3>
+                        <h2 className="text-[var(--foreground)] font-bold">Server Status</h2>
                         <span className="text-xs text-[var(--muted-foreground)]">
                             Powered by UptimeRobot
                         </span>

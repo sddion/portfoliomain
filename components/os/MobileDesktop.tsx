@@ -12,12 +12,25 @@ import { NotificationShade } from "@/components/os/NotificationShade"
 import { MobileConkyWidget } from "@/components/os/MobileConkyWidget"
 import { SnowfallEffect } from "@/components/ui/snowfall-effect"
 import { LoginScreen } from "@/components/os/LoginScreen"
+import { BootSequence } from "@/components/os/BootSequence"
 import { RecruiterWelcome } from "@/components/os/RecruiterWelcome"
 import { PWAInstall } from "@/components/os/PWAInstall"
 import { cn } from "@/lib/utils"
 
 export function MobileDesktop() {
-    const { windows, openWindow, closeWindow, activeWindowId, isLoggedIn, settings, updateSettings, installedApps, isAppsLoaded } = useWindowManager()
+    const {
+        windows,
+        openWindow,
+        closeWindow,
+        activeWindowId,
+        isLoggedIn,
+        isSystemBooting,
+        setSystemBooting,
+        settings,
+        updateSettings,
+        installedApps,
+        isAppsLoaded
+    } = useWindowManager()
     const { notifications } = useNotifications()
     const [time, setTime] = useState(new Date())
     const [notificationOpen, setNotificationOpen] = useState(false)
@@ -159,6 +172,10 @@ export function MobileDesktop() {
     const page1Apps = useMemo(() => apps.slice(0, appsPerPage), [apps])
     const page2Apps = useMemo(() => apps.slice(appsPerPage), [apps])
     const totalPages = page2Apps.length > 0 ? 2 : 1
+
+    if (isSystemBooting) {
+        return <BootSequence onComplete={() => setSystemBooting(false)} />
+    }
 
     if (!isLoggedIn) {
         return <LoginScreen />

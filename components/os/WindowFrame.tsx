@@ -159,6 +159,7 @@ export const WindowFrame = React.memo(function WindowFrame({
                         onClick={handleMinimize}
                         onMouseDown={(e) => e.stopPropagation()}
                         className="p-1.5 hover:bg-white/10 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                        aria-label="Minimize"
                     >
                         <Minus size={14} />
                     </button>
@@ -166,6 +167,7 @@ export const WindowFrame = React.memo(function WindowFrame({
                         onClick={handleMaximize}
                         onMouseDown={(e) => e.stopPropagation()}
                         className="p-1.5 hover:bg-white/10 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                        aria-label={isMaximized ? "Restore" : "Maximize"}
                     >
                         {isMaximized ? <Maximize2 size={12} /> : <Square size={12} />}
                     </button>
@@ -173,6 +175,7 @@ export const WindowFrame = React.memo(function WindowFrame({
                         onClick={handleClose}
                         onMouseDown={(e) => e.stopPropagation()}
                         className="p-1.5 hover:bg-red-500/80 rounded text-[var(--muted-foreground)] hover:text-white transition-colors"
+                        aria-label="Close"
                     >
                         <X size={14} />
                     </button>

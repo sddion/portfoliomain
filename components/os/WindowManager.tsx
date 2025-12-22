@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react"
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback, startTransition } from "react"
 import { useTheme } from "next-themes"
 import { useUserStore } from "@/hooks/use-user-store"
 import { INITIAL_APPS, AppWithComponent } from "@/data/apps"
@@ -33,6 +33,8 @@ interface WindowContextType {
     activeWindowId: string | null
     isBooting: boolean
     setBooting: (booting: boolean) => void
+    isSystemBooting: boolean
+    setSystemBooting: (booting: boolean) => void
     isLoggedIn: boolean
     login: () => void
     logout: () => void
@@ -63,6 +65,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     const [windows, setWindows] = useState<WindowState[]>([])
     const [activeWindowId, setActiveWindowId] = useState<string | null>(null)
     const [isBooting, setBooting] = useState(false)
+    const [isSystemBooting, setSystemBooting] = useState(true)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [showSnowfall, setShowSnowfall] = useState(true)
 
@@ -87,7 +90,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
             setTheme(defaultTheme)
         }
         // Removed 'theme' from dependencies to prevent feedback loops when setting theme locally
-    }, [settings?.theme, setTheme, authLoading])
+    }, [settings?.theme, setTheme, authLoading, theme])
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !authLoading && user) {
@@ -186,37 +189,43 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const closeWindow = useCallback((id: string) => {
-        setWindows((prev) => {
-            const updated = prev.filter((w) => w.id !== id)
+        startTransition(() => {
+            setWindows((prev) => {
+                const updated = prev.filter((w) => w.id !== id)
 
-            // If we closed the active window, find the next one to focus
-            if (activeWindowId === id) {
-                if (updated.length > 0) {
-                    // Find window with highest zIndex
-                    const next = updated.reduce((prev, current) =>
-                        (prev.zIndex > current.zIndex) ? prev : current
-                    )
-                    setActiveWindowId(next.id)
-                } else {
-                    setActiveWindowId(null)
+                // If we closed the active window, find the next one to focus
+                if (activeWindowId === id) {
+                    if (updated.length > 0) {
+                        // Find window with highest zIndex
+                        const next = updated.reduce((prev, current) =>
+                            (prev.zIndex > current.zIndex) ? prev : current
+                        )
+                        setActiveWindowId(next.id)
+                    } else {
+                        setActiveWindowId(null)
+                    }
                 }
-            }
 
-            return updated
+                return updated
+            })
         })
     }, [activeWindowId])
 
     const minimizeWindow = useCallback((id: string) => {
-        setWindows((prev) =>
-            prev.map((w) => (w.id === id ? { ...w, isMinimized: true } : w))
-        )
+        startTransition(() => {
+            setWindows((prev) =>
+                prev.map((w) => (w.id === id ? { ...w, isMinimized: true } : w))
+            )
+        })
     }, [])
 
     const maximizeWindow = useCallback((id: string) => {
-        setWindows((prev) =>
-            prev.map((w) => (w.id === id ? { ...w, isMaximized: !w.isMaximized } : w))
-        )
-        focusWindow(id)
+        startTransition(() => {
+            setWindows((prev) =>
+                prev.map((w) => (w.id === id ? { ...w, isMaximized: !w.isMaximized } : w))
+            )
+            focusWindow(id)
+        })
     }, [focusWindow])
 
     const toggleSnowfall = useCallback(() => setShowSnowfall(prev => !prev), [])
@@ -285,6 +294,8 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         activeWindowId,
         isBooting,
         setBooting,
+        isSystemBooting,
+        setSystemBooting,
         isLoggedIn,
         login,
         logout,
@@ -310,6 +321,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         focusWindow,
         activeWindowId,
         isBooting,
+        isSystemBooting,
         isLoggedIn,
         login,
         logout,

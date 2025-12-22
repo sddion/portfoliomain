@@ -4,57 +4,46 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 
 export function BootSequence({ onComplete }: { onComplete: () => void }) {
-    const [lines, setLines] = useState<string[]>([])
+    const [currentFrame, setCurrentFrame] = useState(1)
+    const totalFrames = 223 // Based on the number of frames available
 
     useEffect(() => {
-        const bootText = [
-            "BIOS Date 01/01/24 15:23:00 Ver: 1.0.2",
-            "CPU: AMD Ryzen 9 5950X 16-Core Processor",
-            "Memory Test: 65536K OK",
-            "Detecting Primary Master ...",
-            "Detecting Primary Slave ... ",
-            "Booting from hard disk...",
-            "Loading kernel modules...",
-            "Mounting root filesystem...",
-            "Starting system services...",
-            "Initializing graphics interface...",
-            "Welcome to Kali Linux",
-        ]
-
-        let delay = 0
-        const timeouts: NodeJS.Timeout[] = []
-
-        bootText.forEach((line, index) => {
-            delay += Math.random() * 300 + 100
-            const id = setTimeout(() => {
-                setLines((prev) => [...prev, line])
-                if (index === bootText.length - 1) {
-                    setTimeout(onComplete, 800)
-                }
-            }, delay)
-            timeouts.push(id)
+        // Preload first few frames
+        const preloadFrames = [1, 2, 3, 4, 5]
+        preloadFrames.forEach(frame => {
+            const img = new Image()
+            img.src = `/bootanimation/${frame}.png`
         })
+    }, [])
 
-        return () => timeouts.forEach(clearTimeout)
-    }, [onComplete])
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentFrame(prev => {
+                if (prev >= totalFrames) {
+                    clearInterval(interval)
+                    setTimeout(onComplete, 500)
+                    return prev
+                }
+                return prev + 1
+            })
+        }, 50) // Adjust speed as needed (50ms = 20fps)
+
+        return () => clearInterval(interval)
+    }, [onComplete, totalFrames])
 
     return (
-        <div className="fixed inset-0 bg-black z-50 flex flex-col justify-start p-10 font-mono text-green-500 overflow-hidden">
-            {lines.map((line, i) => (
-                <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="mb-1"
-                >
-                    {`> ${line}`}
-                </motion.div>
-            ))}
-            <motion.div
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ repeat: Infinity, duration: 0.8 }}
-                className="w-3 h-5 bg-green-500 mt-1"
-            />
+        <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center overflow-hidden">
+            <div className="relative w-full max-w-4xl aspect-video flex items-center justify-center">
+                <motion.img
+                    key={currentFrame}
+                    src={`/bootanimation/${currentFrame}.png`}
+                    alt="Booting..."
+                    initial={{ opacity: 0.8 }}
+                    animate={{ opacity: 1 }}
+                    className="w-full h-auto object-contain pointer-events-none select-none"
+                    transition={{ duration: 0.03 }}
+                />
+            </div>
         </div>
     )
 }

@@ -16,7 +16,19 @@ import { useNotifications } from "@/hooks/useNotifications"
 import { AppIcon } from "@/components/os/IconManager"
 
 export function Desktop() {
-    const { isBooting, setBooting, windows, openWindow, isLoggedIn, settings, updateSettings, installedApps, isAppsLoaded } = useWindowManager()
+    const {
+        isBooting,
+        setBooting,
+        isSystemBooting,
+        setSystemBooting,
+        windows,
+        openWindow,
+        isLoggedIn,
+        settings,
+        updateSettings,
+        installedApps,
+        isAppsLoaded
+    } = useWindowManager()
     const { showNotification } = useNotifications()
 
     // Recruiter Detection via URL parameter
@@ -29,6 +41,10 @@ export function Desktop() {
             }
         }
     }, [isLoggedIn, settings.isRecruiter, updateSettings])
+
+    if (isSystemBooting) {
+        return <BootSequence onComplete={() => setSystemBooting(false)} />
+    }
 
     if (!isLoggedIn) {
         return <LoginScreen />
