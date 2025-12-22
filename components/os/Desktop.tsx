@@ -50,9 +50,6 @@ export function Desktop() {
         return <LoginScreen />
     }
 
-    if (isBooting) {
-        return <BootSequence onComplete={() => setBooting(false)} />
-    }
 
     return (
         <div
