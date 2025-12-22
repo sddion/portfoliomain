@@ -4,12 +4,12 @@ import { useEffect } from "react"
 import { useWindowManager } from "@/components/os/WindowManager"
 
 export function AdSenseManager() {
-    const { isLoggedIn, isBooting } = useWindowManager()
+    const { isLoggedIn, isBooting, hasContentWindow } = useWindowManager()
 
     useEffect(() => {
-        // Only load AdSense if the user is logged in AND the boot sequence is finished.
-        // This ensures ads are only served on the "Desktop" which contains publisher content.
-        if (!isLoggedIn || isBooting) {
+        // Only load AdSense if the user is logged in AND the boot sequence is finished AND a content window is open.
+        // This ensures ads are only served on screens with publisher content.
+        if (!isLoggedIn || isBooting || !hasContentWindow) {
             return
         }
 
@@ -24,7 +24,7 @@ export function AdSenseManager() {
                 document.head.removeChild(script)
             }
         }
-    }, [isLoggedIn, isBooting])
+    }, [isLoggedIn, isBooting, hasContentWindow])
 
     return null
 }

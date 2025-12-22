@@ -12,10 +12,10 @@ interface AdUnitProps {
 }
 
 export function AdUnit({ slot, format = "auto", layout, style, className }: AdUnitProps) {
-    const { isLoggedIn, isBooting } = useWindowManager()
+    const { isLoggedIn, isBooting, hasContentWindow } = useWindowManager()
 
     useEffect(() => {
-        if (isLoggedIn && !isBooting) {
+        if (isLoggedIn && !isBooting && hasContentWindow) {
             try {
                 // @ts-ignore
                 ; (window.adsbygoogle = window.adsbygoogle || []).push({})
@@ -23,9 +23,9 @@ export function AdUnit({ slot, format = "auto", layout, style, className }: AdUn
                 console.error("AdSense error:", err)
             }
         }
-    }, [isLoggedIn, isBooting])
+    }, [isLoggedIn, isBooting, hasContentWindow])
 
-    if (!isLoggedIn || isBooting) {
+    if (!isLoggedIn || isBooting || !hasContentWindow) {
         return null
     }
 
